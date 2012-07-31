@@ -1,0 +1,20 @@
+---
+layout: page
+---
+{% for post in site.posts %}
+<div class="firehose-post">
+    {% assign excerpt = true %}
+    {% assign link_title = true %}
+    {% include post.html %}
+</div>
+{% endfor %}
+
+<!-- Pagination links -->
+<div class="pagination">
+  {% if paginator.previous_page %}
+    <a href="/page{{paginator.previous_page}}" class="previous">&lt;&lt;Read Older Posts</a>
+  {% endif %}
+  {% if paginator.next_page %}
+    <a href="/page{{paginator.next_page}}" class="next ">Read Newer Posts&gt;&gt;</a>
+  {% endif %}
+</div>
