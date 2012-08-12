@@ -54,6 +54,34 @@ h2 {
 	font-weight:bold;
 }
 
+/* @group 3D/three.js */
+.demo_3d {
+    max-width: 400px;
+    margin: 0 auto;
+}
+.demo_3d  canvas {
+    border: 1px solid #bbb;
+}
+/* @end */
+
+/* @group ui controls */
+.slider-control {
+    margin-bottom: 1em;
+}
+.slider-label {
+    font-family:sans-serif;
+	font-size: 75%;
+}
+
+.slider {
+    margin-right:0.75em;
+    margin-top:0.2em;
+    float:left;
+    width: 50%;
+}
+
+/* @end */
+
 .title-link {
     color: black !important;
     text-decoration: none;
@@ -68,6 +96,31 @@ h2 {
     color: #666;
     margin-top: 4px;
 	font-weight:bold;
+}
+
+.context-img {
+    float: right;
+    margin-left: 1.5em;
+}
+
+.context-img img {
+    border: 1px solid black;
+}
+
+.caption
+{
+    color: #666;
+    font-size: 75%;
+    line-height: 1.2em;
+}
+
+.credit {
+    font-style: italic;
+}
+
+
+.context-img .credit > a {
+    color: #999;
 }
 
 
@@ -171,7 +224,7 @@ table.neat td { background-color: white; }
 table.neat th.title { border-bottom: 1px solid gray; border-top: 1px solid gray; vertical-align: bottom; background-color: lightgrey; }
 caption { 
 	color: #333;
-	font-size: 0.875em;
+	font-size: 75%;
 	margin: 0.875em auto 0 auto;
 	line-height: 1.14em;
 	text-align: justify;
@@ -228,7 +281,6 @@ ul.compact li a {
 #header h1 {
 	font-family: Palatino, georgia, "times new roman", serif;
 	margin-bottom: 0;
-	line-height: 0.9em;
 	display: block;
 	font-weight: normal;
 }
@@ -238,7 +290,6 @@ ul.compact li a {
 	top: 0;
 	right: 0;
 	font-size: 100%;
-	line-height: 1.6em;
 	display: block;
 	margin: 0;
 	width: 50%;

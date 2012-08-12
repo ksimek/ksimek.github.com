@@ -1,11 +1,18 @@
 ---
 layout: post
 title: "The Perspective Camera - An Interactive Tour"
-published: false
+#published: false
 description: ""
 category: 
 tags: []
 ---
+
+<div class='context-img' style='width:350px'>
+<img src='/img/1st_and_ten.jpg' />
+<div class='caption'>The "1st and Ten" system, one of the first successful applications of augmented reality in sports.
+<div class='credit'><a href="http://www.howstuffworks.com/first-down-line.htm">howstuffworks.com</a></div>
+</div>
+</div>
 
 On September 27, 1998 a yellow line appeared across the gridiron during an otherwise ordinary football game between the Cincinnati Bengals and the Baltimore Ravens.  It had been added by a computer that analyzed the camera's position and the shape of the ground in real-time in order to overlay thin yellow strip onto the field.  The line marked marked the position of the next first-down, but it also marked the beginning of a new era of computer vision in live sports, from [computerized pitch analysis](http://www.youtube.com/watch?v=p-y7N-giirQ) in baseball to [automatic line-refs](http://www.youtube.com/watch?v=Cgeb61VIKvo) in tennis.  
 
@@ -19,6 +26,14 @@ What do all of these technologies have in common?  They all require a precise un
 
 <!--more-->
 
+<div class='context-img' style='width:180px'>
+    <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">
+    <img src='/img/h_and_z.jpg' />
+    </a>
+    <div class='caption'>
+        These articles won't cover everything.  This book does.
+    </div>
+</div>
 This series of articles is intended as a supplement to a more rigorous treatment available in several excellent textbooks.  I will focus on providing what textbooks generally don't provide: interactive demos, runnable code, and practical advice on implementation.    I will assume the reader has a basic understanding of 3D graphics and OpenGL, as well as some background in computer vision.  In other words, if you've never heard of homogeneous coordinates or a camera matrix, you might want to start with an introductory book on computer vision or at least have one handy.  I highly recommend [Multiple View Geometry in Computer Vision](http://www.amazon.com/Multiple-View-Geometry-Computer-Vision/dp/0521540518/ref=sr_1_fkmr1_1?ie=UTF8&qid=1343611611&sr=8-1-fkmr1&keywords=harley+and+zisserman) by Hartley and Zisserman, from which I borrow mathematical notation and conventions (e.g. column vectors, right-handed coordinates, etc.)
 
 Technical Requirements
@@ -38,7 +53,7 @@ g^2 &  h^2 & i^2
 \]
 </div>
 
-3D interactive demos are provided by [three.js](https://github.com/mrdoob/three.js/), which also needs JavaScript and prefers a browser that supports WebGL ([htto://google.com/chrome](Google Chrome) works great, as does [the latest version of Firefox](http://www.mozilla.org/en-US/firefox/fx/#desktop)).  Older browsers will render using canvas, which will run slowly, look ugly, and hurl vicious insults at you.  But it should work.   If you see two spheres below, you're in business.
+3D interactive demos are provided by [three.js](https://github.com/mrdoob/three.js/), which also needs JavaScript and prefers a browser that supports WebGL ( [Google Chrome](http://google.com/chrome) works great, as does [the latest version of Firefox](http://www.mozilla.org/en-US/firefox/fx/#desktop)).  Older browsers will render using canvas, which will run slowly, look ugly, and hurl vicious insults at you.  But it should work.   If you see two spheres below, you're in business.
 
 <script>
 
@@ -161,9 +176,9 @@ g^2 &  h^2 & i^2
 
     function onMouseDown(event)
     {
-        $container.mousemove(onMouseMove);
-        $container.mouseup(onMouseUp);
-        $container.mouseout(onMouseOut);
+        $(document).mousemove(onMouseMove);
+        $(document).mouseup(onMouseUp);
+        $(document).mouseout(onMouseOut);
 
         mouseDownX = event.screenX;
         mouseDownY = event.screenY;
@@ -194,9 +209,9 @@ g^2 &  h^2 & i^2
 
     function removeListeners()
     {
-        $container.unbind( 'mousemove');
-        $container.unbind( 'mouseup');
-        $container.unbind( 'mouseout');
+        $(document).unbind( 'mousemove');
+        $(document).unbind( 'mouseup');
+        $(document).unbind( 'mouseout');
     }
 
     function onTouchStart(event)
@@ -264,7 +279,7 @@ g^2 &  h^2 & i^2
     // attach the render-supplied DOM element
     $(document).ready(function(){
         $container = $('#3d_container');
-        $container.append(renderer.domElement);
+        $container.prepend(renderer.domElement);
 
         $container.mousedown(onMouseDown);
         $container.bind( 'touchstart', onTouchStart);
@@ -276,7 +291,10 @@ g^2 &  h^2 & i^2
 </script>
 
 
-<div id="3d_container">
+<div class="demo_3d">
+    <div id="3d_container" >
+    </div>
+    <div class="caption">3D demo.  Drag to move camera. </div>
 </div>
 
 Table of Contents
@@ -284,13 +302,15 @@ Table of Contents
 
 Below is a list of all the articles in this series.  New articles will be added to this list as I post them, so you can always return to this page for an up-to-date listing.
 
-* Dissecting the Camera Matrix, Part 1: Intrinsic/Extrinsic Decomposition
+* [Dissecting the Camera Matrix, Part 1: Intrinsic/Extrinsic Decomposition](2012/08/05/dissecting-the-camera-matrix-part-1/)
 * Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix
 * Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix
 * Simulating your Calibrated Camera in OpenGL
-* Stereo Rendering "the Right Way" using a Calibrated Camera
+* Stereo Rendering using a Calibrated Camera
 * Virtual Reality Head Tracking using a Calibrated Camera
 <!--
 * Pixel-perfect Backprojected Textures
 * Rendering a Pixel-Perfect Image Plane
 -->
+
+Happy reading!

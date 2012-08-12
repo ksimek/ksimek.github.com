@@ -10,6 +10,7 @@ THREE.CalibratedCamera = function ( fx, fy, x0, y0, s, width, height, near, far)
     this.width = width;
     this.near = near;
     this.far = far;
+    this.screenToCameraMatrix = new THREE.Matrix4();
 
     this.updateProjectionMatrix();
 
@@ -36,6 +37,20 @@ THREE.CalibratedCamera.prototype.updateProjectionMatrix = function () {
              0, this.fy, -this.y0,  0,
              0,  0,   X,  Y,
              0,  0,  -1,  0);
+
     this.projectionMatrix.multiplySelf(intrinsicCameraMatrix);
+    this.screenToCameraMatrixNeedsUpdate = true;
 };
 
+THREE.CalibratedCamera.prototype.updateScreenToCameraMatrix = function () {
+    if(this.screenToCameraMatrixNeedsUpdate)
+    {
+        this.screenToCameraMatrix.set(
+                this.fx,  this.s, -this.x0,  0,
+                 0, this.fy, -this.y0,  0,
+                 0,  0,   -1,  0,
+                 0,  0,   0,  1);
+        this.screenToCameraMatrix.getInverse(this.screenToCameraMatrix);
+    }
+    this.screenToCameraMatrixNeedsUpdate = false;
+};
