@@ -15,10 +15,10 @@ I'm Kyle Simek, a research assistant in computer vision at the University of Ari
 
 I'm the co-author of Ergo, a C++ template library for Markov Chain Monte Carlo simulation, and the author of cudcvt, a computer vision toolkit in CUDA.  You can see more of my work at the [code page](/code.html).
 
-I've been programming since 1993, when I learned Apple HyperCard in fifth-grade.  As a high school sophomore, fate was kind to me: I took AP Computer Science the first year after my high school phased-out Pascal and introduced a newfangled language, C++.  Over the course of my career, I've built projects in Java, C#, PHP, Python, Javascript and Matlab, but I'm happy to be "down to the metal" again, writing C and C++ code to churn out Markov-Chain Monte Carlo simulations.
+I've been programming since 1993, when I learned Apple HyperCard in fifth-grade.  As a high school sophomore, fate was kind to me: my AP Computer Science course switched their curriculum from Pascal to C++.  Over the course of my career, I've built projects in Java, C#, PHP, Python, Javascript and Matlab, but I'm happy to be "down to the metal" again, writing C and C++ code to churn out Markov-Chain Monte Carlo simulations.
 
 {% comment %}
 In my spare time, I play guitar in a rock band called, well, <em><a href="http://www.facebook.com/pages/Research/155179121234225?sk=app_2405167945">Research</a></em>, I destroy personal electronics in various interesting ways, and I sometimes build things, too.
 {% endcomment %}
 
-I created this blog to share the oddball nuggets of wisdom I've acquired over the course of my research, things that I couldn't find in one place anywhere else on the internet.  I hope you find some of it useful!
+I created this blog to share the oddball nuggets of wisdom I've acquired over the course of my research, things that I couldn't find in one place anywhere else on the internet.  I hope you find it useful!
