@@ -86,14 +86,9 @@
 
 <p>In 2007, Carnegie Mellon PhD student Johnny Lee <a href="http://www.youtube.com/watch?v=Jd3-eiid-Uw">hacked a $40 Nintento Wii-mote</a> into an impressive head-tracking virtual reality interface.</p>
 
-<p>In 2010, <a href="http://en.wikipedia.org/wiki/Kinect">Microsoft released the Kinect</a>, a consumer stereo camera that rivaled the functionality of compititors sold for ten times its price, which continues to disrupt the worlds of both gaming and computer vision.</p>
+<p>In 2010, <a href="http://en.wikipedia.org/wiki/Kinect">Microsoft released the Kinect</a>, a consumer stereo camera that rivaled the functionality of competitors sold for ten times its price, which continues to disrupt the worlds of both gaming and computer vision.</p>
 
-<p>What do all of these technologies have in common?  They all require a precise understanding of how the pixels in a 2D image relate to the 3D world they represent.  In other words, they all hinge on a strong camera model.  This is the first in a series of articles that explores the most commonly used camera model in computer vision: the perspective camera.  We'll start by deconstructing the perspective camera to show how each of its parts affect the rendering of a 3D scene.  Next, we'll describe how to import your calibrated camera into OpenGL to render virtual objects into a real image.  Finally, we'll show how to use your perspective camera to implement rendering in a virtual-reality system, complete with stereo rendering and head-tracking.</p>
-
-<p><span id="more"></span></p>
-
-
-
+<p>What do all of these technologies have in common?  They all require a precise understanding of how the pixels in a 2D image relate to the 3D world they represent.  In other words, they all hinge on a strong camera model.  This is the first in a series of articles that explores one of the most important camera models in computer vision: the pinhole perspective camera.  We'll start by deconstructing the perspective camera to show how each of its parts affect the rendering of a 3D scene.  Next, we'll describe how to import your calibrated camera into OpenGL to render virtual objects into a real image.  Finally, we'll show how to use your perspective camera to implement rendering in a virtual-reality system, complete with stereo rendering and head-tracking.</p>
 
 <div class='context-img' style='width:180px'>
     <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">
@@ -105,7 +100,10 @@
 </div>
 
 
-<p>This series of articles is intended as a supplement to a more rigorous treatment available in several excellent textbooks.  I will focus on providing what textbooks generally don't provide: interactive demos, runnable code, and practical advice on implementation.    I will assume the reader has a basic understanding of 3D graphics and OpenGL, as well as some background in computer vision.  In other words, if you've never heard of homogeneous coordinates or a camera matrix, you might want to start with an introductory book on computer vision or at least have one handy.  I highly recommend <a href="http://www.amazon.com/Multiple-View-Geometry-Computer-Vision/dp/0521540518/ref=sr_1_fkmr1_1?ie=UTF8&amp;qid=1343611611&amp;sr=8-1-fkmr1&amp;keywords=harley+and+zisserman">Multiple View Geometry in Computer Vision</a> by Hartley and Zisserman, from which I borrow mathematical notation and conventions (e.g. column vectors, right-handed coordinates, etc.)</p>
+<p>This series of articles is intended as a supplement to a more rigorous treatment available in several excellent textbooks.  I will focus on providing what textbooks generally don't provide: interactive demos, runnable code, and practical advice on implementation.    I will assume the reader has a basic understanding of 3D graphics and OpenGL, as well as some background in computer vision.  In other words, if you've never heard of homogeneous coordinates or a camera matrix, you might want to start with an introductory book on computer vision.  I highly recommend <a href="http://www.amazon.com/Multiple-View-Geometry-Computer-Vision/dp/0521540518/ref=sr_1_fkmr1_1?ie=UTF8&amp;qid=1343611611&amp;sr=8-1-fkmr1&amp;keywords=harley+and+zisserman">Multiple View Geometry in Computer Vision</a> by Hartley and Zisserman, from which I borrow mathematical notation and conventions (e.g. column vectors, right-handed coordinates, etc.)</p>
+
+<p><span id="more"></span></p>
+
 
 <h2>Technical Requirements</h2>
 

@@ -83,9 +83,9 @@
 </div>
 
 
-<p>So, you've been playing around a new computer vision library, and you've managed to calibrate your camera.  You now have a 3x4 matrix...  what do you do with it?  It would be a whole lot more useful if you could get at the camera's position or find out it's field-of view.  You crack open your trusty copy of <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Hartley and Zisserman</a> to, which tells you how to decompose your camera into an intrinsic and extrinsic matrix -- great! But when you look at the results, something isn't quite right.  Maybe your rotation matrix has a determinant of -1 and your matrix-to-quaternion function is barfing.  Maybe your focal-length is negative, and you can't understand why.  Maybe your translation vector mistakenly claims that the world origin in <em>behind</em> the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don't see <em>anything</em>.</p>
+<p>So, you've been playing around a new computer vision library, and you've managed to calibrate your camera.  You now have a 3x4 matrix...  what do you do with it?  It would be a lot more useful if you could get at the camera's position or find out it's field-of view.  You crack open your trusty copy of <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Hartley and Zisserman</a>, which tells you how to decompose your camera into an intrinsic and extrinsic matrix --- great! But when you look at the results, something isn't quite right.  Maybe your rotation matrix has a determinant of -1, causing your matrix-to-quaternion function to barf.  Maybe your focal-length is negative, and you can't understand why.  Maybe your translation vector mistakenly claims that the world origin in <em>behind</em> the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don't see <em>anything</em>.</p>
 
-<p>Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the parts of these matrices in more detail, I'll cover how to convert them into a form usable by OpenGL.</p>
+<p>Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the parts of these matrices in more detail, and I'll cover how to convert them into a form usable by OpenGL.</p>
 
 <p><span id="more"></span></p>
 
@@ -96,9 +96,10 @@
 
 <p>Before we start, you might be asking "where does the camera matrix come from in the first place?"  It's a good question, because in most graphics applications, you'll be starting with the view and projection matrix already separated, and decomposition isn't necessary.  The "all-in-one" camera matrix usually arises when the parameters of a real camera are estimated from either a calibration process or from computer-vision techniques like structure-from-motion.  This article assumes you already have a camera matrix, but if you're looking for help with camera calibration, I recommend looking into the <a href="http://www.vision.caltech.edu/bouguetj/calib_doc/">Camera Calibration Toolbox for Matlab</a>.  OpenCV also seems to have <a href="http://opencv.willowgarage.com/documentation/python/camera_calibration_and_3d_reconstruction.html">some useful routines</a> for automatic camera calibration from a sequences of chessboard images, although I haven't personally used them.  As usual, <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Hartley and Zisserman's</a> treatment of the topic is canonical.</p>
 
-<h2>Split 'em Up: Camera Decomposition</h2>
+<h2>Cut 'em Up: Camera Decomposition <a href="http://www.break.com/usercontent/2006/10/21/mitch-hedberg-on-pringles-169072" class="huh">[?]</a></h2>
 
-<p>To start, we'll assume your camera matrix is 3x4, which transforms homogeneous 3D world-coordinates to homogeneous 2D image-coordinates.  Following Hartley and Zisserman, we'll denote the matrix as <em>P</em>, and occasionally it will be useful to use the block-form:</p>
+
+<p>To start, we'll assume your camera matrix is 3x4, which transforms homogeneous 3D world coordinates to homogeneous 2D image coordinates.  Following Hartley and Zisserman, we'll denote the matrix as <em>P</em>, and occasionally it will be useful to use the block-form:</p>
 
 <div>
 \[ P = [M \,| -MC] \]
@@ -112,23 +113,23 @@
 <ul>
 <li>It doesn't tell you where the camera is or where it's pointing.</li>
 <li>It doesn't tell you about the camera's internal geometry.</li>
-<li>Specular lighting isn't possible, since you can't get normal vectors in camera coordinates.</li>
+<li>Specular lighting isn't possible, since you can't get surface normals in camera coordinates.</li>
 </ul>
 
 
-<p>To address these drawbacks, a camera matrix can be decomposed into the product of two matrices: an intrinsic matrix, <em>K</em>, and an extrinsic matrix, \([R \,\|\, \boldsymbol{ t}]\):</p>
+<p>To address these drawbacks, a camera matrix can be decomposed into the product of two matrices: an intrinsic matrix, <em>K</em>, and an extrinsic matrix, \([R \, |\, -RC ]\):</p>
 
-<div>\[P = [M \,| -MC] = K [R  \,| -RC ] \]</div>
+<div>\[P = K [R  \,| -RC ] \]</div>
 
 
 <p>The matrix <em>K</em> is a 3x3 upper-triangular matrix that describes the camera's internal parameters like focal length.  <em>R</em> is a 3x3 rotation matrix whose columns are the direction of the world axes in the camera's camera coordinate frame. The vector <em>C</em> is the camera center in world coordinates; the vector <em><strong>t</strong> = -RC</em> gives the position of the world origin in camera coordinates.   We'll study each of these matrices in more detail in later articles, today we'll just discuss how to get them from <em>P</em>.</p>
 
-<p>Recovering the camera center, <em>C</em>, is straightforward.  Note that the last column of <em>P</em> is <em>-MC</em>, so just right-multiply it by \(-M<sup>{-1}\).</sup>  (Hartley and Zisserman discuss two alternative approaches in section 6.2.4, which I assume are more numerically stable, but I haven't had any problems in my experience.  Any thoughts? Reply in the comments!)</p>
+<p>Recovering the camera center, <em>C</em>, is straightforward.  Note that the last column of <em>P</em> is <em>-MC</em>, so just right-multiply it by \(-M&#94;{-1}\).  (Hartley and Zisserman discuss two alternative approaches in section 6.2.4, which I assume are more numerically stable, but I haven't had any problems in my experience.  Any thoughts? Reply in the comments!)</p>
 
 <h2>Before You RQ-ze Me... <a href="http://www.youtube.com/watch?v=jQAvWte8w0c" class="huh">[?]</a></h2>
 
 
-<p>To recover R and K, we note that R is orthogonal by virtue of being a rotation matrix, and K is upper-triangular.  Those familiar with linear algebra will know that we can decompose any full-rank matrix into the product of an upper-triangular matrix and an orthogonal matrix by using <a href="http://en.wikipedia.org/wiki/QR_decomposition">RQ-decomposition</a>.  Unfortunately RQ-decomposition isn't available in many libraries including Matlab, but luckily, it's friend QR-decomposition usually is.  <a href="http://www.janeriksolem.net/2011/03/rq-factorization-of-camera-matrices.html">Solem's vision blog</a> has a nice article describing how to implement the missing function using a few matrix flips; here's a Matlab version (thanks to Solem for letting me repost this!):</p>
+<p>To recover R and K, we note that R is orthogonal by virtue of being a rotation matrix, and K is upper-triangular.  Those familiar with linear algebra will know that we can decompose any full-rank matrix into the product of an upper-triangular matrix and an orthogonal matrix by using <a href="http://en.wikipedia.org/wiki/QR_decomposition">RQ-decomposition</a>.  Unfortunately RQ-decomposition isn't available in many libraries including Matlab, but luckily, it's friend QR-decomposition usually is.  <a href="http://www.janeriksolem.net/2011/03/rq-factorization-of-camera-matrices.html">Solem's vision blog</a> has a nice article implementing the missing function using a few matrix flips; here's a Matlab version (thanks to Solem for letting me repost this!):</p>
 
 <div class="highlight"><pre><code class="matlab"><span class="k">function</span><span class="w"> </span>[R Q] <span class="p">=</span><span class="w"> </span><span class="nf">rq</span><span class="p">(</span>M<span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="p">[</span><span class="n">Q</span><span class="p">,</span><span class="n">R</span><span class="p">]</span> <span class="p">=</span> <span class="n">qr</span><span class="p">(</span><span class="nb">flipud</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">&#39;</span><span class="p">)</span>
@@ -154,7 +155,7 @@
 </ol>
 
 
-<p>Solem's blog elegantly gives us a positive-diagonal in three lines of code:</p>
+<p>Solem's blog elegantly gives us positive diagonal entries in three lines of code:</p>
 
 <div class="highlight"><pre><code class="matlab"># <span class="n">make</span> <span class="n">diagonal</span> <span class="n">of</span> <span class="n">K</span> <span class="n">positive</span>
 <span class="n">T</span> <span class="p">=</span> <span class="nb">diag</span><span class="p">(</span><span class="nb">sign</span><span class="p">(</span><span class="nb">diag</span><span class="p">(</span><span class="n">K</span><span class="p">)));</span>
@@ -165,24 +166,25 @@
 </div>
 
 
-<p>   However, there are several practical situations in which the camera and image axes won't agree, and the diagonal elements of <em>K</em> shouldn't be positive.  Forcing them to be positive can result in side-effect that are nasty in practice, including:</p>
+<p>   However, there are several practical situations in which the camera and image axes won't agree.  In this case the diagonal elements of <em>K</em> shouldn't be positive, and forcing them to be positive can result in side-effect that are nasty in practice, including:</p>
 
 <ul>
 <li> The objects appear on the wrong side of the camera.</li>
 <li> The rotation matrix has a determinant of -1 instead of 1.</li>
-<li> Visible points transform to 2D points with a negative <em>w</em> homogeneous coordinate, <a href="http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix">causing some graphics libraries not to render them</a>.</li>
+<li> Incorrect specular lighting.</li>
+<li> Visible geometry won't render <a href="http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix">due to a having negative <em>w</em> coordinate</a>.</li>
 </ul>
 
 
 <div class='context-img' style='width:321px'>
 <img src='/img/hz_camera.png' />
-<div class='caption'>Hartley and Zisserman's camera.  Camera and image axes point left... what's up with that?
+<div class='caption'>Call me crazy, but I think Hartley and Zisserman's use weird coordinate conventions.  Camera and image <em>x</em>-axes point left... what's up with that?
 <div class='credit'><a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">From "Multiple View Geometry in Computer Vision"</a></div>
 </div>
 </div>
 
 
-<p>   In this case, you've got some fixing to do.  Start by making sure that your camera and world coordinates both have the same <a href="http://en.wikipedia.org/wiki/Right-hand_rule">handedness</a>.    Then take note of the axis conventions you used when you calibrated your camera.   What direction did the image <em>y</em>-axis point, up or down?  The <em>x</em>-axis?  Now consider your camera's coordinate axes.  Does your camera look down the negative-<em>z</em> axis (OpenGL-style)?  Positive-<em>z</em> (like Hartley and Zisserman)?  Does the <em>x</em>-axis point left (like H&amp;Z) or right (i.e. not-insane)?  The <em>y</em>-axis?  Okay, okay, you get the idea.</p>
+<p>   In this case, you've got some fixing to do.  Start by making sure that your camera and world coordinates both have the same <a href="http://en.wikipedia.org/wiki/Right-hand_rule">handedness</a>.    Then take note of the axis conventions you used when you calibrated your camera.   What direction did the image <em>y</em>-axis point, up or down?  The <em>x</em>-axis?  Now consider your camera's coordinate axes.  Does your camera look down the negative-<em>z</em> axis (OpenGL-style)?  Positive-<em>z</em> (like Hartley and Zisserman)?  Does the <em>x</em>-axis point left or right?  The <em>y</em>-axis?  Okay, okay, you get the idea.</p>
 
 <p>   With those in mind, the rules for getting signs right are pretty simple:</p>
 
@@ -201,11 +203,11 @@
 
 <p>Although most mathematical treatments of projective geometry assume that the camera looks in the positive-<em>z</em> direction, many real-world systems (including OpenGL) place the camera looking down the negative-<em>z</em> axis.  This allows the <em>x</em> and <em>y</em> axis to point right and up, resulting in a coordinate system that feels natural while still being right-handed.</p>
 
-<p>Recall that the conversion from 2D homogeneous coordinates to inhomogeneous involves dividing by the <em>z</em>-coordinate.  When an object in front of the camera has a negative-<em>z</em> coordinate, the 2D <em>x</em> and <em>y</em> coordinates are divided by a negative number, flipping their signs and causing points to be rendered in reverse.  To solve this, we could negate the camera <em>x</em> and <em>y</em>-coordinates before projecting, but it is equivalent to negate the camera <em>z</em>-coordinate instead.  You can accomplish this by negating the third column of <em>K</em> while keeping <em>R</em> unchanged.  This also ensures that the w-coordinate is always positive for points in front of the camera, which can simplify clipping.</p>
+<p>Recall that the conversion from 2D homogeneous coordinates to inhomogeneous involves dividing by the <em>z</em>-coordinate.  When an object in front of the camera has a negative-<em>z</em> coordinate, the 2D <em>x</em> and <em>y</em> coordinates are divided by a negative number, flipping their signs and causing points to be rendered in reverse.  To solve this, we could negate the camera <em>x</em> and <em>y</em>-coordinates before projecting, but it is equivalent to negate the camera <em>z</em>-coordinate instead.  You can accomplish this by negating the third column of <em>K</em> while keeping <em>R</em> unchanged.  Negating <em>z</em> also ensures that the w-coordinate is always positive for points in front of the camera, which OpenGL would clip otherwise.</p>
 
 <h2>Who Flipped my Axes?</h2>
 
-<p>Sometime your camera was calibrated using different coordinates than you prefer.  Converting between image coordinate conventions is accomplished by post-transforming the matrix by reflection and translation; you can roll these transformations into <em>K</em>.</p>
+<p>Sometimes your camera will be calibrated using different coordinates than you prefer.  Converting between image coordinate conventions is accomplished by post-transforming the matrix by reflection and translation; you can roll these transformations into <em>K</em>.</p>
 
 <p>For example, suppose your original camera matrix produces traditional image coordinates, with the origin in the top-left and the <em>y</em>-axis pointing downward, but you prefer a center-origin with the <em>y-axis</em> pointing upward.   To convert, first negate the image <em>y</em>-coordinate, and then translate downward by <em>H/2</em>, where <em>H</em> is the image height in pixels.  The resulting intrinsic matrix <em>K'</em> is given by:</p>
 
@@ -218,9 +220,9 @@
 
 <h2>Summary</h2>
 
-<p>The procedure above should give you a correct camera decomposition under any circumstances.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or <a href="/contact.html">email me</a>.</p>
+<p>The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or <a href="/contact.html">email me</a>.</p>
 
-<p>Tune-in next time, when we investigate the extrinsic matrix, and we'll learn why, which contrary to popular belief, it <em>doesn't</em> represent the camera's pose.</p>
+<p>Tune-in next time, when we investigate the extrinsic matrix, and we'll learn why, contrary to popular belief, it <em>doesn't</em> represent the camera's pose.  Stay tuned!</p>
 
       <address class="signature">
         Posted by
