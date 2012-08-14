@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>Sightations</title>
+ <link href="http://ksimek.github.com/atom.xml" rel="self"/>
+ <link href="http://ksimek.github.com"/>
+ <updated>2012-08-13T23:48:28-07:00</updated>
+ <id>http://ksimek.github.com</id>
+ <author>
+   <name>Kyle Simek</name>
+   <email>ksimek@email.arizona.edu</email>
+ </author>
+
+ 
+ <entry>
+   <title>Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition</title>
+   <link href="http://ksimek.github.com/2012/08/14/decompose"/>
+   <updated>2012-08-14T00:00:00-07:00</updated>
+   <id>http://ksimek.github.com/2012/08/14/decompose</id>
+   <content type="html">&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
+
+
+&lt;div class='context-img' style='width:320px'&gt;
+&lt;img src='/img/decompose.jpg' /&gt;
+&lt;div class='caption'&gt;Not this kind of decomposition.
+&lt;div class='credit'&gt;&lt;a href=&quot;http://www.flickr.com/photos/dhollister/2596483147/&quot;&gt;Credit: Daniel Hollister&lt;/a&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;So, you've been playing around a new computer vision library, and you've managed to calibrate your camera.  You now have a 3x4 matrix...  what do you do with it?  It would be a whole lot more useful if you could get at the camera's position or find out it's field-of view.  You crack open your trusty copy of &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Hartley and Zisserman&lt;/a&gt; to, which tells you how to decompose your camera into an intrinsic and extrinsic matrix -- great! But when you look at the results, something isn't quite right.  Maybe your rotation matrix has a determinant of -1 and your matrix-to-quaternion function is barfing.  Maybe your focal-length is negative, and you can't understand why.  Maybe your translation vector mistakenly claims that the world origin in &lt;em&gt;behind&lt;/em&gt; the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don't see &lt;em&gt;anything&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the parts of these matrices in more detail, I'll cover how to convert them into a form usable by OpenGL.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+
+&lt;p&gt;This is the second article in the series, &quot;&lt;a href=&quot;/2012/08/13/introduction&quot;&gt;The Perspective Camera, an Interactive Tour&lt;/a&gt;.&quot;  To read other article in this series, head over to the &lt;a href=&quot;/2012/08/13/introduction#toc&quot;&gt;introduction page&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Prologue: Getting a Camera Matrix&lt;/h2&gt;
+
+&lt;p&gt;Before we start, you might be asking &quot;where does the camera matrix come from in the first place?&quot;  It's a good question, because in most graphics applications, you'll be starting with the view and projection matrix already separated, and decomposition isn't necessary.  The &quot;all-in-one&quot; camera matrix usually arises when the parameters of a real camera are estimated from either a calibration process or from computer-vision techniques like structure-from-motion.  This article assumes you already have a camera matrix, but if you're looking for help with camera calibration, I recommend looking into the &lt;a href=&quot;http://www.vision.caltech.edu/bouguetj/calib_doc/&quot;&gt;Camera Calibration Toolbox for Matlab&lt;/a&gt;.  OpenCV also seems to have &lt;a href=&quot;http://opencv.willowgarage.com/documentation/python/camera_calibration_and_3d_reconstruction.html&quot;&gt;some useful routines&lt;/a&gt; for automatic camera calibration from a sequences of chessboard images, although I haven't personally used them.  As usual, &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Hartley and Zisserman's&lt;/a&gt; treatment of the topic is canonical.&lt;/p&gt;
+
+&lt;h2&gt;Split 'em Up: Camera Decomposition&lt;/h2&gt;
+
+&lt;p&gt;To start, we'll assume your camera matrix is 3x4, which transforms homogeneous 3D world-coordinates to homogeneous 2D image-coordinates.  Following Hartley and Zisserman, we'll denote the matrix as &lt;em&gt;P&lt;/em&gt;, and occasionally it will be useful to use the block-form:&lt;/p&gt;
+
+&lt;div&gt;
+\[ P = [M \,| -MC] \]
+&lt;/div&gt;
+
+
+&lt;p&gt;where &lt;em&gt;M&lt;/em&gt; is an invertible 3x3 matrix, and &lt;em&gt;C&lt;/em&gt; is a column-vector representing the camera's position in world coordinates.  Some calibration software provides a 4x4 matrix, which adds an extra row to preserve the &lt;em&gt;z&lt;/em&gt;-coordinate.  In this case, ignoring the third row should give you the 3x4 matrix you want, but your mileage may vary.&lt;/p&gt;
+
+&lt;p&gt;The camera matrix by itself is useful when you want to project 3D points into a 2D image, but it has several drawbacks, including:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It doesn't tell you where the camera is or where it's pointing.&lt;/li&gt;
+&lt;li&gt;It doesn't tell you about the camera's internal geometry.&lt;/li&gt;
+&lt;li&gt;Specular lighting isn't possible, since you can't get normal vectors in camera coordinates.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;To address these drawbacks, a camera matrix can be decomposed into the product of two matrices: an intrinsic matrix, &lt;em&gt;K&lt;/em&gt;, and an extrinsic matrix, \([R \,\|\, \boldsymbol{ t}]\):&lt;/p&gt;
+
+&lt;div&gt;\[P = [M \,| -MC] = K [R  \,| -RC ] \]&lt;/div&gt;
+
+
+&lt;p&gt;The matrix &lt;em&gt;K&lt;/em&gt; is a 3x3 upper-triangular matrix that describes the camera's internal parameters like focal length.  &lt;em&gt;R&lt;/em&gt; is a 3x3 rotation matrix whose columns are the direction of the world axes in the camera's camera coordinate frame. The vector &lt;em&gt;C&lt;/em&gt; is the camera center in world coordinates; the vector &lt;em&gt;&lt;strong&gt;t&lt;/strong&gt; = -RC&lt;/em&gt; gives the position of the world origin in camera coordinates.   We'll study each of these matrices in more detail in later articles, today we'll just discuss how to get them from &lt;em&gt;P&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Recovering the camera center, &lt;em&gt;C&lt;/em&gt;, is straightforward.  Note that the last column of &lt;em&gt;P&lt;/em&gt; is &lt;em&gt;-MC&lt;/em&gt;, so just right-multiply it by \(-M&lt;sup&gt;{-1}\).&lt;/sup&gt;  (Hartley and Zisserman discuss two alternative approaches in section 6.2.4, which I assume are more numerically stable, but I haven't had any problems in my experience.  Any thoughts? Reply in the comments!)&lt;/p&gt;
+
+&lt;h2&gt;Before You RQ-ze Me... &lt;a href=&quot;http://www.youtube.com/watch?v=jQAvWte8w0c&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
+
+
+&lt;p&gt;To recover R and K, we note that R is orthogonal by virtue of being a rotation matrix, and K is upper-triangular.  Those familiar with linear algebra will know that we can decompose any full-rank matrix into the product of an upper-triangular matrix and an orthogonal matrix by using &lt;a href=&quot;http://en.wikipedia.org/wiki/QR_decomposition&quot;&gt;RQ-decomposition&lt;/a&gt;.  Unfortunately RQ-decomposition isn't available in many libraries including Matlab, but luckily, it's friend QR-decomposition usually is.  &lt;a href=&quot;http://www.janeriksolem.net/2011/03/rq-factorization-of-camera-matrices.html&quot;&gt;Solem's vision blog&lt;/a&gt; has a nice article describing how to implement the missing function using a few matrix flips; here's a Matlab version (thanks to Solem for letting me repost this!):&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;[R Q] &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;M&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;qr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;fliplr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;   
+    &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt; Easy!&lt;/p&gt;
+
+&lt;h2&gt; I'm seeing double...  FOUR decompositions!  &lt;a href=&quot;http://imgur.com/1pAsu&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
+
+
+&lt;p&gt;There's only one problem: the result of RQ-decomposition isn't unique.  To see this, try negating any column of &lt;em&gt;K&lt;/em&gt; and the corresponding row of &lt;em&gt;R&lt;/em&gt;: the resulting camera matrix is unchanged.  Most people simply force the diagonal elements of &lt;em&gt;K&lt;/em&gt; to be positive, which is the correct approach if two conditions are true:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;your image's X/Y axes point in the same direction as your camera's X/Y axes.&lt;/li&gt;
+&lt;li&gt;your camera looks in the positive-&lt;em&gt;z&lt;/em&gt; direction.&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;Solem's blog elegantly gives us a positive-diagonal in three lines of code:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;# &lt;span class=&quot;n&quot;&gt;make&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;diagonal&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;positive&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)));&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; # &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;its&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;own&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;   However, there are several practical situations in which the camera and image axes won't agree, and the diagonal elements of &lt;em&gt;K&lt;/em&gt; shouldn't be positive.  Forcing them to be positive can result in side-effect that are nasty in practice, including:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt; The objects appear on the wrong side of the camera.&lt;/li&gt;
+&lt;li&gt; The rotation matrix has a determinant of -1 instead of 1.&lt;/li&gt;
+&lt;li&gt; Visible points transform to 2D points with a negative &lt;em&gt;w&lt;/em&gt; homogeneous coordinate, &lt;a href=&quot;http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix&quot;&gt;causing some graphics libraries not to render them&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;div class='context-img' style='width:321px'&gt;
+&lt;img src='/img/hz_camera.png' /&gt;
+&lt;div class='caption'&gt;Hartley and Zisserman's camera.  Camera and image axes point left... what's up with that?
+&lt;div class='credit'&gt;&lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;From &quot;Multiple View Geometry in Computer Vision&quot;&lt;/a&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;   In this case, you've got some fixing to do.  Start by making sure that your camera and world coordinates both have the same &lt;a href=&quot;http://en.wikipedia.org/wiki/Right-hand_rule&quot;&gt;handedness&lt;/a&gt;.    Then take note of the axis conventions you used when you calibrated your camera.   What direction did the image &lt;em&gt;y&lt;/em&gt;-axis point, up or down?  The &lt;em&gt;x&lt;/em&gt;-axis?  Now consider your camera's coordinate axes.  Does your camera look down the negative-&lt;em&gt;z&lt;/em&gt; axis (OpenGL-style)?  Positive-&lt;em&gt;z&lt;/em&gt; (like Hartley and Zisserman)?  Does the &lt;em&gt;x&lt;/em&gt;-axis point left (like H&amp;amp;Z) or right (i.e. not-insane)?  The &lt;em&gt;y&lt;/em&gt;-axis?  Okay, okay, you get the idea.&lt;/p&gt;
+
+&lt;p&gt;   With those in mind, the rules for getting signs right are pretty simple:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;If the image &lt;em&gt;x&lt;/em&gt;-axis and camera &lt;em&gt;x&lt;/em&gt;-axis point in opposite directions, negate the first column of &lt;em&gt;K&lt;/em&gt; and the first row of &lt;em&gt;R&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;If the image &lt;em&gt;y&lt;/em&gt;-axis and camera &lt;em&gt;y&lt;/em&gt;-axis point in opposite directions, negate the second column of &lt;em&gt;K&lt;/em&gt; and the second row of &lt;em&gt;R&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;If the camera looks down the &lt;strong&gt;negative&lt;/strong&gt;-&lt;em&gt;z&lt;/em&gt; axis, negate the third column of &lt;em&gt;K&lt;/em&gt;.  &lt;em&gt;Leave R unchanged&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;If the determinant of &lt;em&gt;R&lt;/em&gt; is -1, negate it.&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;The first two steps are self explanatory.  The last step is equivalent to multiplying the entire camera matrix, &lt;em&gt;P&lt;/em&gt;, by -1.  Since &lt;em&gt;P&lt;/em&gt; operates on homogeneous coordinates, multiplying it by any constant has no effect.  Lets examine the reasoning behind the third step...&lt;/p&gt;
+
+&lt;h2&gt;Lookin' Out My Back Door &lt;a href=&quot;http://www.youtube.com/watch?v=QNczeP33Yk0&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
+
+
+&lt;p&gt;Although most mathematical treatments of projective geometry assume that the camera looks in the positive-&lt;em&gt;z&lt;/em&gt; direction, many real-world systems (including OpenGL) place the camera looking down the negative-&lt;em&gt;z&lt;/em&gt; axis.  This allows the &lt;em&gt;x&lt;/em&gt; and &lt;em&gt;y&lt;/em&gt; axis to point right and up, resulting in a coordinate system that feels natural while still being right-handed.&lt;/p&gt;
+
+&lt;p&gt;Recall that the conversion from 2D homogeneous coordinates to inhomogeneous involves dividing by the &lt;em&gt;z&lt;/em&gt;-coordinate.  When an object in front of the camera has a negative-&lt;em&gt;z&lt;/em&gt; coordinate, the 2D &lt;em&gt;x&lt;/em&gt; and &lt;em&gt;y&lt;/em&gt; coordinates are divided by a negative number, flipping their signs and causing points to be rendered in reverse.  To solve this, we could negate the camera &lt;em&gt;x&lt;/em&gt; and &lt;em&gt;y&lt;/em&gt;-coordinates before projecting, but it is equivalent to negate the camera &lt;em&gt;z&lt;/em&gt;-coordinate instead.  You can accomplish this by negating the third column of &lt;em&gt;K&lt;/em&gt; while keeping &lt;em&gt;R&lt;/em&gt; unchanged.  This also ensures that the w-coordinate is always positive for points in front of the camera, which can simplify clipping.&lt;/p&gt;
+
+&lt;h2&gt;Who Flipped my Axes?&lt;/h2&gt;
+
+&lt;p&gt;Sometime your camera was calibrated using different coordinates than you prefer.  Converting between image coordinate conventions is accomplished by post-transforming the matrix by reflection and translation; you can roll these transformations into &lt;em&gt;K&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;For example, suppose your original camera matrix produces traditional image coordinates, with the origin in the top-left and the &lt;em&gt;y&lt;/em&gt;-axis pointing downward, but you prefer a center-origin with the &lt;em&gt;y-axis&lt;/em&gt; pointing upward.   To convert, first negate the image &lt;em&gt;y&lt;/em&gt;-coordinate, and then translate downward by &lt;em&gt;H/2&lt;/em&gt;, where &lt;em&gt;H&lt;/em&gt; is the image height in pixels.  The resulting intrinsic matrix &lt;em&gt;K'&lt;/em&gt; is given by:&lt;/p&gt;
+
+&lt;div&gt;
+\[
+    K' = \begin{bmatrix}1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; -h/2 \\  0 &amp; 0 &amp; 1 \end{bmatrix} \times \begin{bmatrix}1 &amp; 0 &amp; 0 \\ 0 &amp; -1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix}  K
+\] 
+&lt;/div&gt;
+
+
+&lt;h2&gt;Summary&lt;/h2&gt;
+
+&lt;p&gt;The procedure above should give you a correct camera decomposition under any circumstances.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or &lt;a href=&quot;/contact.html&quot;&gt;email me&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Tune-in next time, when we investigate the extrinsic matrix, and we'll learn why, which contrary to popular belief, it &lt;em&gt;doesn't&lt;/em&gt; represent the camera's pose.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>The Perspective Camera - An Interactive Tour</title>
+   <link href="http://ksimek.github.com/2012/08/13/introduction"/>
+   <updated>2012-08-13T00:00:00-07:00</updated>
+   <id>http://ksimek.github.com/2012/08/13/introduction</id>
+   <content type="html">&lt;div class='context-img' style='width:350px'&gt;
+&lt;img src='/img/1st_and_ten.jpg' /&gt;
+&lt;div class='caption'&gt;The &quot;1st and Ten&quot; system, one of the first successful applications of augmented reality in sports.
+&lt;div class='credit'&gt;&lt;a href=&quot;http://www.howstuffworks.com/first-down-line.htm&quot;&gt;howstuffworks.com&lt;/a&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;On September 27, 1998 a yellow line appeared across the gridiron during an otherwise ordinary football game between the Cincinnati Bengals and the Baltimore Ravens.  It had been added by a computer that analyzed the camera's position and the shape of the ground in real-time in order to overlay thin yellow strip onto the field.  The line marked marked the position of the next first-down, but it also marked the beginning of a new era of computer vision in live sports, from &lt;a href=&quot;http://www.youtube.com/watch?v=p-y7N-giirQ&quot;&gt;computerized pitch analysis&lt;/a&gt; in baseball to &lt;a href=&quot;http://www.youtube.com/watch?v=Cgeb61VIKvo&quot;&gt;automatic line-refs&lt;/a&gt; in tennis.&lt;/p&gt;
+
+&lt;p&gt;In 2006, researchers from Microsoft and the University of Washington &lt;a href=&quot;http://www.youtube.com/watch?v=IgBQCoEfiMs&quot;&gt;automatically constructed a 3D tour of the Trevi Fountain in Rome&lt;/a&gt; using only images obtained by searching Flickr for &quot;trevi AND rome.&quot;&lt;/p&gt;
+
+&lt;p&gt;In 2007, Carnegie Mellon PhD student Johnny Lee &lt;a href=&quot;http://www.youtube.com/watch?v=Jd3-eiid-Uw&quot;&gt;hacked a $40 Nintento Wii-mote&lt;/a&gt; into an impressive head-tracking virtual reality interface.&lt;/p&gt;
+
+&lt;p&gt;In 2010, &lt;a href=&quot;http://en.wikipedia.org/wiki/Kinect&quot;&gt;Microsoft released the Kinect&lt;/a&gt;, a consumer stereo camera that rivaled the functionality of compititors sold for ten times its price, which continues to disrupt the worlds of both gaming and computer vision.&lt;/p&gt;
+
+&lt;p&gt;What do all of these technologies have in common?  They all require a precise understanding of how the pixels in a 2D image relate to the 3D world they represent.  In other words, they all hinge on a strong camera model.  This is the first in a series of articles that explores the most commonly used camera model in computer vision: the perspective camera.  We'll start by deconstructing the perspective camera to show how each of its parts affect the rendering of a 3D scene.  Next, we'll describe how to import your calibrated camera into OpenGL to render virtual objects into a real image.  Finally, we'll show how to use your perspective camera to implement rendering in a virtual-reality system, complete with stereo rendering and head-tracking.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+
+
+
+&lt;div class='context-img' style='width:180px'&gt;
+    &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;
+    &lt;img src='/img/h_and_z.jpg' /&gt;
+    &lt;/a&gt;
+    &lt;div class='caption'&gt;
+        These articles won't cover everything.  This book does.
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;This series of articles is intended as a supplement to a more rigorous treatment available in several excellent textbooks.  I will focus on providing what textbooks generally don't provide: interactive demos, runnable code, and practical advice on implementation.    I will assume the reader has a basic understanding of 3D graphics and OpenGL, as well as some background in computer vision.  In other words, if you've never heard of homogeneous coordinates or a camera matrix, you might want to start with an introductory book on computer vision or at least have one handy.  I highly recommend &lt;a href=&quot;http://www.amazon.com/Multiple-View-Geometry-Computer-Vision/dp/0521540518/ref=sr_1_fkmr1_1?ie=UTF8&amp;amp;qid=1343611611&amp;amp;sr=8-1-fkmr1&amp;amp;keywords=harley+and+zisserman&quot;&gt;Multiple View Geometry in Computer Vision&lt;/a&gt; by Hartley and Zisserman, from which I borrow mathematical notation and conventions (e.g. column vectors, right-handed coordinates, etc.)&lt;/p&gt;
+
+&lt;h2&gt;Technical Requirements&lt;/h2&gt;
+
+&lt;p&gt;Equations in these articles are typeset using MathJax, which won't display if you've disabled JavaScript or &lt;a href=&quot;http://www.mathjax.org/resources/browser-compatibility/&quot;&gt;are using a browser that is woefully out of date&lt;/a&gt; (sorry IE 5 users).  If everything is working, you should see a matrix below:&lt;/p&gt;
+
+&lt;div&gt;
+\[
+\left (
+\begin{array}{c c c}
+a^2 &amp;  b^2 &amp; c^2 \\
+d^2 &amp;  e^2 &amp; f^2 \\
+g^2 &amp;  h^2 &amp; i^2
+\end{array}
+\right )
+\]
+&lt;/div&gt;
+
+
+&lt;p&gt;3D interactive demos are provided by &lt;a href=&quot;https://github.com/mrdoob/three.js/&quot;&gt;three.js&lt;/a&gt;, which also needs JavaScript and prefers a browser that supports WebGL ( &lt;a href=&quot;http://google.com/chrome&quot;&gt;Google Chrome&lt;/a&gt; works great, as does &lt;a href=&quot;http://www.mozilla.org/en-US/firefox/fx/#desktop&quot;&gt;the latest version of Firefox&lt;/a&gt;).  Older browsers will render using canvas, which will run slowly, look ugly, and hurl vicious insults at you.  But it should work.   If you see two spheres below, you're in business.&lt;/p&gt;
+
+&lt;script&gt;
+
+    requestAnimFrame = (function(){
+      return  window.requestAnimationFrame       || 
+              window.webkitRequestAnimationFrame || 
+              window.mozRequestAnimationFrame    || 
+              window.oRequestAnimationFrame      || 
+              window.msRequestAnimationFrame     || 
+              function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+              };
+    })();
+
+    var $container;
+    var mouseDX = 0, mouseDY = 0;
+    var mouseDownX, mouseDownY;
+    var x0, y0, s, fx, fy;
+    var rot_y, tx, ty, tz;
+
+    // set the scene size
+    var WIDTH = 400,
+      HEIGHT = 300;
+
+    // set some camera attributes
+    var VIEW_ANGLE = 45,
+      ASPECT = WIDTH / HEIGHT,
+      NEAR = 0.1,
+      FAR = 10000;
+
+    // get the DOM element to attach to
+    // - assume we've got jQuery to hand
+
+    // create a WebGL renderer, camera
+    // and a scene
+    var renderer = new THREE.WebGLRenderer();
+//            var renderer = new THREE.CanvasRenderer();
+
+    moveParameter = moveCameraCenter;
+    //moveParameter = moveCameraPP;
+    //moveParameter = zoomCamera;
+
+    var default_focal = HEIGHT / 2 / Math.tan(VIEW_ANGLE * Math.PI / 360);
+    var camera =
+      new THREE.CalibratedCamera(
+        default_focal, default_focal,
+        0, 0,
+        0,
+        WIDTH,
+        HEIGHT,
+        NEAR,
+        FAR);
+
+    var scene = new THREE.Scene();
+
+    // add the camera to the scene
+    scene.add(camera);
+
+    // the camera starts at 0,0,0
+    // so pull it back
+    camera.position.z = 300;
+
+    // start the renderer
+    renderer.setSize(WIDTH, HEIGHT);
+
+    // set up the sphere vars
+    var radius = 50,
+        segments = 16,
+        rings = 16;
+
+    // create the sphere's material
+    var sphereMaterial =
+      new THREE.MeshLambertMaterial(
+        {
+          color: 0xCC0000
+        });
+
+    var sphere2Material =
+      new THREE.MeshLambertMaterial(
+        {
+          color: 0x00CC00
+        });
+
+    var sphere = new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        radius,
+        segments,
+        rings),
+
+      sphereMaterial);
+
+    var sphere2 = new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        radius,
+        segments,
+        rings),
+
+      sphere2Material);
+
+    sphere2.position.z -= 100;
+    sphere2.position.x -= 100;
+
+    // add the sphere to the scene
+    scene.add(sphere);
+    scene.add(sphere2);
+
+    // create a point light
+    var pointLight =
+      new THREE.PointLight(0xFFFFFF);
+
+    // set its position
+    pointLight.position.x = 10;
+    pointLight.position.y = 50;
+    pointLight.position.z = 130;
+
+    // add to the scene
+    scene.add(pointLight);
+
+    function onMouseDown(event)
+    {
+        $(document).mousemove(onMouseMove);
+        $(document).mouseup(onMouseUp);
+        $(document).mouseout(onMouseOut);
+
+        mouseDownX = event.screenX;
+        mouseDownY = event.screenY;
+    }
+
+    function onMouseMove(event)
+    {
+        var mouseX = event.screenX;
+        var mouseY = event.screenY;
+        
+        var mouseDX = mouseX - mouseDownX;
+        var mouseDY = mouseY - mouseDownY;
+
+        moveParameter(mouseDX, mouseDY);
+        render();
+    }
+
+
+    function onMouseOut(event)
+    {
+        removeListeners();
+    }
+
+    function onMouseUp(event)
+    {
+        removeListeners();
+    }
+
+    function removeListeners()
+    {
+        $(document).unbind( 'mousemove');
+        $(document).unbind( 'mouseup');
+        $(document).unbind( 'mouseout');
+    }
+
+    function onTouchStart(event)
+    {
+        if ( event.touches.length == 1 ) {
+
+            event.preventDefault();
+
+            mouseDownX = event.touches[ 0 ].pageX;
+            mouseDownY = event.touches[ 0 ].pageY;
+        }
+    }
+
+    function onTouchMove(event)
+    {
+        if ( event.touches.length == 1 ) {
+
+            event.preventDefault();
+
+            var mouseX = event.touches[ 0 ].pageX;
+            var mouseY = event.touches[ 0 ].pageY;
+
+            var mouseDX = mouseX - mouseDownX;
+            var mouseDY = mouseY - mouseDownY;
+
+            moveParameter(mouseDX, mouseDY);
+            render();
+        }
+    }
+
+    function zoomCamera(param1, param2)
+    {
+        camera.fx = default_focal + 2*param2;
+        camera.fy = default_focal + 2*param2;
+        camera.s = -2*param1;
+        camera.updateProjectionMatrix();
+    }
+
+    // move camera's principal point
+    function moveCameraPP(param1, param2)
+    {
+        camera.x0 = param1;
+        camera.y0 = -param2;
+        camera.updateProjectionMatrix();
+    }
+
+    function moveCameraCenter(param1, param2)
+    {
+        camera.position.x =  param1;
+        camera.position.y = -param2;
+    }
+
+    function animLoop() 
+    {
+        requestAnimFrame(animLoop);
+        render();
+    }
+
+    function render()
+    {
+        renderer.render(scene, camera);
+    }
+
+
+    // attach the render-supplied DOM element
+    $(document).ready(function(){
+        $container = $('#3d_container');
+        $container.prepend(renderer.domElement);
+
+        $container.mousedown(onMouseDown);
+        $container.bind( 'touchstart', onTouchStart);
+        $container.bind( 'touchmove', onTouchMove);
+
+        render();
+    });
+
+&lt;/script&gt;
+
+
+
+
+&lt;div class=&quot;demo_3d&quot;&gt;
+    &lt;div id=&quot;3d_container&quot; &gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;caption&quot;&gt;3D demo.  Drag to move camera. &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;&lt;a name=&quot;toc&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;Table of Contents  &lt;/h2&gt;
+
+
+&lt;p&gt;Below is a list of all the articles in this series.  New articles will be added to this list as I post them, so you can always return to this page for an up-to-date listing.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;Dissecting the Camera Matrix, Part 1: Intrinsic/Extrinsic Decomposition&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix&lt;/li&gt;
+&lt;li&gt;Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix&lt;/li&gt;
+&lt;li&gt;Simulating your Calibrated Camera in OpenGL&lt;/li&gt;
+&lt;li&gt;Stereo Rendering using a Calibrated Camera&lt;/li&gt;
+&lt;li&gt;Head-tracked Display using a Calibrated Camera&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Happy reading!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ 
+</feed>
