@@ -6,11 +6,13 @@
 # git push origin source
 
 # Push master branch
-jekyll --pygments \
+mkdir -p /tmp/site
+rm -rf /tmp/site/* 
+jekyll --pygments /tmp/site \
 && git checkout master \
-&& git rm -r * >/dev/null 
-cp -r _site/* . \
-&& rm -r _site  \
+&& rm -r * \
+&& cp -r /tmp/site/*. \
+&& rm -r /tmp/site/ \
 && git add -A \
 && git commit \
 && git push origin master
