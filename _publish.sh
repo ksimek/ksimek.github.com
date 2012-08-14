@@ -11,7 +11,7 @@ rm -rf /tmp/site/*
 jekyll --pygments /tmp/site \
 && git checkout master \
 && rm -r * \
-&& cp -r /tmp/site/*. \
+&& cp -r /tmp/site/* . \
 && rm -r /tmp/site/ \
 && git add -A \
 && git commit \
