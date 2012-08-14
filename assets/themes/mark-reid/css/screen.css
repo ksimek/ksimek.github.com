@@ -62,15 +62,27 @@ h2 {
 .demo_3d  canvas {
     border: 1px solid #bbb;
 }
+
+#demo_controls {
+    font-size: 60%;
+    line-height:1.5em;
+}
+
+./
 /* @end */
 
 /* @group ui controls */
+ul.ui-tabs-nav li
+{
+ /*   font-size:75%; */
+}
+
 .slider-control {
     margin-bottom: 1em;
 }
 .slider-label {
     font-family:sans-serif;
-	font-size: 75%;
+	/*font-size: 75%;*/
 }
 
 .slider {
@@ -93,9 +105,9 @@ h2 {
 
 .date {
     line-height: 1.5em;
-    color: #666;
-    margin-top: 4px;
-	font-weight:bold;
+    color: #999;
+    margin: 4px 0 1.5em 0;
+    font-style: italic;
 }
 
 .context-img {
@@ -105,6 +117,10 @@ h2 {
 
 .context-img img {
     border: 1px solid black;
+}
+
+.huh {
+    font-size:10%;
 }
 
 .caption
@@ -134,7 +150,7 @@ hr {
 sup { line-height: 1ex; }
 
 #site {
-	max-width: 55em;
+	max-width: 50em;
 	margin: 1.5em auto 3em auto;
 	line-height:1.5em;
 }
@@ -158,6 +174,7 @@ sup { line-height: 1ex; }
 	-moz-box-shadow: 2px 2px 8px #aaa;	
 }
 
+
 /* TODO
 #page { counter-reset: section; }
 #page h2:before {
@@ -169,7 +186,7 @@ sup { line-height: 1ex; }
 */
 
 /* @group FancyFirst */
-.emphnext + p:first-letter, p.emphfirst:first-letter {
+.article > p:first-of-type::first-letter {
 	font-size: 48px;
 	padding: 0 0.15em 0 0;
 	margin:  0.05em 0 -0.15em 0;
@@ -177,7 +194,7 @@ sup { line-height: 1ex; }
 	float: left;
 }
 
-.emphnext + p:first-line, p.emphfirst:first-line {
+.article > p:first-of-type::first-line {
 	font-variant: small-caps;
 	font-size: larger;
 }
@@ -233,7 +250,7 @@ caption {
 /* @end */
 
 /* @group Lists */
-ul {
+ul, ol {
 	margin-top: 1.5em;
 	margin-bottom: 1.5em;
 	line-height: 1.5em;
@@ -245,7 +262,7 @@ ul li {
 }
 ol li {
 	list-style-type: decimal;
-	list-style-position: inside;
+	list-style-position: outside;
 }
 dt { font-weight: bold;}
 dd { margin: 0 0 1.5em 0; text-align: justify; }

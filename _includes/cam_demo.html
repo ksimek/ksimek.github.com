@@ -1,0 +1,208 @@
+<script type="text/javascript" src="/js/geometry/FocalPlaneGeometry.js"></script>
+<script type="text/javascript" src="/js/geometry/FrustumGeometry.js"></script>
+<script type="text/javascript" src="/js/cam_demo.js"></script>
+
+<div class="demo_3d">
+    <div id="3d_container" >
+    </div>
+    
+    <div class="caption"><em>Left</em>: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   <em>Right</em>: camera's image.  Adjust camera parameters with sliders below.</div>
+    <div id="demo_controls">
+        <ul>
+            <li><a href="#intrinsic-controls">Intrinsic</a></li>
+            <li><a href="#extrinsic-world-controls">Extrinsic (World)</a></li>
+            <li><a href="#extrinsic-camera-controls">Extrinsic (Camera)</a></li>
+        </ul>
+        <div id="extrinsic-world-controls">
+            <div class="slider-control">
+                <div class="slider" id="world_x_slider">
+                </div>
+                <div class="slider-label">
+                \(\boldsymbol{t}_x\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="world_y_slider">
+                </div>
+                <div class="slider-label">
+                \(\boldsymbol{t}_y\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="world_z_slider">
+                </div>
+                <div class="slider-label">
+                \(\boldsymbol{t}_z\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="world_rx_slider">
+                </div>
+                <div class="slider-label">
+                x-Rotation
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="world_ry_slider">
+                </div>
+                <div class="slider-label">
+                y-Rotation
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="world_rz_slider">
+                </div>
+                <div class="slider-label">
+                z-Rotation
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <p>Adjust extrinsic parameters above.</p>
+
+            <p>This is a "world-centric" parameterization.  These parameters describe how the <em>world</em> changes relative to the <em>camera</em>.  These parameters correspond directly to entries in the extrinsic camera matrix.</p>
+            
+            <p>As you adjust these parameters, note how the camera moves in the world (left pane) and contrast with the "camera-centric" parameterization:</p>
+            <ul>
+            <li>Rotating affects the camera's position (the blue box).</li>
+            <li>The direction of camera motion depends on the current rotation.</li>
+            <li>Positive rotations move the camera clockwise (or equivalently, rotate the world counter-clockwise).</li>
+            </ul>
+
+            <p>Also note how the image is affected (right pane):</p>
+
+            <ul>
+            <li>Rotating never moves the world origin (red ball).</li>
+            <li>Changing \(t_x\) always moves the spheres horizontally, regardless of rotation. </li>
+            <li>Decreasing \(t_z\) always moves the camera closer to the world origin. </li>
+            </ul>
+
+            <p>The left pane is arguably more intuitive in a camera-centric parameterization, while the world-centric parameterization makes the right pane more intuitive.</p>
+
+        </div>
+        <div id="extrinsic-camera-controls">
+            <div class="slider-control">
+                <div class="slider" id="camera_x_slider">
+                </div>
+                <div class="slider-label">
+                \(C_x\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="camera_y_slider">
+                </div>
+                <div class="slider-label">
+                \(C_y\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="camera_z_slider">
+                </div>
+                <div class="slider-label">
+                \(C_z\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="camera_rx_slider">
+                </div>
+                <div class="slider-label">
+                x-Rotation
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="camera_ry_slider">
+                </div>
+                <div class="slider-label">
+                y-Rotation
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="camera_rz_slider">
+                </div>
+                <div class="slider-label">
+                z-Rotation
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <p>Adjust extrinsic parameters above.</p>
+
+            <p>This is a "camera-centric" parameterization, which describes how the <em>camera</em> changes relative to the <em>world</em>.  These parameters correspond to elements of the <em>inverse</em> extrinsic camera matrix.</p>
+            
+            <p>As you adjust these parameters, note how the camera moves in the world (left pane) and contrast with the "world-centric" parameterization:</p>
+            <ul>
+            <li>The camera's position (the blue box) is unaffected by rotation.</li>
+            <li>The direction of camera motion is independent of the current rotation.</li>
+            <li>A positive rotation rotates the camera counter-clockwise (or equivalently, rotates the world clockwise).</li>
+            <li>Increasing \(C_y\) always moves the camera up, regardless of rotation. </li>
+            </ul>
+
+            <p>Also note how the image is affected (right pane):</p>
+
+            <ul>
+            <li>Rotating around x moves both spheres horizontally.</li>
+            <li>With different rotations, changing \(C_x\) moves the spheres in different directions. </li>
+            </ul>
+
+            <p>The left pane is arguably more intuitive in a camera-centric parameterization, while the world-centric parameterization makes the right pane more intuitive.</p>
+        </div>
+        <div id="intrinsic-controls">
+            <div class="slider-control">
+                <div class="slider" id="focal_slider">
+                </div>
+                <div class="slider-label">
+                Focal Length
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="skew_slider">
+                </div>
+                <div class="slider-label">
+                Axis Skew 
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="x0_slider">
+                </div>
+                <div class="slider-label">
+                \(x_0\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="y0_slider">
+                </div>
+                <div class="slider-label">
+                \(y_0\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <p>Adjust intrinsic parameters above.  As you adjust these parameters, observe how the viewing volume changes in the left pane:</p>
+
+            <ul>
+            <li> Changing the focal length moves the yellow focal plane, which chainges the field-of-view angle of the viewing volume.</li>
+            <li> Changing the principal point affects where the green center-line intersects the focal plane.</li>
+            <li> Setting skew to non-zero causes the focal plane to be non-rectangular</li>
+            </ul>
+            
+            <p>Intrinsic parameters result in 2D transformations only; the depth of objects are ignored.  To see this, observe how the image in the right pane is affected by changing intrinsic parameters:</p>
+
+            <ul>
+                <li>Changing the focal length scales the near sphere and the far sphere equally.</li>
+                <li>Changing the principal point has no affect on parallax.</li>
+                <li>No combination of intrinsic parameters will reveal occluded parts of an object.</li>
+            </ul>
+            
+        </div>
+    </div>
+</div>

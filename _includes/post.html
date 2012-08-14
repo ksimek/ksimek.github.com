@@ -5,13 +5,13 @@
 {% else %}
   <h1 class="title">{{ post.title }}</h1>
 {% endif %}
-  <h2 class="date">{{ post.date | date: "%B %d, %Y" }}</h2>
+  <div class="date emphnext">{{ post.date | date: "%B %d, %Y" }}</div>
 
   {% if excerpt and post.excerpt %}
     {{ post.excerpt }}
     <p> <a href="{{ post.url }}/#more" class="more-link"><span class="readmore">more...</span></a></p>
   {% else %}
-    {{ post.content | mark_excerpt | markdownify }}
+    {{ content | mark_excerpt }}
       <address class="signature">
         Posted by
         <a class="author" href="{{ HOME_PATH }}">{{ site.author.name }}</a> 

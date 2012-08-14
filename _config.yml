@@ -7,6 +7,13 @@ exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
 #auto: true
 pygments: true
 markdown: rdiscount
+#markdown: kramdown 
+#
+#kramdown:
+# use_coderay: true
+# coderay:
+#  coderay_css: class
+#  coderay_line_numbers:
 
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.

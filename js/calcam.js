@@ -54,3 +54,27 @@ THREE.CalibratedCamera.prototype.updateScreenToCameraMatrix = function () {
     }
     this.screenToCameraMatrixNeedsUpdate = false;
 };
+
+THREE.CalibratedCamera.prototype.clone = function()
+{
+    var result = new THREE.CalibratedCamera(
+            this.fx,
+            this.fy,
+            this.x0,
+            this.y0,
+            this.s,
+            this.width,
+            this.height,
+            this.near,
+            this.far
+            );
+    result.position.copy(this.position);
+    result.rotation.copy(this.rotation);
+    result.rotationAutoUpdate = this.rotationAutoUpdate;
+    result.eulerOrder = this.eulerOrder;
+
+    result.matrix.copy(this.matrix);
+    result.matrixAutoUpdate = this.matrixAutoUpdate;
+
+    return result;
+}

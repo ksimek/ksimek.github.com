@@ -1,10 +1,13 @@
 ---
-layout: page
+title: Sightations
+top: Kyle Simek
+layout: home 
 ---
 {% for post in site.posts %}
-<div class="firehose-post">
+<div class="firehose-post article">
     {% assign excerpt = true %}
     {% assign link_title = true %}
+    {% assign content = post.content %}
     {% include post.html %}
 </div>
 {% endfor %}
