@@ -16,3 +16,5 @@ jekyll --pygments /tmp/site \
 && git add -A \
 && git commit \
 && git push origin master
+&& git checkout source
+&& git checkout .
