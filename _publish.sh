@@ -6,6 +6,7 @@
 # git push origin source
 
 # Push master branch
+sed -i -e 's/production:.*/production: true/g' _config.yml
 mkdir -p /tmp/site
 rm -rf /tmp/site/* 
 jekyll --pygments /tmp/site \
@@ -18,3 +19,4 @@ jekyll --pygments /tmp/site \
 && git push origin master \
 && git checkout source \
 && git checkout .
+sed -i -e 's/production:.*/production: false/g' _config.yml
