@@ -1,8 +1,15 @@
----
-# Remember to set production_url in your _config.yml file!
-title : Sitemap
----
-{% for page in site.pages %}
-{{site.production_url}}{{ page.url }}{% endfor %}
-{% for post in site.posts %}
-{{site.production_url}}{{ post.url }}{% endfor %}
+
+http://ksimek.github.com/about.html
+http://ksimek.github.com/archive.html
+http://ksimek.github.com/atom.xml
+http://ksimek.github.com/categories.html
+http://ksimek.github.com/code.html
+http://ksimek.github.com/contact.html
+http://ksimek.github.com/index.html
+http://ksimek.github.com/pages.html
+http://ksimek.github.com/perspective_camera_toy.html
+http://ksimek.github.com/sitemap.txt
+http://ksimek.github.com/tags.html
+
+http://ksimek.github.com/2012/08/14/decompose
+http://ksimek.github.com/2012/08/13/introduction
