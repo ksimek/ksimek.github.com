@@ -20,6 +20,7 @@ markdown: rdiscount
 #
 title : Sightations
 tagline: Kyle Simek's Computer Vision Blog
+production: true
 author :
   name : Kyle Simek
   email : ksimek@email.arizona.edu
@@ -134,5 +135,3 @@ JB :
   # where [HELPER] is the name of the helper you are overriding.
   
 
-# This line must be the last:
-production: true

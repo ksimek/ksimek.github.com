@@ -303,7 +303,7 @@ g^2 &  h^2 & i^2
 Below is a list of all the articles in this series.  New articles will be added to this list as I post them, so you can always return to this page for an up-to-date listing.
 
 * [Dissecting the Camera Matrix, Part 1: Intrinsic/Extrinsic Decomposition](/2012/08/14/decompose/)
-* Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix
+* [Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix](/2012/08/22/extrinsic/)
 * Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix
 * Simulating your Calibrated Camera in OpenGL
 * Stereo Rendering using a Calibrated Camera

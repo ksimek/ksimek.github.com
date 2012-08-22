@@ -19,4 +19,3 @@ jekyll --pygments /tmp/site \
 && git push origin master \
 && git checkout source \
 && git checkout .
-sed -i -e 's/production:.*/production: false/g' _config.yml

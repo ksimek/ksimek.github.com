@@ -126,5 +126,5 @@ Summary
 ---------
 The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or [email me](/contact.html).
 
-Tune-in next time, when we investigate the extrinsic matrix, and we'll learn why, contrary to popular belief, it _doesn't_ represent the camera's pose.  Stay tuned!
+Tune-in next time, [when we investigate the extrinsic matrix](/2012/08/22/extrinsic), and we'll learn why, contrary to popular belief, it _doesn't_ represent the camera's pose.  Stay tuned!
 

@@ -2,16 +2,20 @@
 <script type="text/javascript" src="/js/geometry/FrustumGeometry.js"></script>
 <script type="text/javascript" src="/js/cam_demo.js"></script>
 
-<div class="demo_3d">
+<div id="webgl_error"></div>
+<div id="javascript_error">Javascript is required for this demo.</div>
+<div class="demo_3d" style="display:none">
+    <table style="width: 100%"><tr style="text-align:center;"><td width="50%">Scene</td><td>Image</td></tr></table>
     <div id="3d_container" >
     </div>
-    
-    <div class="caption"><em>Left</em>: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   <em>Right</em>: camera's image.  Adjust camera parameters with sliders below.</div>
+    <div class="caption">
+    <em>Left</em>: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   <em>Right</em>: camera's image.</div>
     <div id="demo_controls">
         <ul>
-            <li><a href="#intrinsic-controls">Intrinsic</a></li>
             <li><a href="#extrinsic-world-controls">Extrinsic (World)</a></li>
-            <li><a href="#extrinsic-camera-controls">Extrinsic (Camera)</a></li>
+            <li><a href="#extrinsic-camera-controls">Extr. (Camera)</a></li>
+            <li><a href="#extrinsic-lookat-controls">Extr. ("Look-at")</a></li>
+            <li><a href="#intrinsic-controls">Intrinsic</a></li>
         </ul>
         <div id="extrinsic-world-controls">
             <div class="slider-control">
@@ -78,11 +82,8 @@
             <ul>
             <li>Rotating never moves the world origin (red ball).</li>
             <li>Changing \(t_x\) always moves the spheres horizontally, regardless of rotation. </li>
-            <li>Decreasing \(t_z\) always moves the camera closer to the world origin. </li>
+            <li>Increasing \(t_z\) always moves the camera closer to the world origin. </li>
             </ul>
-
-            <p>The left pane is arguably more intuitive in a camera-centric parameterization, while the world-centric parameterization makes the right pane more intuitive.</p>
-
         </div>
         <div id="extrinsic-camera-controls">
             <div class="slider-control">
@@ -139,20 +140,76 @@
             
             <p>As you adjust these parameters, note how the camera moves in the world (left pane) and contrast with the "world-centric" parameterization:</p>
             <ul>
-            <li>The camera's position (the blue box) is unaffected by rotation.</li>
+            <li>Rotation occurs about the camera's position (the blue box).</li>
             <li>The direction of camera motion is independent of the current rotation.</li>
             <li>A positive rotation rotates the camera counter-clockwise (or equivalently, rotates the world clockwise).</li>
-            <li>Increasing \(C_y\) always moves the camera up, regardless of rotation. </li>
+            <li>Increasing \(C_y\) always moves the camera toward the sky, regardless of rotation. </li>
             </ul>
 
             <p>Also note how the image is affected (right pane):</p>
 
             <ul>
-            <li>Rotating around x moves both spheres horizontally.</li>
+            <li>Rotating around y moves both spheres horizontally.</li>
             <li>With different rotations, changing \(C_x\) moves the spheres in different directions. </li>
             </ul>
+        </div>
 
-            <p>The left pane is arguably more intuitive in a camera-centric parameterization, while the world-centric parameterization makes the right pane more intuitive.</p>
+        <div id="extrinsic-lookat-controls">
+            <div class="slider-control">
+                <div class="slider" id="lookat_x_slider">
+                </div>
+                <div class="slider-label">
+                \(C_x\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="lookat_y_slider">
+                </div>
+                <div class="slider-label">
+                \(C_y\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="lookat_z_slider">
+                </div>
+                <div class="slider-label">
+                \(C_z\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="lookat_px_slider">
+                </div>
+                <div class="slider-label">
+                \(p_x\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="lookat_py_slider">
+                </div>
+                <div class="slider-label">
+                \(p_y\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="lookat_pz_slider">
+                </div>
+                <div class="slider-label">
+                \(p_z\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <p>Adjust extrinsic parameters above.</p>
+
+            <p>This is a "look-at" parameterization, which describes the camera's orientation in terms of what it is looking at.  Adjust \(p_x\), \(p_y\), and \(p_z\) to change where the camera is looking (orange dot).  The up vector is fixed at (0,1,0)'.  Notice that moving the camera center, *C*, causes the camera to rotate.</p>
+
+            <p>
+            </p>
+            
         </div>
         <div id="intrinsic-controls">
             <div class="slider-control">

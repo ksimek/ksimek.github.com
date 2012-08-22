@@ -5,6 +5,7 @@ $(document).ready(function(){
 
     $container = $('#3d_container');
     
+    var lookat_mode = 0;
     var clock = new THREE.Clock();
     var revolve_t = 0;
     var REVOLVE_PERIOD = 10;
@@ -21,7 +22,7 @@ $(document).ready(function(){
     var VIEW_ANGLE = 90;
     var default_focal = HEIGHT / 2 / Math.tan(VIEW_ANGLE/2 * Math.PI / 360);
     var FOCAL_MIN = default_focal * 0.75
-    var FOCAL_MAX = default_focal * 3;
+    var FOCAL_MAX = default_focal * 4;
     var SKEW_MIN = 0.0;
     var SKEW_MAX = HEIGHT;
     var X0_MIN = -WIDTH/2;
@@ -36,12 +37,33 @@ $(document).ready(function(){
     var WORLD_RZ_MIN = -Math.PI/6;
     var WORLD_RZ_MAX =  Math.PI/6;
 
-    var WORLD_X_MIN = -100;
-    var WORLD_X_MAX =  100;
-    var WORLD_Y_MIN = -100;
-    var WORLD_Y_MAX =  100;
+    var WORLD_X_MIN = -300;
+    var WORLD_X_MAX =  300;
+    var WORLD_Y_MIN = -300;
+    var WORLD_Y_MAX =  300;
     var WORLD_Z_MIN =   50;
-    var WORLD_Z_MAX =  500;
+    var WORLD_Z_MAX =  700;
+
+    var CAMERA_RX_MIN = -Math.PI/6;
+    var CAMERA_RX_MAX =  Math.PI/6;
+    var CAMERA_RY_MIN = -Math.PI/6;
+    var CAMERA_RY_MAX =  Math.PI/6;
+    var CAMERA_RZ_MIN = -Math.PI/6;
+    var CAMERA_RZ_MAX =  Math.PI/6;
+
+    var CAMERA_X_MIN = -300;
+    var CAMERA_X_MAX =  300;
+    var CAMERA_Y_MIN = -300;
+    var CAMERA_Y_MAX =  300;
+    var CAMERA_Z_MIN =  50;
+    var CAMERA_Z_MAX =  700;
+
+    var LOOKAT_PX_MIN = -300
+    var LOOKAT_PX_MAX =  300
+    var LOOKAT_PY_MIN = -300
+    var LOOKAT_PY_MAX =  300
+    var LOOKAT_PZ_MIN = -300
+    var LOOKAT_PZ_MAX =  300
     
     var ASPECT = WIDTH / HEIGHT,
       NEAR = WORLD_Z_MIN,
@@ -52,8 +74,18 @@ $(document).ready(function(){
 
     // create a WebGL renderer, camera
     // and a scene
-    var renderer = new THREE.WebGLRenderer();
+    
+    if(!Detector.webgl)
+    {
+        Detector.addGetWebGLMessage({parent: $('#webgl_error').get(0)});
+        $('.demo_3d').remove();
+        return;
+    }
+
+    $('.demo_3d').show();
+
     // start the renderer
+    var renderer = new THREE.WebGLRenderer();
     renderer.setSize(WIDTH*2, HEIGHT);
     renderer.autoClear = false;
     $container.prepend(renderer.domElement);
@@ -83,6 +115,8 @@ $(document).ready(function(){
     get_camera_t(default_camera, camera_t);
     var camera_r = new THREE.Vector3();
     camera_r.copy(default_camera.rotation);
+
+    var lookat_p = new THREE.Vector3(0,0,0);
 
     var camera = default_camera.clone();
 
@@ -117,13 +151,29 @@ $(document).ready(function(){
     var cameraCubeMaterial = new THREE.MeshBasicMaterial({color: 0x0000bb});
     var cameraCube = new THREE.Mesh(
           new THREE.CubeGeometry(
-            75/2,
-            75/2,
-            37.5/2),
+            75,
+            75,
+            37.5),
           cameraCubeMaterial);
     cameraCube.position = camera.position;
     cameraCube.rotation = camera.rotation;
     camera_scene.add(cameraCube);
+
+    var pAxisMaterial = new THREE.LineBasicMaterial({ color: 0x66cc66});
+
+    var pAxisGeometry = new THREE.Geometry();
+
+    var pAxis = camera.matrix.getColumnZ().clone();
+    pAxis.normalize();
+    pAxis.multiplyScalar(-FOCAL_MAX); // end at far plane
+    pAxis.addSelf(camera.position);
+    pAxisGeometry.vertices.push(camera.position.clone());
+    pAxisGeometry.vertices.push(pAxis);
+    var principal_axis = new THREE.Line(
+            pAxisGeometry,
+            pAxisMaterial);
+
+    camera_scene.add(principal_axis);
 
     // set up the sphere vars
     var radius = 50,
@@ -167,29 +217,43 @@ $(document).ready(function(){
     sphere2.position.z -= 300;
     sphere2.position.x -= 100;
 
-    // add the sphere to the scene
+    // add the "lookat" indicator sphere 
     scene.add(sphere);
     scene.add(sphere2);
 
+    var lookat_point = new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        20,
+        4,
+        4),
+
+      new THREE.MeshBasicMaterial({color: 0xff6600}));
+    camera_scene.add(lookat_point);
+    // hide it for now
+    lookat_point.position.x = 10000;
+    lookat_point.position.y = 10000;
+    lookat_point.position.z = 10000;
+
     // OVERHEAD VIEW
-    var SCENE_HEIGHT = 1.5 * (camera.position.z - sphere2.position.z);
+    var SCENE_HEIGHT = 2 * (camera.position.z - sphere2.position.z);
     var SCENE_WIDTH = SCENE_HEIGHT * ASPECT;
-    var scale = 4.0;
     var overhead_camera = 
       new THREE.OrthographicCamera(
         SCENE_WIDTH / - 2,
         SCENE_WIDTH / 2,
         SCENE_HEIGHT / 2,
         SCENE_HEIGHT / - 2,
-        -2000, 2000);
-    overhead_camera.position.x = 0;
+        -4000, 4000);
     overhead_camera.position.y = 400;
-    overhead_camera.position.z = 0;
 
-    overhead_camera.rotation.x =- 0.8;
-
+    revolve_t = REVOLVE_PERIOD / 8;
+    overhead_camera.position.x = REVOLVE_RADIUS * Math.cos(revolve_t/REVOLVE_PERIOD * 2*Math.PI);
+    overhead_camera.position.z = REVOLVE_RADIUS * Math.sin(revolve_t/REVOLVE_PERIOD * 2*Math.PI);
+    overhead_camera.lookAt(new THREE.Vector3(0,0,(camera.position.z - FOCAL_MAX)/2.0));
 
     scene.add(overhead_camera);
+    camera_scene.add(overhead_camera);
 
     // OVERLAY: Camera for drawing 2D elements
     var overlay_scene = new THREE.Scene();
@@ -275,6 +339,7 @@ $(document).ready(function(){
         camera.updateProjectionMatrix();
         camera_scene.remove(focal_plane);
         camera_scene.remove(frustum);
+        camera_scene.remove(principal_axis);
 
         frustum = new THREE.Mesh(
             new THREE.FrustumGeometry(0, frustum_far, camera),
@@ -285,6 +350,31 @@ $(document).ready(function(){
                 new THREE.FocalPlaneGeometry(camera),
                 focal_plane_material);
         focal_plane.doubleSided = true;
+
+        var p1 = camera.position.clone();
+        var p2 = camera.matrix.getColumnZ().clone();
+        p2.normalize();
+        p2.multiplyScalar(-FOCAL_MAX); // end at far plane
+        p2.addSelf(p1);
+        pAxisGeometry = new THREE.Geometry();
+        pAxisGeometry.vertices.push(p1);
+        pAxisGeometry.vertices.push(p2);
+        principal_axis = new THREE.Line(
+            pAxisGeometry,
+            pAxisMaterial);
+
+        camera_scene.add(principal_axis);
+
+        if(lookat_mode)
+        {
+            lookat_point.position = lookat_p.clone();
+        }
+        else
+        {
+            lookat_point.position.x = 100000;
+            lookat_point.position.y = 100000;
+            lookat_point.position.z = 100000;
+        }
 
         camera_scene.add(focal_plane);
         camera_scene.add(frustum);
@@ -324,12 +414,12 @@ $(document).ready(function(){
 
     }
 
-    $("#demo_controls").tabs();
-
     function reset_demo()
     {
         camera = default_camera.clone();
         init_world_controls();
+        init_camera_controls();
+        init_lookat_controls();
     }
 
     function init_world_controls(){
@@ -347,11 +437,37 @@ $(document).ready(function(){
 
         world_x_slider.slider("value", camera_t.x);
         world_y_slider.slider("value", camera_t.y);
-        world_z_slider.slider("value", -camera_t.z);
+        world_z_slider.slider("value", camera_t.z);
 
         world_rx_slider.slider("value", camera_r.x);
         world_ry_slider.slider("value", camera_r.y);
-        world_rz_slider.slider("value", -camera_r.z);
+        world_rz_slider.slider("value", camera_r.z);
+    }
+
+    function init_camera_controls()
+    {
+        camera_x_slider.slider("value", camera.position.x);
+        camera_y_slider.slider("value", camera.position.y);
+        camera_z_slider.slider("value", camera.position.z);
+
+        camera_rx_slider.slider("value", camera.rotation.x);
+        camera_ry_slider.slider("value", camera.rotation.y);
+        camera_rz_slider.slider("value", camera.rotation.z);
+    }
+
+    function init_lookat_controls() {
+        lookat_p = camera.matrix.getColumnZ().clone();
+        lookat_p.normalize();
+        lookat_p.multiplyScalar(-FOCAL_MAX/2.0);
+        lookat_p.addSelf(camera.position);
+
+        lookat_x_slider.slider("value", camera.position.x);
+        lookat_y_slider.slider("value", camera.position.y);
+        lookat_z_slider.slider("value", camera.position.z);
+
+        lookat_px_slider.slider("value", lookat_p.x);
+        lookat_py_slider.slider("value", lookat_p.y);
+        lookat_pz_slider.slider("value", lookat_p.z);
     }
 
     function get_camera_t(camera, t)
@@ -427,11 +543,11 @@ $(document).ready(function(){
 
     var world_z_slider = $('#world_z_slider');
     world_z_slider.slider({
-        value: -camera_t.z,
-        min: WORLD_Z_MIN,
-        max: WORLD_Z_MAX,
+        value: camera_t.z,
+        min: -WORLD_Z_MAX,
+        max: -WORLD_Z_MIN,
         slide: function(event, ui) {
-            camera_t.z = -ui.value;
+            camera_t.z = ui.value;
             set_camera_world(camera, camera_t, camera_r);
             updateDemo();
             return true;
@@ -478,6 +594,162 @@ $(document).ready(function(){
             camera_r.z = ui.value;
 
             set_camera_world(camera, camera_t, camera_r);
+            updateDemo();
+            return true;
+        }
+    });
+
+    var camera_x_slider = $('#camera_x_slider');
+    camera_x_slider.slider({
+        value: camera.position.x,
+        min: CAMERA_X_MIN,
+        max: CAMERA_X_MAX,
+        slide: function(event, ui) {
+            camera.position.x = ui.value;
+            updateDemo();
+            return true;
+        }
+    });
+
+    var camera_y_slider = $('#camera_y_slider');
+    camera_y_slider.slider({
+        value: camera.position.y,
+        min: CAMERA_Y_MIN,
+        max: CAMERA_Y_MAX,
+        slide: function(event, ui) {
+            camera.position.y = ui.value;
+            updateDemo();
+            return true;
+        }
+    });
+
+    var camera_z_slider = $('#camera_z_slider');
+    camera_z_slider.slider({
+        value: camera.position.z,
+        min: CAMERA_Z_MIN,
+        max: CAMERA_Z_MAX,
+        slide: function(event, ui) {
+            camera.position.z = ui.value;
+            updateDemo();
+            return true;
+        }
+    });
+
+    var camera_rx_slider = $('#camera_rx_slider');
+    camera_rx_slider.slider({
+        value: camera_r.x,
+        min: CAMERA_RX_MIN,
+        max: CAMERA_RX_MAX,
+        step: 0.01,
+        slide: function(event, ui) {
+            camera.rotation.x = ui.value;
+            updateDemo();
+            return true;
+        }
+    });
+
+    var camera_ry_slider = $('#camera_ry_slider');
+    camera_ry_slider.slider({
+        value: camera_r.y,
+        min: CAMERA_RY_MIN,
+        max: CAMERA_RY_MAX,
+        step: 0.01,
+        slide: function(event, ui) {
+            camera.rotation.y = ui.value;
+            updateDemo();
+            return true;
+        }
+    });
+
+    var camera_rz_slider = $('#camera_rz_slider');
+    camera_rz_slider.slider({
+        value: camera_r.z,
+        min: CAMERA_RZ_MIN,
+        max: CAMERA_RZ_MAX,
+        step: 0.01,
+        slide: function(event, ui) {
+            camera.rotation.z = ui.value;
+            updateDemo();
+            return true;
+        }
+    });
+
+    var lookat_x_slider = $('#lookat_x_slider');
+    lookat_x_slider.slider({
+        value: camera.position.x,
+        min: CAMERA_X_MIN,
+        max: CAMERA_X_MAX,
+        slide: function(event, ui) {
+            camera.position.x = ui.value;
+            camera.lookAt(lookat_p);
+            updateDemo();
+            return true;
+        }
+    });
+
+    var lookat_y_slider = $('#lookat_y_slider');
+    lookat_y_slider.slider({
+        value: camera.position.y,
+        min: CAMERA_Y_MIN,
+        max: CAMERA_Y_MAX,
+        slide: function(event, ui) {
+            camera.position.y = ui.value;
+            camera.lookAt(lookat_p);
+            updateDemo();
+            return true;
+        }
+    });
+
+    var lookat_z_slider = $('#lookat_z_slider');
+    lookat_z_slider.slider({
+        value: camera.position.z,
+        min: CAMERA_Z_MIN,
+        max: CAMERA_Z_MAX,
+        slide: function(event, ui) {
+            camera.position.z = ui.value;
+            camera.lookAt(lookat_p);
+            updateDemo();
+            return true;
+        }
+    });
+
+    var lookat_px_slider = $('#lookat_px_slider');
+    lookat_px_slider.slider({
+        value: lookat_p.x,
+        min: LOOKAT_PX_MIN,
+        max: LOOKAT_PX_MAX,
+        step: 0.01,
+        slide: function(event, ui) {
+            lookat_p.x = ui.value;
+            camera.lookAt(lookat_p);
+            updateDemo();
+            return true;
+        }
+    });
+
+    var lookat_py_slider = $('#lookat_py_slider');
+    lookat_py_slider.slider({
+        value: lookat_p.y,
+        min: LOOKAT_PY_MIN,
+        max: LOOKAT_PY_MAX,
+        step: 0.01,
+        slide: function(event, ui) {
+            lookat_p.y = ui.value;
+            camera.lookAt(lookat_p);
+            updateDemo();
+            return true;
+        }
+    });
+
+    var lookat_pz_slider = $('#lookat_pz_slider');
+    lookat_pz_slider.slider({
+        value: lookat_p.z,
+        min: LOOKAT_PZ_MIN,
+        max: LOOKAT_PZ_MAX,
+        step: 0.01,
+        slide: function(event, ui) {
+            lookat_p.z = ui.value;
+            camera.lookAt(lookat_p);
             updateDemo();
             return true;
         }
@@ -535,10 +807,32 @@ $(document).ready(function(){
         }
     });
 
+    $("#demo_controls").tabs({
+        show: function(event, ui){
+            if(ui.index == 0)
+            {
+                init_world_controls();
+                lookat_mode = 0;
+            }
+            if(ui.index == 1)
+            {
+                init_camera_controls();
+                lookat_mode = 0;
+            }
+            if(ui.index == 2)
+            {
+                init_lookat_controls();
+                lookat_mode = 1;
+            }
+
+            updateDemo();
+        }
+    });
+
 
 
     reset_demo();
     render();
-    animate();
+    //animate();
 });
 

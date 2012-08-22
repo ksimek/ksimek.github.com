@@ -8,15 +8,10 @@ Camera demo:
 
 calcam to github
 "Reset" button
-
-controls for extrinsic camera
-copy for intrinsic, extrinsic camera
+    reset on tab click?
 
 x_o y_o to p. point x, p.point y
 
-in world-centric, increasing z moves camera _away_.  shouldn't it move it closer?
-
-green center line
 
 finish Code page:
 ------------
