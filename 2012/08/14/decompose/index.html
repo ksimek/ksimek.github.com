@@ -42,8 +42,15 @@
    <!-- three.js Javascript -->
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <script src="/js/Detector.js"></script>
     <script src="/js/Three.js"></script>
     <script src="/js/calcam.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+                $('#javascript_error').hide();
+        });
+    </script>
 
 </head>
 <body id="">
@@ -224,7 +231,7 @@
 
 <p>The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or <a href="/contact.html">email me</a>.</p>
 
-<p>Tune-in next time, when we investigate the extrinsic matrix, and we'll learn why, contrary to popular belief, it <em>doesn't</em> represent the camera's pose.  Stay tuned!</p>
+<p>Tune-in next time, <a href="/2012/08/22/extrinsic">when we investigate the extrinsic matrix</a>, and we'll learn why, contrary to popular belief, it <em>doesn't</em> represent the camera's pose.  Stay tuned!</p>
 
       <address class="signature">
         Posted by
@@ -235,6 +242,8 @@
 
   
   <div class="prev-next">
+  
+    <a href="/2012/08/22/extrinsic" class="next" title="Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix">Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix &rarr;</a>
   
   
     <a href="/2012/08/13/introduction" class="prev" title="The Perspective Camera - An Interactive Tour">&larr; The Perspective Camera - An Interactive Tour</a>

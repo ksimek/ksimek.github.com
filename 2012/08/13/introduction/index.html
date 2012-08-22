@@ -42,8 +42,15 @@
    <!-- three.js Javascript -->
     <script src="/js/jquery.js"></script>
     <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <script src="/js/Detector.js"></script>
     <script src="/js/Three.js"></script>
     <script src="/js/calcam.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+                $('#javascript_error').hide();
+        });
+    </script>
 
 </head>
 <body id="">
@@ -380,7 +387,7 @@ g^2 &  h^2 & i^2
 
 <ul>
 <li><a href="/2012/08/14/decompose/">Dissecting the Camera Matrix, Part 1: Intrinsic/Extrinsic Decomposition</a></li>
-<li>Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</li>
+<li><a href="/2012/08/22/extrinsic/">Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</a></li>
 <li>Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix</li>
 <li>Simulating your Calibrated Camera in OpenGL</li>
 <li>Stereo Rendering using a Calibrated Camera</li>
