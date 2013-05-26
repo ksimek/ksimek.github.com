@@ -191,9 +191,9 @@ The extrinsic matrix's rotation matrix is then given by:
 \[
 R = \left[ 
 \begin{array}{ccc}
-s_1 & u_1^' & -L_1 \\
-s_2 & u_2^' & -L_2 \\
-s_3 & u_3^' & -L_3 \\
+s_1 & u_1' & -L_1 \\
+s_2 & u_2' & -L_2 \\
+s_3 & u_3' & -L_3 
 \end{array}
 \right]
 \]
