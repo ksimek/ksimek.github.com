@@ -140,17 +140,6 @@
 
 <p>To recover R and K, we note that R is orthogonal by virtue of being a rotation matrix, and K is upper-triangular.  Those familiar with linear algebra will know that we can decompose any full-rank matrix into the product of an upper-triangular matrix and an orthogonal matrix by using <a href="http://en.wikipedia.org/wiki/QR_decomposition">RQ-decomposition</a>.  Unfortunately RQ-decomposition isn't available in many libraries including Matlab, but luckily, it's friend QR-decomposition usually is.  <a href="http://www.janeriksolem.net/2011/03/rq-factorization-of-camera-matrices.html">Solem's vision blog</a> has a nice article implementing the missing function using a few matrix flips; here's a Matlab version (thanks to Solem for letting me repost this!):</p>
 
-<div class="highlight"><pre><code class="matlab"><span class="k">function</span><span class="w"> </span>[R Q] <span class="p">=</span><span class="w"> </span><span class="nf">rq</span><span class="p">(</span>M<span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">[</span><span class="n">Q</span><span class="p">,</span><span class="n">R</span><span class="p">]</span> <span class="p">=</span> <span class="n">qr</span><span class="p">(</span><span class="nb">flipud</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">&#39;</span><span class="p">)</span>
-    <span class="n">R</span> <span class="p">=</span> <span class="nb">flipud</span><span class="p">(</span><span class="n">R</span><span class="o">&#39;</span><span class="p">);</span>
-    <span class="n">R</span> <span class="p">=</span> <span class="nb">fliplr</span><span class="p">(</span><span class="n">R</span><span class="p">);</span>
-
-    <span class="n">Q</span> <span class="p">=</span> <span class="n">Q</span><span class="o">&#39;</span><span class="p">;</span>   
-    <span class="n">Q</span> <span class="p">=</span> <span class="nb">flipud</span><span class="p">(</span><span class="n">Q</span><span class="p">);</span>
-</code></pre>
-</div>
-
-
 <p> Easy!</p>
 
 <h2> I'm seeing double...  FOUR decompositions!  <a href="http://imgur.com/1pAsu" class="huh">[?]</a></h2>
@@ -165,15 +154,6 @@
 
 
 <p>Solem's blog elegantly gives us positive diagonal entries in three lines of code:</p>
-
-<div class="highlight"><pre><code class="matlab"># <span class="n">make</span> <span class="n">diagonal</span> <span class="n">of</span> <span class="n">K</span> <span class="n">positive</span>
-<span class="n">T</span> <span class="p">=</span> <span class="nb">diag</span><span class="p">(</span><span class="nb">sign</span><span class="p">(</span><span class="nb">diag</span><span class="p">(</span><span class="n">K</span><span class="p">)));</span>
-
-<span class="n">K</span> <span class="p">=</span> <span class="n">K</span> <span class="o">*</span> <span class="n">T</span><span class="p">;</span>
-<span class="n">R</span> <span class="p">=</span> <span class="n">T</span> <span class="o">*</span> <span class="n">R</span><span class="p">;</span> # <span class="p">(</span><span class="n">T</span> <span class="n">is</span> <span class="n">its</span> <span class="n">own</span> <span class="n">inverse</span><span class="p">)</span>
-</code></pre>
-</div>
-
 
 <p>   However, there are several practical situations in which the camera and image axes won't agree.  In this case the diagonal elements of <em>K</em> shouldn't be positive, and forcing them to be positive can result in side-effect that are nasty in practice, including:</p>
 

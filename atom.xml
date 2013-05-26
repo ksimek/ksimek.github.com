@@ -4,7 +4,7 @@
  <title>Sightations</title>
  <link href="http://ksimek.github.com/atom.xml" rel="self"/>
  <link href="http://ksimek.github.com"/>
- <updated>2012-08-23T09:55:52-07:00</updated>
+ <updated>2013-05-26T11:22:37-07:00</updated>
  <id>http://ksimek.github.com</id>
  <author>
    <name>Kyle Simek</name>
@@ -206,9 +206,9 @@ R  &amp;= R_c^T \\
 \[
 R = \left[ 
 \begin{array}{ccc}
-s_1 &amp; u_1^' &amp; -L_1 \\
-s_2 &amp; u_2^' &amp; -L_2 \\
-s_3 &amp; u_3^' &amp; -L_3 \\
+s_1 &amp; u_1' &amp; -L_1 \\
+s_2 &amp; u_2' &amp; -L_2 \\
+s_3 &amp; u_3' &amp; -L_3 
 \end{array}
 \right]
 \]
@@ -576,17 +576,6 @@ s_3 &amp; u_3^' &amp; -L_3 \\
 
 &lt;p&gt;To recover R and K, we note that R is orthogonal by virtue of being a rotation matrix, and K is upper-triangular.  Those familiar with linear algebra will know that we can decompose any full-rank matrix into the product of an upper-triangular matrix and an orthogonal matrix by using &lt;a href=&quot;http://en.wikipedia.org/wiki/QR_decomposition&quot;&gt;RQ-decomposition&lt;/a&gt;.  Unfortunately RQ-decomposition isn't available in many libraries including Matlab, but luckily, it's friend QR-decomposition usually is.  &lt;a href=&quot;http://www.janeriksolem.net/2011/03/rq-factorization-of-camera-matrices.html&quot;&gt;Solem's vision blog&lt;/a&gt; has a nice article implementing the missing function using a few matrix flips; here's a Matlab version (thanks to Solem for letting me repost this!):&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;[R Q] &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;M&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
-&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;qr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;fliplr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;   
-    &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
 &lt;p&gt; Easy!&lt;/p&gt;
 
 &lt;h2&gt; I'm seeing double...  FOUR decompositions!  &lt;a href=&quot;http://imgur.com/1pAsu&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
@@ -601,15 +590,6 @@ s_3 &amp; u_3^' &amp; -L_3 \\
 
 
 &lt;p&gt;Solem's blog elegantly gives us positive diagonal entries in three lines of code:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;# &lt;span class=&quot;n&quot;&gt;make&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;diagonal&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;positive&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)));&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; # &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;its&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;own&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
 
 &lt;p&gt;   However, there are several practical situations in which the camera and image axes won't agree.  In this case the diagonal elements of &lt;em&gt;K&lt;/em&gt; shouldn't be positive, and forcing them to be positive can result in side-effect that are nasty in practice, including:&lt;/p&gt;
 
