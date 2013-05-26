@@ -85,7 +85,7 @@
 
 <h2>The Extrinsic Camera Matrix</h2>
 
-<p>The camera's extrinsic matrix describes the camera's location in the world, and what direction it's pointing.  Those familiar with OpenGL know this as the "view matrix" (or rolled into the "modelview matrix").  It has two components: a rotation matrix, <em>R</em>, and a translation vector <strong><em>t</em></strong>, but, as we'll soon see, these don't exactly correspond to the camera's rotation and translation.  First we'll examine the parts of the extrinsic matrix, and later we'll look at alternative ways of describing the camera's pose that are more intuitive.</p>
+<p>The camera's extrinsic matrix describes the camera's location in the world, and what direction it's pointing.  Those familiar with OpenGL know this as the "view matrix" (or rolled into the "modelview matrix").  It has two components: a rotation matrix, <em>R</em>, and a translation vector <strong><em>t</em></strong>, but as we'll soon see, these don't exactly correspond to the camera's rotation and translation.  First we'll examine the parts of the extrinsic matrix, and later we'll look at alternative ways of describing the camera's pose that are more intuitive.</p>
 
 <p><span id="more"></span></p>
 
@@ -151,13 +151,13 @@ r_{3,1} & r_{3,2} & r_{3,3} & 0 \\
 
 <p>This matrix describes how to transform points in world coordinates to camera coordinates.  The vector <strong><em>t</em></strong> can be interpreted as the position of the world origin in camera coordinates, and the columns of <em>R</em> represent represent the directions of the world-axes in camera coordinates.</p>
 
-<p>The important thing to remember about the extrinsic matrix is that it describes how the <em>world</em> is transformed relative to the <em>camera</em>.  This is often counter-intuitive, because we usually want to specify how the <em>camera</em> is transformed relative to the <em>world</em>.    Next, we'll examine two alternative ways to describe the camera's extrinsic parameters that are more intuitive, and how to convert them into the form of an extrinsic matrix.</p>
+<p>The important thing to remember about the extrinsic matrix is that it describes how the <em>world</em> is transformed relative to the <em>camera</em>.  This is often counter-intuitive, because we usually want to specify how the <em>camera</em> is transformed relative to the <em>world</em>.    Next, we'll examine two alternative ways to describe the camera's extrinsic parameters that are more intuitive and how to convert them into the form of an extrinsic matrix.</p>
 
 <h2>Building the Extrinsic Matrix from Camera Pose</h2>
 
 <p>It's often more natural to specify the camera's pose directly rather than specifying how world points should transform to camera coordinates.  Luckily, building an extrinsic camera matrix this way is easy: just build a rigid transformation matrix that describes the camera's pose and then take it's inverse.</p>
 
-<p>Let <em>C</em> be a column vector describing the location of the camera-center in world coordinates, and let \(R_c\) be the rotation matrix describing the camera's orientation with respect to the world coordinate axes.  The transformation matrix that describes the camera's pose is then given by \([R_c \,|\, C ]\).  Like before, we make the matrix square by adding an extra row of (0,0,0,1).  Then the extrinsic matrix is given by inverting the camera's pose matrix:</p>
+<p>Let <em>C</em> be a column vector describing the location of the camera-center in world coordinates, and let \(R_c\) be the rotation matrix describing the camera's orientation with respect to the world coordinate axes.  The transformation matrix that describes the camera's pose is then \([R_c \,|\, C ]\).  Like before, we make the matrix square by adding an extra row of (0,0,0,1).  Then the extrinsic matrix is obtained by inverting the camera's pose matrix:</p>
 
 <div>
 \begin{align}
@@ -567,7 +567,7 @@ s_3 & u_3' & -L_3
 
 <h2>Conclusion</h2>
 
-<p>We've just studied three different ways of parameterizing a camera's extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you're writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along (t_z) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren't sure which you prefer, play with the tool above and decide which approach feels the most natural.</p>
+<p>We've just explored three different ways of parameterizing a camera's extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you're writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along (t_z) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren't sure which you prefer, play with the tool above and decide which approach feels the most natural.</p>
 
 <p>Join us next time when we explore the intrinsic matrix, and we'll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!</p>
 

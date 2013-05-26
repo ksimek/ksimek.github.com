@@ -4,7 +4,7 @@
  <title>Sightations</title>
  <link href="http://ksimek.github.com/atom.xml" rel="self"/>
  <link href="http://ksimek.github.com"/>
- <updated>2013-05-26T11:22:37-07:00</updated>
+ <updated>2013-05-26T11:30:58-07:00</updated>
  <id>http://ksimek.github.com</id>
  <author>
    <name>Kyle Simek</name>
@@ -21,7 +21,7 @@
 
 &lt;h2&gt;The Extrinsic Camera Matrix&lt;/h2&gt;
 
-&lt;p&gt;The camera's extrinsic matrix describes the camera's location in the world, and what direction it's pointing.  Those familiar with OpenGL know this as the &quot;view matrix&quot; (or rolled into the &quot;modelview matrix&quot;).  It has two components: a rotation matrix, &lt;em&gt;R&lt;/em&gt;, and a translation vector &lt;strong&gt;&lt;em&gt;t&lt;/em&gt;&lt;/strong&gt;, but, as we'll soon see, these don't exactly correspond to the camera's rotation and translation.  First we'll examine the parts of the extrinsic matrix, and later we'll look at alternative ways of describing the camera's pose that are more intuitive.&lt;/p&gt;
+&lt;p&gt;The camera's extrinsic matrix describes the camera's location in the world, and what direction it's pointing.  Those familiar with OpenGL know this as the &quot;view matrix&quot; (or rolled into the &quot;modelview matrix&quot;).  It has two components: a rotation matrix, &lt;em&gt;R&lt;/em&gt;, and a translation vector &lt;strong&gt;&lt;em&gt;t&lt;/em&gt;&lt;/strong&gt;, but as we'll soon see, these don't exactly correspond to the camera's rotation and translation.  First we'll examine the parts of the extrinsic matrix, and later we'll look at alternative ways of describing the camera's pose that are more intuitive.&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -87,13 +87,13 @@ r_{3,1} &amp; r_{3,2} &amp; r_{3,3} &amp; 0 \\
 
 &lt;p&gt;This matrix describes how to transform points in world coordinates to camera coordinates.  The vector &lt;strong&gt;&lt;em&gt;t&lt;/em&gt;&lt;/strong&gt; can be interpreted as the position of the world origin in camera coordinates, and the columns of &lt;em&gt;R&lt;/em&gt; represent represent the directions of the world-axes in camera coordinates.&lt;/p&gt;
 
-&lt;p&gt;The important thing to remember about the extrinsic matrix is that it describes how the &lt;em&gt;world&lt;/em&gt; is transformed relative to the &lt;em&gt;camera&lt;/em&gt;.  This is often counter-intuitive, because we usually want to specify how the &lt;em&gt;camera&lt;/em&gt; is transformed relative to the &lt;em&gt;world&lt;/em&gt;.    Next, we'll examine two alternative ways to describe the camera's extrinsic parameters that are more intuitive, and how to convert them into the form of an extrinsic matrix.&lt;/p&gt;
+&lt;p&gt;The important thing to remember about the extrinsic matrix is that it describes how the &lt;em&gt;world&lt;/em&gt; is transformed relative to the &lt;em&gt;camera&lt;/em&gt;.  This is often counter-intuitive, because we usually want to specify how the &lt;em&gt;camera&lt;/em&gt; is transformed relative to the &lt;em&gt;world&lt;/em&gt;.    Next, we'll examine two alternative ways to describe the camera's extrinsic parameters that are more intuitive and how to convert them into the form of an extrinsic matrix.&lt;/p&gt;
 
 &lt;h2&gt;Building the Extrinsic Matrix from Camera Pose&lt;/h2&gt;
 
 &lt;p&gt;It's often more natural to specify the camera's pose directly rather than specifying how world points should transform to camera coordinates.  Luckily, building an extrinsic camera matrix this way is easy: just build a rigid transformation matrix that describes the camera's pose and then take it's inverse.&lt;/p&gt;
 
-&lt;p&gt;Let &lt;em&gt;C&lt;/em&gt; be a column vector describing the location of the camera-center in world coordinates, and let \(R_c\) be the rotation matrix describing the camera's orientation with respect to the world coordinate axes.  The transformation matrix that describes the camera's pose is then given by \([R_c \,|\, C ]\).  Like before, we make the matrix square by adding an extra row of (0,0,0,1).  Then the extrinsic matrix is given by inverting the camera's pose matrix:&lt;/p&gt;
+&lt;p&gt;Let &lt;em&gt;C&lt;/em&gt; be a column vector describing the location of the camera-center in world coordinates, and let \(R_c\) be the rotation matrix describing the camera's orientation with respect to the world coordinate axes.  The transformation matrix that describes the camera's pose is then \([R_c \,|\, C ]\).  Like before, we make the matrix square by adding an extra row of (0,0,0,1).  Then the extrinsic matrix is obtained by inverting the camera's pose matrix:&lt;/p&gt;
 
 &lt;div&gt;
 \begin{align}
@@ -503,7 +503,7 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;We've just studied three different ways of parameterizing a camera's extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you're writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along (t_z) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren't sure which you prefer, play with the tool above and decide which approach feels the most natural.&lt;/p&gt;
+&lt;p&gt;We've just explored three different ways of parameterizing a camera's extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you're writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along (t_z) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren't sure which you prefer, play with the tool above and decide which approach feels the most natural.&lt;/p&gt;
 
 &lt;p&gt;Join us next time when we explore the intrinsic matrix, and we'll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!&lt;/p&gt;
 
