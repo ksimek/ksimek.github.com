@@ -6,6 +6,12 @@
   <h1 class="title">{{ post.title }}</h1>
 {% endif %}
   <div class="date emphnext">{{ post.date | date: "%B %d, %Y" }}</div>
+    {% if page.edit %}
+    <div class="edit-disclosure">
+    {{page.edit}}
+    </div>
+    {% endif %}
+
 
   {% if excerpt and post.excerpt %}
     {{ post.excerpt }}
