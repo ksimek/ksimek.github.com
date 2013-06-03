@@ -109,6 +109,12 @@ ul.ui-tabs-nav li
     font-style: italic;
 }
 
+.edit-disclosure {
+    margin-top: -1.5em;
+    color: #999;
+    font-style: italic;
+}
+
 .context-img {
     float: right;
     margin-left: 1.5em;

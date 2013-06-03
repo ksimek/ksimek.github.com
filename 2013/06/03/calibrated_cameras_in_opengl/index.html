@@ -1,0 +1,335 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <title>Calibrated Cameras in OpenGL without glFrustum &larr; </title>
+   <meta name="author" content="Kyle Simek" />
+
+   <link rel="start" href="/" />
+
+	
+	
+    <link rel="shortcut icon" href="/favicon.ico">
+
+	
+	
+
+   <!-- syntax highlighting CSS -->
+   <link rel="stylesheet" href="/assets/themes/mark-reid/css/syntax.css" type="text/css" />
+
+   <!-- Jquery UI CSS --!>
+   <link media="screen" rel="stylesheet" href="/css/ui-smoothness/jquery-ui-1.8.22.custom.css" type="text/css" />
+
+   <!-- Homepage CSS -->
+   <link media="screen" rel="stylesheet" href="/assets/themes/mark-reid/css/screen.css" type="text/css" />
+
+   <!-- Handheld CSS -->
+   <link media="handheld, only screen and (max-width: 480px), only screen and (max-device-width: 480px)" href="/assets/themes/mark-reid/css/handheld.css" type="text/css" rel="stylesheet" />
+
+
+<!--[if IEMobile]>
+<link rel="stylesheet" type="text/css" href="/assets/themes/mark-reid/css/handheld.css" media="screen" />
+<![endif]-->
+
+   <!-- Mathjax Javascript -->
+   <script type="text/javascript"
+     src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+   </script>
+
+   <!-- three.js Javascript -->
+    <script src="/js/jquery.js"></script>
+    <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+    <script src="/js/Detector.js"></script>
+    <script src="/js/Three.js"></script>
+    <script src="/js/calcam.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+                $('#javascript_error').hide();
+        });
+    </script>
+
+</head>
+<body id="">
+<div id="site">
+  
+  <div id="header">
+    <h1>
+    	<a href="/" title="Sightations">Sightations</a>
+    	<span class="byline">&larr; <a href="/">A Computer Vision Blog</a></span>
+    </h1>
+    <ul class="nav">
+      <li><a class="home" href="/">Home</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/code.html">Code</a></li>
+      <li><a  href="/archive.html">Archive</a></li>
+
+    </ul>
+  </div>
+
+  
+<div id="page" class="article">
+	
+  
+  
+  <h1 class="title">Calibrated Cameras in OpenGL without glFrustum</h1>
+
+  <div class="date emphnext">June 03, 2013</div>
+    
+    <div class="edit-disclosure">
+    Author's note: some of this content appeared in <a href="http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/">this article</a> on my old blog, which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.
+    </div>
+    
+
+
+  
+    <div class="clearer"></div>
+
+
+<div class='context-img' style='width:317px'>
+<img src='/img/augmented_reality.jpg' />
+<div class='caption'>Simulating a calibrated camera for augmented reality.
+<div class='credit'><a href="http://www.flickr.com/photos/thp4/8060086636/">Credit: thp4</a></div>
+</div>
+</div>
+
+
+<p>You've calibrated your camera.  You've decomposed it into intrinsic and extrinsic camera matrices. Now you need to use it to render a synthetic scene in OpenGL.  You know the extrinsic matrix corresponds to the modelview matrix and the intrinsic is the projection matrix, but beyond that you're stumped.  You remember something about <code>gluPerspective</code>, but it only permits two degrees of freedom, and your intrinsic camera matrix has five.  glFrustum looks promising, but the mapping between its parameters and the camera matrix aren't obvious and it looks like you'll have to ignore your camera's axis skew.  You may be asking yourself, "I have a matrix, why can't I just use it?"</p>
+
+<p>You can.  And you don't have to jettison your axis skew, either.  In this article, I'll show how to use your intrinsic camera matrix in OpenGL with minimal modification.  For illustration, I'll use OpenGL 2.1 API calls, but the same matrices can be sent to your shaders in modern OpenGL.</p>
+
+<h2>glFrustum:  Two Transforms in One</h2>
+
+<p>To better understand perspective projection in OpenGL, let's examine <code>glFrustum</code>. According to the OpenGL documentation,</p>
+
+<blockquote><p>glFrustum describes a perspective matrix that produces a perspective projection.</p></blockquote>
+
+<p>While this is true, it only tells half of the story.</p>
+
+<p><span id="more"></span></p>
+
+
+<p>In reality, <code>glFrustum</code> does two things: first it performs perspective projection, and then it converts to <a href="http://medialab.di.unipi.it/web/IUM/Waterloo/node15.html">normalized device coordinates (NDC)</a>.  The former is a common operation in projective geometry,  while the latter is OpenGL arcana, an implementation detail.</p>
+
+<p>To give us finer-grained control over these operations, we'll separate projection matrix into two matrices <em>Persp</em> and <em>NDC</em>:</p>
+
+<div>\[ Proj = NDC \times Persp \]</div>
+
+
+<p>Our intrinsic camera matrix describes a perspective projection, so it will be the key to the <em>Persp</em> matrix.  For the <em>NDC</em> matrix, we'll (ab)use OpenGL's <code>glOrtho</code> routine.</p>
+
+<h2>Step 1: Projective Transform</h2>
+
+<p>Our 3x3 intrinsic camera matrix <em>K</em> needs two modifications before it's ready to use in OpenGL.  First, for proper clipping, the (3,3) element of <em>K</em> <em>must</em> be -1. OpenGL's camera looks down the <em>negative</em> z-axis, so if \(K_{33}\) is positive, vertices in front of the camera will have a negative <em>w</em> coordinate after projection.  In principle, this is okay, but <a href="http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix">because of how OpenGL performs clipping</a>, all of these points will be clipped.</p>
+
+<p>If \(K_{33}\) isn't -1, your intrinsic and extrinsic matrices need some modifications.  Getting the camera decomposition right isn't trivial, so I'll refer the reader to <a href="2012/08/14/decompose">my earlier article on camera decomposition</a>, which will walk you through the steps.   Part of the result will be the negation of the third column of the intrinsic matrix, so you'll see those elements negated below.</p>
+
+<div>\[ K = \left( \begin{array}{ccc} \alpha & s & -x_0 \\ 0 & \beta & -y_0  \\ 0 & 0 & -1 \end{array} \right) \]</div>
+
+
+<p>For the second modification, we need to prevent losing Z-depth information, so we'll add an extra row and column to the intrinsic matrix.</p>
+
+<div>\[ Persp = \left( \begin{array}{cccc} \alpha & s & -x_0 & 0 \\ 0 & \beta & -y_0 & 0 \\ 0 & 0 & A & B \\ 0 & 0 & -1 & 0 \end{array} \right)  \]</div>
+
+
+<p>where</p>
+
+<div> \[ \begin{align}
+A &= near + far \\
+B &= near * far
+\end{align} \]
+</div>
+
+
+<p>The new third row preserve the ordering of Z-values while mapping <em>-near</em> and <em>-far</em> onto themselves (after normalizing by <em>w</em>, proof left as an exercise).  The result is that points between the clipping planes remain between clipping planes after multiplication by <em>Persp</em>.</p>
+
+<h2>Step 2: Transform to NDC</h2>
+
+<p>The <em>NDC</em> matrix is (perhaps surprisingly) provided by <code>glOrtho</code>.  The <em>Persp</em> matrix converts a frustum-shaped space into a cuboid-shaped shape, while <code>glOrtho</code> converts the cuboid space to normalized device coordinates.  A call to <code>glOrtho(left, right, bottom, top, near, far)</code> constructs the matrix:</p>
+
+<div>\[ \text{glOrtho} = \left( \begin{array}{cccc} \frac{2}{right - left} & 0 & 0 & t_x \\ 0 & \frac{2}{top - bottom} & 0 & t_y \\ 0 & 0 & -\frac{2}{far - near} & t_z \\ 0 & 0 & 0 & 1 \end{array} \right) \]</div>
+
+
+<p>where</p>
+
+<div> \[ \begin{align}
+t_x &= -\frac{right + left}{right - left} \\
+t_y &= -\frac{top + bottom}{top - bottom} \\
+t_z &= -\frac{far + near}{far - near} 
+\end{align} \]
+</div>
+
+
+<p>When calling <code>glOrtho</code>, the <em>near</em> and <em>far</em> parameters should be the same as those used to compute <em>A</em> and <em>B</em> above.  The choice of top, bottom, left, and right clipping planes correspond to the dimensions of the original image and the coordinate conventions used during calibration.  For example, if your camera was calibrated from an image with dimensions \(W \times H\) and its origin at the top-left, your OpenGL 2.1 code would be</p>
+
+<pre><code>glLoadIdentity();
+glOrtho(0, W, H, 0, near, far);
+glMultMatrix(persp);
+</code></pre>
+
+<p>Note that <em>H</em> is used as the "bottom" parameter and <em>0</em> is the "top," indicating a y-downward axis convention.</p>
+
+<p>If you calibrated using a coordinate system with the y-axis pointing upward and the origin at the center of the image,</p>
+
+<pre><code>glLoadIdentity();
+glOrtho(-W/2, W/2, -H/2, H/2, near, far);
+glMultMatrix(persp);
+</code></pre>
+
+<p>Note that there is a strong relationship between the <code>glOrtho</code> parameters and the perspective matrix.  For example, shifting the viewing volume left by X is equivalent to shifting the principal point right by X.  Doubling \(\alpha\) is equivalent to dividing <em>left</em> and <em>right</em> by two.  This is the same relationship that exists in a pinhole camera between the camera's geometry and the geometry of its film--shifting the pinhole right is equivalent to shifting the film left; doubling the focal length is equivalent to halving the dimensions of the film.  Clearly the two-matrix representation of projection is redundant, but keeping these matrices separate allows us to maintain the logical separation between the camera geometry and the image geometry.</p>
+
+<h2>Equivalence to glFrustum</h2>
+
+<p>We can show that the two-matrix approach above reduces to a single call to <code>glFrustum</code> when \(\alpha\) and \(\beta\) are set to <em>near</em> and \(s\), \(x_0\) and \(y_0\) are zero.  The resulting matrix is:</p>
+
+<div>
+\[ \begin{align}
+
+Proj &= NDC * Persp \\[1.5em]
+     &= 
+        \left( \begin{array}{cccc} \frac{2}{right - left} & 0 & 0 & t_x \\ 0 & \frac{2}{top - bottom} & 0 & t_y \\ 0 & 0 & -\frac{2}{far - near} & t_z \\ 0 & 0 & 0 & 1 \end{array} \right)
+        *
+        \left( \begin{array}{cccc} near & 0 & 0 & 0 \\ 0 & near & 0 & 0 \\ 0 & 0 & A & B \\ 0 & 0 & -1 & 0 \end{array} \right) \\[1.5em]
+    &= \left( \begin{array}{cccc} \frac{2 near}{right - left} & 0 & A' & 0 \\ 0 & \frac{2 near}{top - bottom} & B' & 0 \\ 0 & 0 & C' & D' \\ 0 & 0 & -1 & 0 \end{array} \right)
+    \end{align} \]
+</div>
+
+
+<p>where</p>
+
+<div> \[ \begin{align}
+A' &= \frac{right + left}{right - left} \\
+B' &= \frac{top + bottom}{top - bottom} \\
+C' &= \frac{far + near}{far - near}  \\
+D' &= \frac{2 \; far \; near}{far - near}  \\
+\end{align} \] </div>
+
+
+<p>This is equivalent to <a href="http://pic.dhe.ibm.com/infocenter/aix/v7r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FglFrustum.htm">the matrix produced by glFrustum</a>.</p>
+
+<p>By tweaking the frame bounds we can relax the constraints imposed above.  We can implement focal lengths other than <em>near</em> by scaling the frame:</p>
+
+<div> \[ \begin{align}
+    left' &= \left( \frac{near}{\alpha} \right) left \\
+    right' &= \left( \frac{near}{\alpha} \right) right \\
+    top' &= \left( \frac{near}{\beta} \right) top \\
+    bottom' &= \left( \frac{near}{\beta} \right) bottom
+\end{align} \] </div>
+
+
+<p>Non-zero principal point offsets are achieved by shifting the frame window:</p>
+
+<div> \[ \begin{align}
+    left'' &= left' - x_0 \\
+    right'' &= right' - x_0 \\
+    top'' &= top' - y_0 \\
+    bottom'' &= bottom' - y_0
+\end{align} \] </div>
+
+
+<p>Thus, with a little massaging, <code>glFrustum</code> can simulate a general intrinsic camera matrix with zero axis skew.</p>
+
+<h2>The Extrinsic Matrix</h2>
+
+<p>The extrinsic matrix can be used as the modelview matrix without modification, just convert it to a 4x4 matrix by adding an extra row of <em>(0,0,0,1)</em>, and pass it to <code>glLoadMatrix</code> or send it to your shader.    If lighting or back-face culling are acting strangely, it's likely that your rotation matrix has a determinant of -1.  This results in the geometry rendering in the right place, but with normal-vectors reversed so your scene is inside-out.  The <a href="2012/08/14/decompose">previous article on camera decomposition</a> should help you prevent this.</p>
+
+<p>Alternatively, you can convert your rotation matrix to axis-angle form and use <code>glRotate</code>.  Remember that the fourth column of the extrinsic matrix is the translation <em>after</em> rotating, so your call to <code>glTranslate</code> should come <em>before</em> <code>glRotate</code>.  Check out <a href="2012/08/22/extrinsic">this previous article</a> for a longer discussion of the extrinsic matrix, including how to it with <code>glLookAt</code>.</p>
+
+<h2>Conclusion</h2>
+
+<p>We've seen two different ways to simulate a calibrated camera in OpenGL, one using glFrustum and one using the intrinsic camera matrix directly.    If you need to implement radial distortion, it should be possible with a vertex shader, but you'll probably want a high poly count so the curved distortions appear smooth--does anyone have experience with this?  In a future article, I'll cover how to accomplish stereo and head-tracked rendering using simple modifications to your intrinsic camera parameters.</p>
+
+      <address class="signature">
+        Posted by
+        <a class="author" href="/">Kyle Simek</a> 
+      </address>
+  
+
+
+  
+  <div class="prev-next">
+  
+  
+    <a href="/2012/08/22/extrinsic" class="prev" title="Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix">&larr; Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</a>
+  
+  </div>
+  <div class="clearer"> </div>
+
+
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'sightations'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  
+</div><!-- End Page -->
+
+
+
+  
+  <div id="footer">
+  	<address>
+  		<span class="copyright">
+  			Content by <a href="/about.html">Kyle Simek</a>. Original design by 
+  			<a href="http://mark.reid.name/">Mark Reid</a>
+  			<br/>
+  			(<a rel="licence" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Some rights reserved</a>)			
+  		</span>
+  		<span class="engine">
+  			Powered by <a href="http://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
+  		</span>
+  	</address>
+  </div>
+  
+</div>
+
+<!--[if IE 6]>
+<script type="text/javascript"> 
+	/*Load jQuery if not already loaded*/ if(typeof jQuery == 'undefined'){ document.write("<script type=\"text/javascript\"   src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js\"></"+"script>"); var __noconflict = true; } 
+	var IE6UPDATE_OPTIONS = {
+		icons_path: "http://static.ie6update.com/hosted/ie6update/images/"
+	}
+</script>
+<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+  
+
+
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-33692744-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+
+
+</body>
+</html>
+
