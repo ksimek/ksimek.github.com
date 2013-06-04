@@ -19,14 +19,14 @@ markdown: rdiscount
 # so be sure to set them if your theme uses them.
 #
 title : Sightations
-tagline: Kyle Simek's Computer Vision Blog
+description: A computer vision blog by Kyle Simek
 production: true
 author :
   name : Kyle Simek
   email : ksimek@email.arizona.edu
   github : ksimek
 #  twitter : username
-#  feedburner : feedname
+  feedburner : sightations
 
 # The production_url is only used when full-domain names are needed
 # such as sitemap.txt 
@@ -115,13 +115,34 @@ JB :
     mixpanel :
         token : '_MIXPANEL_TOKEN_'
 
-  # Settings for sharing helper. 
-  # Sharing is for things like tweet, plusone, like, reddit buttons etc.
-  # Set 'provider' to the sharing provider you want to use.
-  # Set 'provider' to false to turn sharing off globally.
-  #
+ # Settings for sharing 
+    # Sharing is for things like tweet, plusone, hn upvotes, like, linkedin
+    # Add a tweet button 		=> provider : tweet
+    # Add a like button 		=> provider : like (you also need a facebook appid)
+    # Add a plus one button 	=> provider : plusone
+    # Add a HN button 		=> provider : hn
+    # Add them all (i.e. hn + tweet + plusone + like) => provider : all
+    # Set 'provider' to the sharing provider you want to use.
+    # Set 'provider' to false to turn sharing off globally.
+    #
   sharing :
-    provider : false
+    provider : all
+    twitter :
+      size :
+      via :
+      count :
+    facebook :
+        appid : 123
+        layout : button_count
+        font :
+        faces : false
+        width : 90
+    googleplus :
+        size : medium
+        width :
+        annotation : bubble
+    linkedin :
+        counter : right      
     
   # Settings for all other include helpers can be defined by creating 
   # a hash with key named for the given helper. ex:

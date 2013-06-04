@@ -394,6 +394,8 @@ body#Kith #header a.kith
 p.line { position: relative; margin: 0; }
 p.excerpt { margin: 0; }
 .comments { font-size: smaller; position: absolute; color: silver; right: 0; top: 0; }
+.post-share { margin-top: 0.5em }
+iframe { border:0px; }
 .excerpt { color: black; }
 
 /* @group Signature */
@@ -459,7 +461,7 @@ pre > code {
 
 /* @group Disqus */
 #disqus_thread {
-	margin-top: 2em;
+	margin-top: 0.5em;
 }
 .dsq-comment-body {
 	text-align: justify;
