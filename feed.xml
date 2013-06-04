@@ -1,23 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
- 
- <title>Sightations</title>
- <link href="http://ksimek.github.io/atom.xml" rel="self"/>
- <link href="http://ksimek.github.io"/>
- <updated>2013-06-03T20:04:58-07:00</updated>
- <id>http://ksimek.github.io</id>
- <author>
-   <name>Kyle Simek</name>
-   <email>ksimek@email.arizona.edu</email>
- </author>
-
- 
- <entry>
-   <title>Calibrated Cameras in OpenGL without glFrustum</title>
-   <link href="http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl"/>
-   <updated>2013-06-03T00:00:00-07:00</updated>
-   <id>http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl</id>
-   <content type="html">&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Sightations</title>
+		<description>A computer vision blog by Kyle Simek</description>
+		<link>http://ksimek.github.io</link>
+		<atom:link href="http://ksimek.github.io/feed.xml" rel="self" type="application/rss+xml" />
+		
+			<item>
+				<title>Calibrated Cameras in OpenGL without glFrustum</title>
+				<description>&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
 
 
 &lt;div class='context-img' style='width:317px'&gt;
@@ -172,15 +163,15 @@ D' &amp;= \frac{2 \; far \; near}{far - near}  \\
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 
 &lt;p&gt;We've seen two different ways to simulate a calibrated camera in OpenGL, one using glFrustum and one using the intrinsic camera matrix directly.    If you need to implement radial distortion, it should be possible with a vertex shader, but you'll probably want a high poly count so the curved distortions appear smooth--does anyone have experience with this?  In a future article, I'll cover how to accomplish stereo and head-tracked rendering using simple modifications to your intrinsic camera parameters.&lt;/p&gt;
-</content>
- </entry>
- 
- <entry>
-   <title>Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</title>
-   <link href="http://ksimek.github.io/2012/08/22/extrinsic"/>
-   <updated>2012-08-22T00:00:00-07:00</updated>
-   <id>http://ksimek.github.io/2012/08/22/extrinsic</id>
-   <content type="html">&lt;p&gt;Welcome to the third post in the series &quot;&lt;a href=&quot;/2012/08/13/introduction/&quot;&gt;The Perspecive Camera - An Interactive Tour&lt;/a&gt;.&quot;  In the last post, &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;we learned how to decompose the camera matrix&lt;/a&gt; into a product of intrinsic and extrinsic matrices.  In the next two posts, we'll explore the extrinsic and intrinsic matrices in greater detail.  First we'll explore various ways of looking at the extrinsic matrix, with an interactive demo at the end.&lt;/p&gt;
+</description>
+				<pubDate>Mon, 03 Jun 2013 00:00:00 -0700</pubDate>
+				<link>http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl</link>
+				<guid isPermaLink="true">http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl</guid>
+			</item>
+		
+			<item>
+				<title>Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</title>
+				<description>&lt;p&gt;Welcome to the third post in the series &quot;&lt;a href=&quot;/2012/08/13/introduction/&quot;&gt;The Perspecive Camera - An Interactive Tour&lt;/a&gt;.&quot;  In the last post, &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;we learned how to decompose the camera matrix&lt;/a&gt; into a product of intrinsic and extrinsic matrices.  In the next two posts, we'll explore the extrinsic and intrinsic matrices in greater detail.  First we'll explore various ways of looking at the extrinsic matrix, with an interactive demo at the end.&lt;/p&gt;
 
 &lt;h2&gt;The Extrinsic Camera Matrix&lt;/h2&gt;
 
@@ -672,15 +663,15 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;br /&gt;
 
-</content>
- </entry>
- 
- <entry>
-   <title>Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition</title>
-   <link href="http://ksimek.github.io/2012/08/14/decompose"/>
-   <updated>2012-08-14T00:00:00-07:00</updated>
-   <id>http://ksimek.github.io/2012/08/14/decompose</id>
-   <content type="html">&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
+</description>
+				<pubDate>Wed, 22 Aug 2012 00:00:00 -0700</pubDate>
+				<link>http://ksimek.github.io/2012/08/22/extrinsic</link>
+				<guid isPermaLink="true">http://ksimek.github.io/2012/08/22/extrinsic</guid>
+			</item>
+		
+			<item>
+				<title>Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition</title>
+				<description>&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
 
 
 &lt;div class='context-img' style='width:320px'&gt;
@@ -828,15 +819,15 @@ s_3 &amp; u_3' &amp; -L_3
 &lt;p&gt;The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or &lt;a href=&quot;/contact.html&quot;&gt;email me&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;In the next article, we'll &lt;a href=&quot;/2012/08/22/extrinsic&quot;&gt;investigate the extrinsic matrix&lt;/a&gt; in more detail, with interactive demos.&lt;/p&gt;
-</content>
- </entry>
- 
- <entry>
-   <title>The Perspective Camera - An Interactive Tour</title>
-   <link href="http://ksimek.github.io/2012/08/13/introduction"/>
-   <updated>2012-08-13T00:00:00-07:00</updated>
-   <id>http://ksimek.github.io/2012/08/13/introduction</id>
-   <content type="html">&lt;div class='context-img' style='width:350px'&gt;
+</description>
+				<pubDate>Tue, 14 Aug 2012 00:00:00 -0700</pubDate>
+				<link>http://ksimek.github.io/2012/08/14/decompose</link>
+				<guid isPermaLink="true">http://ksimek.github.io/2012/08/14/decompose</guid>
+			</item>
+		
+			<item>
+				<title>The Perspective Camera - An Interactive Tour</title>
+				<description>&lt;div class='context-img' style='width:350px'&gt;
 &lt;img src='/img/1st_and_ten.jpg' /&gt;
 &lt;div class='caption'&gt;The &quot;1st and Ten&quot; system, one of the first successful applications of augmented reality in sports.
 &lt;div class='credit'&gt;&lt;a href=&quot;http://www.howstuffworks.com/first-down-line.htm&quot;&gt;howstuffworks.com&lt;/a&gt;&lt;/div&gt;
@@ -1151,8 +1142,11 @@ g^2 &amp;  h^2 &amp; i^2
 
 
 &lt;p&gt;Happy reading!&lt;/p&gt;
-</content>
- </entry>
- 
- 
-</feed>
+</description>
+				<pubDate>Mon, 13 Aug 2012 00:00:00 -0700</pubDate>
+				<link>http://ksimek.github.io/2012/08/13/introduction</link>
+				<guid isPermaLink="true">http://ksimek.github.io/2012/08/13/introduction</guid>
+			</item>
+		
+	</channel>
+</rss>

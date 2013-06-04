@@ -5,6 +5,8 @@ http://ksimek.github.io/atom.xml
 http://ksimek.github.io/categories.html
 http://ksimek.github.io/code.html
 http://ksimek.github.io/contact.html
+http://ksimek.github.io/feed.xml
+http://ksimek.github.io/feeds.html
 http://ksimek.github.io/index.html
 http://ksimek.github.io/pages.html
 http://ksimek.github.io/perspective_camera_toy.html
