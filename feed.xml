@@ -737,8 +737,7 @@ s_3 &amp; u_3' &amp; -L_3
 
     &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;   
     &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt; Easy!&lt;/p&gt;
@@ -761,8 +760,7 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; # &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;its&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;own&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;   In practice, the camera and image axes won't agree, and the diagonal elements of &lt;em&gt;K&lt;/em&gt; shouldn't be positive.   Forcing them to be positive can result in nasty side-effect, including:&lt;/p&gt;
@@ -801,7 +799,7 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;p&gt;You can double-check the result by inspecting the vector \(\mathbf{t} = -RC\), which is the location of the world origin in camera coordinates.  If everything is correct, the sign of \(t_x, t_y, t_z\) should reflect where the world origin appears in the camera (left/right of center, above/below center, in front/behind camera, respectively).&lt;/p&gt;
 
-&lt;h2&gt;Who Flipped my Axes?&lt;/h2&gt;
+&lt;h2&gt;&lt;a id=&quot;flipaxis&quot;&gt;&lt;/a&gt; Who Flipped my Axes? &lt;/h2&gt;
 
 &lt;p&gt;Until now, our discussion of 2D coordinate conventions have referred to the coordinates used during calibration.  If your application uses a different 2D coordinate convention, you'll need to transform K using 2D translation and reflection.&lt;/p&gt;
 

@@ -156,8 +156,7 @@
 
     <span class="n">Q</span> <span class="p">=</span> <span class="n">Q</span><span class="o">&#39;</span><span class="p">;</span>   
     <span class="n">Q</span> <span class="p">=</span> <span class="nb">flipud</span><span class="p">(</span><span class="n">Q</span><span class="p">);</span>
-</code></pre>
-</div>
+</code></pre></div>
 
 
 <p> Easy!</p>
@@ -180,8 +179,7 @@
 
 <span class="n">K</span> <span class="p">=</span> <span class="n">K</span> <span class="o">*</span> <span class="n">T</span><span class="p">;</span>
 <span class="n">R</span> <span class="p">=</span> <span class="n">T</span> <span class="o">*</span> <span class="n">R</span><span class="p">;</span> # <span class="p">(</span><span class="n">T</span> <span class="n">is</span> <span class="n">its</span> <span class="n">own</span> <span class="n">inverse</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div>
 
 
 <p>   In practice, the camera and image axes won't agree, and the diagonal elements of <em>K</em> shouldn't be positive.   Forcing them to be positive can result in nasty side-effect, including:</p>
@@ -220,7 +218,7 @@
 
 <p>You can double-check the result by inspecting the vector \(\mathbf{t} = -RC\), which is the location of the world origin in camera coordinates.  If everything is correct, the sign of \(t_x, t_y, t_z\) should reflect where the world origin appears in the camera (left/right of center, above/below center, in front/behind camera, respectively).</p>
 
-<h2>Who Flipped my Axes?</h2>
+<h2><a id="flipaxis"></a> Who Flipped my Axes? </h2>
 
 <p>Until now, our discussion of 2D coordinate conventions have referred to the coordinates used during calibration.  If your application uses a different 2D coordinate convention, you'll need to transform K using 2D translation and reflection.</p>
 
