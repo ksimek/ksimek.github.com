@@ -112,7 +112,7 @@ Regarding step 3, Hartley and Zisserman's camera looks down the positive-*z* dir
 
 You can double-check the result by inspecting the vector \\(\mathbf{t} = -RC\\), which is the location of the world origin in camera coordinates.  If everything is correct, the sign of \\(t_x, t_y, t_z\\) should reflect where the world origin appears in the camera (left/right of center, above/below center, in front/behind camera, respectively).
 
-Who Flipped my Axes?
+<a id="flipaxis"></a> Who Flipped my Axes? 
 -------------------------------------
 
 Until now, our discussion of 2D coordinate conventions have referred to the coordinates used during calibration.  If your application uses a different 2D coordinate convention, you'll need to transform K using 2D translation and reflection.

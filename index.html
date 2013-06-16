@@ -3,7 +3,7 @@ title: Sightations
 top: Kyle Simek
 layout: home 
 ---
-{% for post in site.posts %}
+{% for post in paginator.posts %}
 <div class="firehose-post article">
     {% assign excerpt = true %}
     {% assign link_title = true %}
@@ -15,9 +15,12 @@ layout: home
 <!-- Pagination links -->
 <div class="pagination">
   {% if paginator.previous_page %}
-    <a href="/page{{paginator.previous_page}}" class="previous">&lt;&lt;Read Older Posts</a>
+    <a href="{{ site.baseurl}}/{{paginator.previous_page_path}}" class="previous">&lt;&lt; Read Newer Posts</a>
+  {% endif %}
+  {% if paginator.next_page and paginator.previous_page %}
+    |
   {% endif %}
   {% if paginator.next_page %}
-    <a href="/page{{paginator.next_page}}" class="next ">Read Newer Posts&gt;&gt;</a>
+    <a href="{{ site.baseurl}}/{{paginator.next_page_path}}" class="next ">Read Older Posts &gt;&gt;</a>
   {% endif %}
 </div>
