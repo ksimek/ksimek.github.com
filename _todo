@@ -31,6 +31,39 @@ ALL:
 ------
 Check all links
 
-test contact form
-test comments
+
+New posts:
+------------
+Intrinsic as 2D transformation
+
+Head tracking
+
+Series from email exchanges w/ Christian
+    Rotations
+        non-transitivity of rotations
+        Euler
+            24 different conventions, no standard
+            intrinsic vs. extrinsic
+        inside-out applications
+        Camera rotations vs. scene rotations - alibi vs. alias
+        right-handed / left-handed
+        row vs. column vector
+        -1 determinant rotation matrix
+
+    OpenCV & principal point
+        1. opencv gives an intrinsic matrix that with center-origin
+        2. display is bottom-right origin
+        3. rotations look funny (interactive demo)
+        4. Fix: convert between systems
+
+    
+Quaternions
+    benefits of quaternions
+    drawbacks
+    conversion from quaternion to Matrix, euler, rodriquez and back again (links to algorithms)
+        Key value: list of conversion algorithms and conversion matrix
+
+
+
+
 
