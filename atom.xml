@@ -4,7 +4,7 @@
  <title>Sightations</title>
  <link href="http://ksimek.github.io/atom.xml" rel="self"/>
  <link href="http://ksimek.github.io"/>
- <updated>2013-06-18T11:55:17-07:00</updated>
+ <updated>2013-06-18T11:57:10-07:00</updated>
  <id>http://ksimek.github.io</id>
  <author>
    <name>Kyle Simek</name>
@@ -18,6 +18,9 @@
    <updated>2013-06-18T00:00:00-07:00</updated>
    <id>http://ksimek.github.io/2013/06/18/calibrated-cameras-and-gluperspective</id>
    <content type="html">&lt;p&gt;After posting my last article &lt;a href=&quot;/2013/06/03/calibrated_cameras_in_opengl/&quot;&gt;relating glFrustum to the intrinsic camera matrix&lt;/a&gt;, I receieved some emails asking how the (now deprecated) &lt;a href=&quot;http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluPerspective.htm&quot;&gt;gluPerspective&lt;/a&gt; function relates to the intrinsic matrix.  We can show a similar result with &lt;code&gt;gluPerspective&lt;/code&gt; as we did with &lt;code&gt;glFrustum&lt;/code&gt;, namely that it is the product of a &lt;code&gt;glOrtho&lt;/code&gt; matrix and a (modified) intrinsic camera matrix, but in this case the intrinsic matrix has different constraints.  I'll be re-using notation and concepts from the previous article, so if you aren't familiar with them, I recommend reading it first.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
 
 &lt;h2&gt;Decomposing gluPerspective&lt;/h2&gt;
 
