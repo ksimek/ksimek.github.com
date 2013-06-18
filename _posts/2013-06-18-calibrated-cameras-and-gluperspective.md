@@ -9,6 +9,8 @@ tags: []
 
 After posting my last article [relating glFrustum to the intrinsic camera matrix]({{site.baseurl}}/2013/06/03/calibrated_cameras_in_opengl/), I receieved some emails asking how the (now deprecated) [gluPerspective](http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluPerspective.htm) function relates to the intrinsic matrix.  We can show a similar result with `gluPerspective` as we did with `glFrustum`, namely that it is the product of a `glOrtho` matrix and a (modified) intrinsic camera matrix, but in this case the intrinsic matrix has different constraints.  I'll be re-using notation and concepts from the previous article, so if you aren't familiar with them, I recommend reading it first. 
 
+<!--more-->
+
 Decomposing gluPerspective
 ------------------------
 
