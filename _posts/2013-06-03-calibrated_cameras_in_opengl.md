@@ -2,7 +2,7 @@
 layout: post
 title: "Calibrated Cameras in OpenGL without glFrustum"
 description: ""
-edit: "Author's note: some of this content appeared in <a href=\"http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/\">this article</a> on my old blog, which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible."
+edit: "Author's note: some of this content appeared on my old blog as \"<a href=\"http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/\">Simulating Calibrated Cameras in OpenGL</a>\", which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.<br/><strong>Update</strong> (June 18, 2013):  added negative signs to definitions of C' and D'."
 ---
 <div class="clearer"></div>
 <div class='context-img' style='width:317px'>
@@ -113,11 +113,11 @@ where
 <div> \[ \begin{align}
 A' &= \frac{right + left}{right - left} \\
 B' &= \frac{top + bottom}{top - bottom} \\
-C' &= \frac{far + near}{far - near}  \\
-D' &= \frac{2 \; far \; near}{far - near}  \\
+C' &= -\frac{far + near}{far - near}  \\
+D' &= -\frac{2 \; far \; near}{far - near}  \\
 \end{align} \] </div>
 
-This is equivalent to [the matrix produced by glFrustum](http://pic.dhe.ibm.com/infocenter/aix/v7r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FglFrustum.htm).  
+This is equivalent to [the matrix produced by glFrustum](http://www.glprogramming.com/blue/ch05.html#id5478066).  
 
 By tweaking the frame bounds we can relax the constraints imposed above.  We can implement focal lengths other than *near* by scaling the frame: 
     
