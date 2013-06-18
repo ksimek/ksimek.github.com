@@ -84,7 +84,7 @@
   <div class="date emphnext">June 03, 2013</div>
     
     <div class="edit-disclosure">
-    Author's note: some of this content appeared in <a href="http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/">this article</a> on my old blog, which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.
+    Author's note: some of this content appeared on my old blog as "<a href="http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/">Simulating Calibrated Cameras in OpenGL</a>", which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.<br/><strong>Update</strong> (June 18, 2013):  added negative signs to definitions of C' and D'.
     </div>
     
 
@@ -207,12 +207,12 @@ Proj &= NDC * Persp \\[1.5em]
 <div> \[ \begin{align}
 A' &= \frac{right + left}{right - left} \\
 B' &= \frac{top + bottom}{top - bottom} \\
-C' &= \frac{far + near}{far - near}  \\
-D' &= \frac{2 \; far \; near}{far - near}  \\
+C' &= -\frac{far + near}{far - near}  \\
+D' &= -\frac{2 \; far \; near}{far - near}  \\
 \end{align} \] </div>
 
 
-<p>This is equivalent to <a href="http://pic.dhe.ibm.com/infocenter/aix/v7r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FglFrustum.htm">the matrix produced by glFrustum</a>.</p>
+<p>This is equivalent to <a href="http://www.glprogramming.com/blue/ch05.html#id5478066">the matrix produced by glFrustum</a>.</p>
 
 <p>By tweaking the frame bounds we can relax the constraints imposed above.  We can implement focal lengths other than <em>near</em> by scaling the frame:</p>
 
@@ -255,6 +255,8 @@ D' &= \frac{2 \; far \; near}{far - near}  \\
 
   
   <div class="prev-next">
+  
+    <a href="/2013/06/18/calibrated-cameras-and-gluperspective" class="next" title="Calibrated Cameras and gluPerspective">Calibrated Cameras and gluPerspective &rarr;</a>
   
   
     <a href="/2012/08/22/extrinsic" class="prev" title="Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix">&larr; Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</a>
