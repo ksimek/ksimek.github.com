@@ -6,14 +6,14 @@
 # git push origin source
 
 # Push master branch
-sed -i -e 's/production:.*/production: true/g' _config.yml
-mkdir -p /tmp/site
-rm -rf /tmp/site/* 
-jekyll build -d /tmp/site --config _config.yml,_config_prod.yml \
+sed -i '' -e 's/production:.*/production: true/g' _config.yml
+mkdir -p /tmp/cv_site
+rm -rf /tmp/cv_site/* 
+jekyll build -d /tmp/cv_site --config _config.yml,_config_prod.yml \
 && git checkout master \
 && rm -r * \
-&& cp -r /tmp/site/* . \
-&& rm -r /tmp/site/ \
+&& cp -r /tmp/cv_site/* . \
+&& rm -r /tmp/cv_site/ \
 && git add -A 
 
 if [[ $? -ne 0 ]]; then
