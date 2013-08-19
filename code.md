@@ -8,7 +8,7 @@ Here you can read about the open-source software I've released.
 
 Ergo
 -------
-[Ergo](http://github.com/ksimek/libergo) is a C++ template library for Markov-Chain Monte-Carlo that supports Gibbs Sampling, Metropolis Hastings, and Hybrid Monte Carlo.  
+[Ergo](https://github.com/ksimek/libergo) is a C++ template library for Markov-Chain Monte-Carlo that supports Gibbs Sampling, Metropolis Hastings, and Hybrid Monte Carlo.  
 
 Cuda Computer Vision Toolkit
 -----------------------------

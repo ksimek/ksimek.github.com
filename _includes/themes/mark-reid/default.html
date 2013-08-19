@@ -26,7 +26,9 @@
    <link rel="stylesheet" href="{{ ASSET_PATH }}/css/syntax.css" type="text/css" />
 
    <!-- Jquery UI CSS --!>
+	{% if page.jquery_ui %}
    <link media="screen" rel="stylesheet" href="/css/ui-smoothness/jquery-ui-1.8.22.custom.css" type="text/css" />
+	{% endif %}
 
    <!-- Homepage CSS -->
    <link media="screen" rel="stylesheet" href="{{ ASSET_PATH }}/css/screen.css" type="text/css" />
@@ -40,22 +42,33 @@
 <![endif]-->
 
    <!-- Mathjax Javascript -->
+
+	{% if page.latex_math %}
    <script type="text/javascript"
      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
    </script>
+    {% endif %}
 
    <!-- three.js Javascript -->
+	{% if page.jquery or page.jquery_ui %}
     <script src="/js/jquery.js"></script>
+	{% endif  %}
+	{% if page.jquery_ui %}
     <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+	{% endif  %}
+	{% if page.three_js %}
     <script src="/js/Detector.js"></script>
     <script src="/js/Three.js"></script>
     <script src="/js/calcam.js"></script>
+    {% endif %}
 
+	{% if page.jquery or page.jquery_ui %}
     <script type="text/javascript">
         $(document).ready(function(){
                 $('#javascript_error').hide();
         });
     </script>
+    {% endif %}
 
 </head>
 <body id="{{ page.section }}">
@@ -92,7 +105,7 @@
   			(<a rel="licence" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Some rights reserved</a>)			
   		</span>
   		<span class="engine">
-  			Powered by <a href="http://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
+  			Powered by <a href="https://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
   		</span>
   	</address>
   </div>

@@ -4,6 +4,7 @@ title: "Calibrated Cameras and gluPerspective"
 description: ""
 category: 
 tags: []
+latex_math: true
 ---
 {% include JB/setup %}
 

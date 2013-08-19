@@ -5,6 +5,9 @@ title: "The Perspective Camera - An Interactive Tour"
 description: ""
 category: 
 tags: []
+latex_math: true
+jquery: true
+three_js: true
 ---
 
 <div class='context-img' style='width:350px'>
@@ -53,7 +56,7 @@ g^2 &  h^2 & i^2
 \]
 </div>
 
-3D interactive demos are provided by [three.js](https://github.com/mrdoob/three.js/), which also needs JavaScript and prefers a browser that supports WebGL ( [Google Chrome](http://google.com/chrome) works great, as does [the latest version of Firefox](http://www.mozilla.org/en-US/firefox/fx/#desktop)).  Older browsers will render using canvas, which will run slowly, look ugly, and hurl vicious insults at you.  But it should work.   If you see two spheres below, you're in business.
+3D interactive demos are provided by [three.js](https://github.com/mrdoob/three.js/), which also needs JavaScript and prefers a browser that supports WebGL ( [Google Chrome](https://www.google.com/intl/en/chrome/browser/) works great, as does [the latest version of Firefox](http://www.mozilla.org/en-US/firefox/fx/#desktop)).  Older browsers will render using canvas, which will run slowly, look ugly, and hurl vicious insults at you.  But it should work.   If you see two spheres below, you're in business.
 
 <script>
 
@@ -302,10 +305,10 @@ g^2 &  h^2 & i^2
 
 Below is a list of all the articles in this series.  New articles will be added to this list as I post them, so you can always return to this page for an up-to-date listing.
 
-* [Dissecting the Camera Matrix, Part 1: Intrinsic/Extrinsic Decomposition](/2012/08/14/decompose/)
-* [Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix](/2012/08/22/extrinsic/)
-* Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix
-* Simulating your Calibrated Camera in OpenGL
+* [Dissecting the Camera Matrix, Part 1: Intrinsic/Extrinsic Decomposition]({{site.baseurl}}/2012/08/14/decompose/)
+* [Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix]({{site.baseurl}}/2012/08/22/extrinsic/)
+* Simulating your Calibrated Camera in OpenGL - [part 1]({{site.baseurl}}/2013/06/03/calibrated_cameras_in_opengl/), [part 2]({{site.baseurl}}/2013/06/18/calibrated-cameras-and-gluperspective/)
+* [Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix]({{site.baseurl}}/2013/08/13/intrinsic/)
 * Stereo Rendering using a Calibrated Camera
 * Head-tracked Display using a Calibrated Camera
 {% comment %}

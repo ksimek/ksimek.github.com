@@ -2,10 +2,13 @@
 layout: post
 title: "Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix"
 description: ""
+latex_math: true
+jquery_ui: true
+three_js: true
 ---
 
 
-Welcome to the third post in the series "[The Perspecive Camera - An Interactive Tour](/2012/08/13/introduction/)."  In the last post, [we learned how to decompose the camera matrix](/2012/08/14/decompose/) into a product of intrinsic and extrinsic matrices.  In the next two posts, we'll explore the extrinsic and intrinsic matrices in greater detail.  First we'll explore various ways of looking at the extrinsic matrix, with an interactive demo at the end.
+Welcome to the third post in the series "[The Perspecive Camera - An Interactive Tour]({{site.baseurl}}/2012/08/13/introduction/)."  In the last post, [we learned how to decompose the camera matrix]({{site.baseurl}}/2012/08/14/decompose/) into a product of intrinsic and extrinsic matrices.  In the next two posts, we'll explore the extrinsic and intrinsic matrices in greater detail.  First we'll explore various ways of looking at the extrinsic matrix, with an interactive demo at the end.
 
 The Extrinsic Camera Matrix
 --------------------------------
@@ -210,10 +213,12 @@ This requires a WebGL-enabled browser with Javascript enabled.
 
 {% include cam_demo.html %}
 
+<br />
+
 Conclusion
 ---------
 We've just explored three different ways of parameterizing a camera's extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you're writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along \(t_z\) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren't sure which you prefer, play with the tool above and decide which approach feels the most natural.
 
-Join us next time when we explore the intrinsic matrix, and we'll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!
+Join us next time [when we explore the intrinsic matrix]({{site.baseurl}}/2013/08/13/intrinsic/), and we'll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!
 
 <br />

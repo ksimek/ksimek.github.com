@@ -3,6 +3,12 @@ ASAP:
 add canvas vs. webgl detector code
 license
 
+Linkback
+------------
+cross post from calcam article to 
+
+http://jamesgregson.blogspot.com/2011/11/matching-calibrated-cameras-with-opengl.html
+
 Camera demo:
 --------------
 
@@ -11,6 +17,19 @@ calcam to github
     reset on tab click?
 
 x_o y_o to p. point x, p.point y
+
+Intrinsic Camera
+----------
+Dissect into 2D transformations
+
+For each transform, describe
+    (a) image-based interpretation
+    (b) camera-based interpretation
+
+Demo
+    intrinsic-only
+
+
 
 
 finish Code page:
@@ -62,8 +81,4 @@ Quaternions
     drawbacks
     conversion from quaternion to Matrix, euler, rodriquez and back again (links to algorithms)
         Key value: list of conversion algorithms and conversion matrix
-
-
-
-
 

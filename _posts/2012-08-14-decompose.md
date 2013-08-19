@@ -3,6 +3,7 @@ layout: post
 title: "Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition"
 description: ""
 edit: "Edited June 2, 2013 - Fixed \"step 3\" and final equation."
+latex_math: true
 ---
 <div class="clearer"></div>
 <div class='context-img' style='width:320px'>
@@ -15,18 +16,18 @@ edit: "Edited June 2, 2013 - Fixed \"step 3\" and final equation."
 
 So, you've been playing around a new computer vision library, and you've managed to calibrate your camera...  now what do you do with it?  It would be a lot more useful if you could get at the camera's position or find out it's field-of view.  You crack open your trusty copy of [Hartley and Zisserman](http://www.robots.ox.ac.uk/~vgg/hzbook/), which tells you how to decompose your camera into an intrinsic and extrinsic matrix --- great! But when you look at the results, something isn't quite right.  Maybe your rotation matrix has a determinant of -1, causing your matrix-to-quaternion function to barf.  Maybe your focal-length is negative, and you can't understand why.  Maybe your translation vector mistakenly claims that the world origin in _behind_ the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don't see _anything_.  
 
-Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the parts of these matrices in more detail, and I'll cover how to convert them into a form usable by OpenGL.
+Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the [intrinsic]({{site.baseurl}}/2013/08/13/intrinsic/) and [extrinsic]({{site.baseurl}}/2012/08/22/extrinsic/) matrices in more detail, and I'll cover [how to convert them into a form usable by OpenGL]({{site.baseurl}}/2013/06/03/calibrated_cameras_in_opengl/).
 
 <!--more-->
 
-This is the second article in the series, "[The Perspective Camera, an Interactive Tour](/2012/08/13/introduction)."  To read other article in this series, head over to the [introduction page](/2012/08/13/introduction#toc).
+This is the second article in the series, "[The Perspective Camera, an Interactive Tour]({{site.baseurl}}/2012/08/13/introduction/)."  To read other article in this series, head over to the [introduction page]({{site.baseurl}}/2012/08/13/introduction/#toc).
 
 
 Prologue: Getting a Camera Matrix
 ----------------------------------
 I'll assume you've already obtained your camera matrix beforehand, but if you're looking for help with camera calibration, I recommend looking into the [Camera Calibration Toolbox for Matlab](http://www.vision.caltech.edu/bouguetj/calib_doc/).  OpenCV also seems to have [some useful routines](http://opencv.willowgarage.com/documentation/python/camera_calibration_and_3d_reconstruction.html) for automatic camera calibration from a sequences of chessboard images, although I haven't personally used them.  As usual, [Hartley and Zisserman's](http://www.robots.ox.ac.uk/~vgg/hzbook/) has a nice treatment of the topic.
 
-<h2>Cut 'em Up: Camera Decomposition <a href="http://www.break.com/usercontent/2006/10/21/mitch-hedberg-on-pringles-169072" class="huh">[?]</a></h2>
+<h2>Cut 'em Up: Camera Decomposition <a href="http://www.break.com/video/ugc/mitch-hedberg-on-pringles-169072" class="huh">[?]</a></h2>
 
 To start, we'll assume your camera matrix is 3x4, which transforms homogeneous 3D world coordinates to homogeneous 2D image coordinates.  Following Hartley and Zisserman, we'll denote the matrix as *P*, and occasionally it will be useful to use the block-form:
  
@@ -126,7 +127,7 @@ For example, consider a camera matrix that was calibrated with the origin in the
 
 Summary
 ---------
-The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or [email me](/contact.html).
+The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or [email me]({{site.baseurl}}/contact.html).
 
-In the next article, we'll [investigate the extrinsic matrix](/2012/08/22/extrinsic) in more detail, with interactive demos.
+In the next article, we'll [investigate the extrinsic matrix]({{site.baseurl}}/2012/08/22/extrinsic/) in more detail, with interactive demos.
 

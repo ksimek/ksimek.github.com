@@ -97,7 +97,7 @@ end # task :page
 
 desc "Launch preview environment"
 task :preview do
-  system "jekyll serve --watch --config _config.yml,_config_test.yml "
+  system "jekyll serve -d /tmp/cv_blog_preview/ --watch --config _config.yml,_config_test.yml "
 end # task :preview
 
 # Public: Alias - Maintains backwards compatability for theme switching.

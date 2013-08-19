@@ -2,7 +2,8 @@
 layout: post
 title: "Calibrated Cameras in OpenGL without glFrustum"
 description: ""
-edit: "Author's note: some of this content appeared on my old blog as \"<a href=\"http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/\">Simulating Calibrated Cameras in OpenGL</a>\", which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.<br/><strong>Update</strong> (June 18, 2013):  added negative signs to definitions of C' and D'."
+edit: "Author's note: some of this content appeared on my old blog as \"<a href=\"http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/\">Simulating Calibrated Cameras in OpenGL</a>\", which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.<br/><strong>Update</strong> (June 18, 2013):  added negative signs to definitions of C' and D'.<br /><strong>Update</strong> (August 19, 2013): James Gregson <a href=\"http://jamesgregson.blogspot.com/2011/11/matching-calibrated-cameras-with-opengl.html\">has posted an implementation in C++</a>.  I haven't tested it myself, but it looks quite nice."
+latex_math: true
 ---
 <div class="clearer"></div>
 <div class='context-img' style='width:317px'>
@@ -41,7 +42,7 @@ Step 1: Projective Transform
 
 Our 3x3 intrinsic camera matrix *K* needs two modifications before it's ready to use in OpenGL.  First, for proper clipping, the (3,3) element of *K* _must_ be -1. OpenGL's camera looks down the *negative* z-axis, so if \\(K_{33}\\) is positive, vertices in front of the camera will have a negative *w* coordinate after projection.  In principle, this is okay, but [because of how OpenGL performs clipping](http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix), all of these points will be clipped. 
 
-If \\(K_{33}\\) isn't -1, your intrinsic and extrinsic matrices need some modifications.  Getting the camera decomposition right isn't trivial, so I'll refer the reader to [my earlier article on camera decomposition](2012/08/14/decompose), which will walk you through the steps.   Part of the result will be the negation of the third column of the intrinsic matrix, so you'll see those elements negated below.
+If \\(K_{33}\\) isn't -1, your intrinsic and extrinsic matrices need some modifications.  Getting the camera decomposition right isn't trivial, so I'll refer the reader to [my earlier article on camera decomposition]({{site.baseurl}}/2012/08/14/decompose/), which will walk you through the steps.   Part of the result will be the negation of the third column of the intrinsic matrix, so you'll see those elements negated below.
 
 <div>\[ K = \left( \begin{array}{ccc} \alpha & s & -x_0 \\ 0 & \beta & -y_0  \\ 0 & 0 & -1 \end{array} \right) \]</div>
 
@@ -142,9 +143,9 @@ Thus, with a little massaging, <code>glFrustum</code> can simulate a general int
 The Extrinsic Matrix
 ----------------------
 
-The extrinsic matrix can be used as the modelview matrix without modification, just convert it to a 4x4 matrix by adding an extra row of *(0,0,0,1)*, and pass it to <code>glLoadMatrix</code> or send it to your shader.    If lighting or back-face culling are acting strangely, it's likely that your rotation matrix has a determinant of -1.  This results in the geometry rendering in the right place, but with normal-vectors reversed so your scene is inside-out.  The [previous article on camera decomposition](2012/08/14/decompose) should help you prevent this.
+The extrinsic matrix can be used as the modelview matrix without modification, just convert it to a 4x4 matrix by adding an extra row of *(0,0,0,1)*, and pass it to <code>glLoadMatrix</code> or send it to your shader.    If lighting or back-face culling are acting strangely, it's likely that your rotation matrix has a determinant of -1.  This results in the geometry rendering in the right place, but with normal-vectors reversed so your scene is inside-out.  The [previous article on camera decomposition]({{site.baseurl}}/2012/08/14/decompose/) should help you prevent this.
 
-Alternatively, you can convert your rotation matrix to axis-angle form and use <code>glRotate</code>.  Remember that the fourth column of the extrinsic matrix is the translation *after* rotating, so your call to <code>glTranslate</code> should come *before* <code>glRotate</code>.  Check out [this previous article](2012/08/22/extrinsic) for a longer discussion of the extrinsic matrix, including how to it with <code>glLookAt</code>.
+Alternatively, you can convert your rotation matrix to axis-angle form and use <code>glRotate</code>.  Remember that the fourth column of the extrinsic matrix is the translation *after* rotating, so your call to <code>glTranslate</code> should come *before* <code>glRotate</code>.  Check out [this previous article]({{site.baseurl}}/2012/08/22/extrinsic/) for a longer discussion of the extrinsic matrix, including how to it with <code>glLookAt</code>.
 
 
 Conclusion

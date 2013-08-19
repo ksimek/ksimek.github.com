@@ -30,15 +30,23 @@ body {
 
 /* Hack via Joel Spolsky to make image rescaling nicer in IE */
 img { -ms-interpolation-mode:bicubic; }
+.article img {
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
 
 /* IE6 ignores this and uses default size of 16pt */
 p { margin: 1.5em 0 1.5em 0; }
 
-a { text-decoration: none; color: #339; }
-a:hover { text-decoration: underline; color: #33f; }
+a { text-decoration: none; color: #0645ad; }
+a:visited { color: #0645ad; }
+a:hover { text-decoration: underline;  }
+/*
 a.pdf:before { 
 	margin-right: 1em;
 	content: url(/files/css/icon_pdf.gif); }
+*/
 
 h1,h2,h3,h4 { 
 	line-height:1em; 
