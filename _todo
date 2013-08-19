@@ -1,59 +1,25 @@
 ASAP:
 ----------
-add canvas vs. webgl detector code
 license
 
-Linkback
-------------
-cross post from calcam article to 
 
-http://jamesgregson.blogspot.com/2011/11/matching-calibrated-cameras-with-opengl.html
 
-Camera demo:
+Resources page
 --------------
-
-calcam to github
-"Reset" button
-    reset on tab click?
-
-x_o y_o to p. point x, p.point y
-
-Intrinsic Camera
-----------
-Dissect into 2D transformations
-
-For each transform, describe
-    (a) image-based interpretation
-    (b) camera-based interpretation
-
-Demo
-    intrinsic-only
-
-
+Create a page for open-source / CC resources
+    pinhole camera AI 
+    calcam script
 
 
 finish Code page:
 ------------
 ergo
-release cudcvt
-release three.js
 
 
-About page:
--------------
-Monome
-ninbento
-hard drive scratcher
-
-
-ALL:
-------
-Check all links
 
 
 New posts:
 ------------
-Intrinsic as 2D transformation
 
 Head tracking
 

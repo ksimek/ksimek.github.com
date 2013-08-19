@@ -7,6 +7,7 @@ tags: []
 latex_math: true
 jquery_ui: true
 three_js: true
+edit:  "Author's note: the source file for all of this post's diagrams <a href=\"/pinhole_camera_diagram/\">is available under a creative commons license</a>.  Please feel free to modify and share!"
 ---
 
 {% include JB/setup %}
@@ -386,6 +387,7 @@ We summarize this full decomposition below.
 To see all of these transformations in action, head over to my [Perpective Camera Toy]({{site.baseurl}}/perspective_camera_toy.html) page for an interactive demo of the full perspective camera.
 
 Do you have other ways of interpreting the intrinsic camera matrix?   Leave a comment or [drop me a line]({{site.baseurl}}/contact.html)!
+
 
 Next time, we'll show how to prepare your calibrated camera to generate stereo image pairs.  See you then!
 
