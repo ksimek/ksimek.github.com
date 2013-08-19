@@ -23,7 +23,7 @@
    <link rel="stylesheet" href="/assets/themes/mark-reid/css/syntax.css" type="text/css" />
 
    <!-- Jquery UI CSS --!>
-   <link media="screen" rel="stylesheet" href="/css/ui-smoothness/jquery-ui-1.8.22.custom.css" type="text/css" />
+	
 
    <!-- Homepage CSS -->
    <link media="screen" rel="stylesheet" href="/assets/themes/mark-reid/css/screen.css" type="text/css" />
@@ -37,22 +37,19 @@
 <![endif]-->
 
    <!-- Mathjax Javascript -->
+
+	
    <script type="text/javascript"
      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
    </script>
+    
 
    <!-- three.js Javascript -->
-    <script src="/js/jquery.js"></script>
-    <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <script src="/js/Detector.js"></script>
-    <script src="/js/Three.js"></script>
-    <script src="/js/calcam.js"></script>
+	
+	
+	
 
-    <script type="text/javascript">
-        $(document).ready(function(){
-                $('#javascript_error').hide();
-        });
-    </script>
+	
 
 </head>
 <body id="">
@@ -84,7 +81,7 @@
   <div class="date emphnext">June 03, 2013</div>
     
     <div class="edit-disclosure">
-    Author's note: some of this content appeared on my old blog as "<a href="http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/">Simulating Calibrated Cameras in OpenGL</a>", which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.<br/><strong>Update</strong> (June 18, 2013):  added negative signs to definitions of C' and D'.
+    Author's note: some of this content appeared on my old blog as "<a href="http://sightations.wordpress.com/2010/08/03/simulating-calibrated-cameras-in-opengl/">Simulating Calibrated Cameras in OpenGL</a>", which contained some errors and missing equations and suffered from general badness.  I hope you'll find this version to be less terrible.<br/><strong>Update</strong> (June 18, 2013):  added negative signs to definitions of C' and D'.<br /><strong>Update</strong> (August 19, 2013): James Gregson <a href="http://jamesgregson.blogspot.com/2011/11/matching-calibrated-cameras-with-opengl.html">has posted an implementation in C++</a>.  I haven't tested it myself, but it looks quite nice.
     </div>
     
 
@@ -129,7 +126,7 @@
 
 <p>Our 3x3 intrinsic camera matrix <em>K</em> needs two modifications before it's ready to use in OpenGL.  First, for proper clipping, the (3,3) element of <em>K</em> <em>must</em> be -1. OpenGL's camera looks down the <em>negative</em> z-axis, so if \(K_{33}\) is positive, vertices in front of the camera will have a negative <em>w</em> coordinate after projection.  In principle, this is okay, but <a href="http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix">because of how OpenGL performs clipping</a>, all of these points will be clipped.</p>
 
-<p>If \(K_{33}\) isn't -1, your intrinsic and extrinsic matrices need some modifications.  Getting the camera decomposition right isn't trivial, so I'll refer the reader to <a href="2012/08/14/decompose">my earlier article on camera decomposition</a>, which will walk you through the steps.   Part of the result will be the negation of the third column of the intrinsic matrix, so you'll see those elements negated below.</p>
+<p>If \(K_{33}\) isn't -1, your intrinsic and extrinsic matrices need some modifications.  Getting the camera decomposition right isn't trivial, so I'll refer the reader to <a href="/2012/08/14/decompose/">my earlier article on camera decomposition</a>, which will walk you through the steps.   Part of the result will be the negation of the third column of the intrinsic matrix, so you'll see those elements negated below.</p>
 
 <div>\[ K = \left( \begin{array}{ccc} \alpha & s & -x_0 \\ 0 & \beta & -y_0  \\ 0 & 0 & -1 \end{array} \right) \]</div>
 
@@ -238,9 +235,9 @@ D' &= -\frac{2 \; far \; near}{far - near}  \\
 
 <h2>The Extrinsic Matrix</h2>
 
-<p>The extrinsic matrix can be used as the modelview matrix without modification, just convert it to a 4x4 matrix by adding an extra row of <em>(0,0,0,1)</em>, and pass it to <code>glLoadMatrix</code> or send it to your shader.    If lighting or back-face culling are acting strangely, it's likely that your rotation matrix has a determinant of -1.  This results in the geometry rendering in the right place, but with normal-vectors reversed so your scene is inside-out.  The <a href="2012/08/14/decompose">previous article on camera decomposition</a> should help you prevent this.</p>
+<p>The extrinsic matrix can be used as the modelview matrix without modification, just convert it to a 4x4 matrix by adding an extra row of <em>(0,0,0,1)</em>, and pass it to <code>glLoadMatrix</code> or send it to your shader.    If lighting or back-face culling are acting strangely, it's likely that your rotation matrix has a determinant of -1.  This results in the geometry rendering in the right place, but with normal-vectors reversed so your scene is inside-out.  The <a href="/2012/08/14/decompose/">previous article on camera decomposition</a> should help you prevent this.</p>
 
-<p>Alternatively, you can convert your rotation matrix to axis-angle form and use <code>glRotate</code>.  Remember that the fourth column of the extrinsic matrix is the translation <em>after</em> rotating, so your call to <code>glTranslate</code> should come <em>before</em> <code>glRotate</code>.  Check out <a href="2012/08/22/extrinsic">this previous article</a> for a longer discussion of the extrinsic matrix, including how to it with <code>glLookAt</code>.</p>
+<p>Alternatively, you can convert your rotation matrix to axis-angle form and use <code>glRotate</code>.  Remember that the fourth column of the extrinsic matrix is the translation <em>after</em> rotating, so your call to <code>glTranslate</code> should come <em>before</em> <code>glRotate</code>.  Check out <a href="/2012/08/22/extrinsic/">this previous article</a> for a longer discussion of the extrinsic matrix, including how to it with <code>glLookAt</code>.</p>
 
 <h2>Conclusion</h2>
 
@@ -256,10 +253,10 @@ D' &= -\frac{2 \; far \; near}{far - near}  \\
   
   <div class="prev-next">
   
-    <a href="/2013/06/18/calibrated-cameras-and-gluperspective" class="next" title="Calibrated Cameras and gluPerspective">Calibrated Cameras and gluPerspective &rarr;</a>
+    <a href="/2013/06/18/calibrated-cameras-and-gluperspective/" class="next" title="Calibrated Cameras and gluPerspective">Calibrated Cameras and gluPerspective &rarr;</a>
   
   
-    <a href="/2012/08/22/extrinsic" class="prev" title="Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix">&larr; Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</a>
+    <a href="/2012/08/22/extrinsic/" class="prev" title="Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix">&larr; Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</a>
   
   </div>
   <div class="clearer"> </div>
@@ -378,7 +375,7 @@ D' &= -\frac{2 \; far \; near}{far - near}  \\
   			(<a rel="licence" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Some rights reserved</a>)			
   		</span>
   		<span class="engine">
-  			Powered by <a href="http://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
+  			Powered by <a href="https://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
   		</span>
   	</address>
   </div>

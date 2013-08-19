@@ -23,7 +23,9 @@
    <link rel="stylesheet" href="/assets/themes/mark-reid/css/syntax.css" type="text/css" />
 
    <!-- Jquery UI CSS --!>
+	
    <link media="screen" rel="stylesheet" href="/css/ui-smoothness/jquery-ui-1.8.22.custom.css" type="text/css" />
+	
 
    <!-- Homepage CSS -->
    <link media="screen" rel="stylesheet" href="/assets/themes/mark-reid/css/screen.css" type="text/css" />
@@ -37,22 +39,33 @@
 <![endif]-->
 
    <!-- Mathjax Javascript -->
+
+	
    <script type="text/javascript"
      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
    </script>
+    
 
    <!-- three.js Javascript -->
+	
     <script src="/js/jquery.js"></script>
+	
+	
     <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+	
+	
     <script src="/js/Detector.js"></script>
     <script src="/js/Three.js"></script>
     <script src="/js/calcam.js"></script>
+    
 
+	
     <script type="text/javascript">
         $(document).ready(function(){
                 $('#javascript_error').hide();
         });
     </script>
+    
 
 </head>
 <body id="">
@@ -570,11 +583,16 @@ s_3 & u_3' & -L_3
 </div>
 
 
+
+
+<br />
+
+
 <h2>Conclusion</h2>
 
 <p>We've just explored three different ways of parameterizing a camera's extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you're writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along (t_z) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren't sure which you prefer, play with the tool above and decide which approach feels the most natural.</p>
 
-<p>Join us next time when we explore the intrinsic matrix, and we'll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!</p>
+<p>Join us next time <a href="/2013/08/13/intrinsic/">when we explore the intrinsic matrix</a>, and we'll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!</p>
 
 <br />
 
@@ -589,10 +607,10 @@ s_3 & u_3' & -L_3
   
   <div class="prev-next">
   
-    <a href="/2013/06/03/calibrated_cameras_in_opengl" class="next" title="Calibrated Cameras in OpenGL without glFrustum">Calibrated Cameras in OpenGL without glFrustum &rarr;</a>
+    <a href="/2013/06/03/calibrated_cameras_in_opengl/" class="next" title="Calibrated Cameras in OpenGL without glFrustum">Calibrated Cameras in OpenGL without glFrustum &rarr;</a>
   
   
-    <a href="/2012/08/14/decompose" class="prev" title="Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition">&larr; Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition</a>
+    <a href="/2012/08/14/decompose/" class="prev" title="Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition">&larr; Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition</a>
   
   </div>
   <div class="clearer"> </div>
@@ -711,7 +729,7 @@ s_3 & u_3' & -L_3
   			(<a rel="licence" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Some rights reserved</a>)			
   		</span>
   		<span class="engine">
-  			Powered by <a href="http://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
+  			Powered by <a href="https://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
   		</span>
   	</address>
   </div>

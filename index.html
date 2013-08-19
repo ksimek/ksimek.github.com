@@ -23,7 +23,7 @@
    <link rel="stylesheet" href="/assets/themes/mark-reid/css/syntax.css" type="text/css" />
 
    <!-- Jquery UI CSS --!>
-   <link media="screen" rel="stylesheet" href="/css/ui-smoothness/jquery-ui-1.8.22.custom.css" type="text/css" />
+	
 
    <!-- Homepage CSS -->
    <link media="screen" rel="stylesheet" href="/assets/themes/mark-reid/css/screen.css" type="text/css" />
@@ -37,22 +37,15 @@
 <![endif]-->
 
    <!-- Mathjax Javascript -->
-   <script type="text/javascript"
-     src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-   </script>
+
+	
 
    <!-- three.js Javascript -->
-    <script src="/js/jquery.js"></script>
-    <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
-    <script src="/js/Detector.js"></script>
-    <script src="/js/Three.js"></script>
-    <script src="/js/calcam.js"></script>
+	
+	
+	
 
-    <script type="text/javascript">
-        $(document).ready(function(){
-                $('#javascript_error').hide();
-        });
-    </script>
+	
 
 </head>
 <body id="">
@@ -83,7 +76,47 @@
     
     
     
-  <a class="title-link" href="/2013/06/18/calibrated-cameras-and-gluperspective">
+  <a class="title-link" href="/2013/08/13/intrinsic/">
+  <h1 class="title">Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix</h1>
+  </a>
+
+  <div class="date emphnext">August 13, 2013</div>
+    
+
+
+  
+    
+
+<div class="clearer"></div>
+
+
+<div class='context-img' style='width:320px'>
+<img src='/img/kodak-camera.jpg' />
+<div class='caption'>
+<div class='credit'><a href="http://www.flickr.com/photos/alhazen/8587124359/">Credit: Dave6163 (via Flickr)</a></div>
+</div>
+</div>
+
+
+<p>Today we'll study the intrinsic camera matrix in our third and final chapter in the trilogy "Dissecting the Camera Matrix."  In <a href="/2012/08/14/decompose/">the first article</a>, we learned how to split the full camera matrix into the intrinsic and extrinsic matrices and how to properly handle ambiguities that arise in that process.  The <a href="/2012/08/22/extrinsic/">second article</a> examined the extrinsic matrix in greater detail, looking into several different interpretations of its 3D rotations and translations.   Today we'll give the same treatment to the intrinsic matrix, examining two equivalent interpretations: as a description of the virtual camera's geometry and as a sequence of simple 2D transformations.   Afterward, you'll see an interactive demo illustrating both interpretations.</p>
+
+<p>If you're not interested in delving into the theory and just want to use your intrinsic matrix with OpenGL, check out the articles <a href="/2013/06/03/calibrated_cameras_in_opengl/">Calibrated Cameras in OpenGL without glFrustum</a> and <a href="/2013/06/18/calibrated-cameras-and-gluperspective/">Calibrated Cameras and gluPerspective</a>.</p>
+
+<p>All of these articles are part of the series "<a href="/2012/08/13/introduction/">The Perspective Camera, an Interactive Tour</a>."  To read the other entries in the series, <a href="/2012/08/13/introduction/#toc">head over to the table of contents</a>.</p>
+
+
+    <p> <a href="/2013/08/13/intrinsic//#more" class="more-link"><span class="readmore">more...</span></a></p>
+  
+
+
+</div>
+
+<div class="firehose-post article">
+    
+    
+    
+    
+  <a class="title-link" href="/2013/06/18/calibrated-cameras-and-gluperspective/">
   <h1 class="title">Calibrated Cameras and gluPerspective</h1>
   </a>
 
@@ -95,7 +128,7 @@
     <p>After posting my last article <a href="/2013/06/03/calibrated_cameras_in_opengl/">relating glFrustum to the intrinsic camera matrix</a>, I receieved some emails asking how the (now deprecated) <a href="http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluPerspective.htm">gluPerspective</a> function relates to the intrinsic matrix.  We can show a similar result with <code>gluPerspective</code> as we did with <code>glFrustum</code>, namely that it is the product of a <code>glOrtho</code> matrix and a (modified) intrinsic camera matrix, but in this case the intrinsic matrix has different constraints.  I'll be re-using notation and concepts from the previous article, so if you aren't familiar with them, I recommend reading it first.</p>
 
 
-    <p> <a href="/2013/06/18/calibrated-cameras-and-gluperspective/#more" class="more-link"><span class="readmore">more...</span></a></p>
+    <p> <a href="/2013/06/18/calibrated-cameras-and-gluperspective//#more" class="more-link"><span class="readmore">more...</span></a></p>
   
 
 
@@ -106,7 +139,7 @@
     
     
     
-  <a class="title-link" href="/2013/06/03/calibrated_cameras_in_opengl">
+  <a class="title-link" href="/2013/06/03/calibrated_cameras_in_opengl/">
   <h1 class="title">Calibrated Cameras in OpenGL without glFrustum</h1>
   </a>
 
@@ -139,7 +172,7 @@
 <p>While this is true, it only tells half of the story.</p>
 
 
-    <p> <a href="/2013/06/03/calibrated_cameras_in_opengl/#more" class="more-link"><span class="readmore">more...</span></a></p>
+    <p> <a href="/2013/06/03/calibrated_cameras_in_opengl//#more" class="more-link"><span class="readmore">more...</span></a></p>
   
 
 
@@ -150,7 +183,7 @@
     
     
     
-  <a class="title-link" href="/2012/08/22/extrinsic">
+  <a class="title-link" href="/2012/08/22/extrinsic/">
   <h1 class="title">Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</h1>
   </a>
 
@@ -166,7 +199,7 @@
 <p>The camera's extrinsic matrix describes the camera's location in the world, and what direction it's pointing.  Those familiar with OpenGL know this as the "view matrix" (or rolled into the "modelview matrix").  It has two components: a rotation matrix, <em>R</em>, and a translation vector <strong><em>t</em></strong>, but as we'll soon see, these don't exactly correspond to the camera's rotation and translation.  First we'll examine the parts of the extrinsic matrix, and later we'll look at alternative ways of describing the camera's pose that are more intuitive.</p>
 
 
-    <p> <a href="/2012/08/22/extrinsic/#more" class="more-link"><span class="readmore">more...</span></a></p>
+    <p> <a href="/2012/08/22/extrinsic//#more" class="more-link"><span class="readmore">more...</span></a></p>
   
 
 
@@ -177,7 +210,7 @@
     
     
     
-  <a class="title-link" href="/2012/08/14/decompose">
+  <a class="title-link" href="/2012/08/14/decompose/">
   <h1 class="title">Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition</h1>
   </a>
 
@@ -199,61 +232,10 @@
 
 <p>So, you've been playing around a new computer vision library, and you've managed to calibrate your camera...  now what do you do with it?  It would be a lot more useful if you could get at the camera's position or find out it's field-of view.  You crack open your trusty copy of <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Hartley and Zisserman</a>, which tells you how to decompose your camera into an intrinsic and extrinsic matrix --- great! But when you look at the results, something isn't quite right.  Maybe your rotation matrix has a determinant of -1, causing your matrix-to-quaternion function to barf.  Maybe your focal-length is negative, and you can't understand why.  Maybe your translation vector mistakenly claims that the world origin in <em>behind</em> the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don't see <em>anything</em>.</p>
 
-<p>Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the parts of these matrices in more detail, and I'll cover how to convert them into a form usable by OpenGL.</p>
+<p>Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the <a href="/2013/08/13/intrinsic/">intrinsic</a> and <a href="/2012/08/22/extrinsic/">extrinsic</a> matrices in more detail, and I'll cover <a href="/2013/06/03/calibrated_cameras_in_opengl/">how to convert them into a form usable by OpenGL</a>.</p>
 
 
-    <p> <a href="/2012/08/14/decompose/#more" class="more-link"><span class="readmore">more...</span></a></p>
-  
-
-
-</div>
-
-<div class="firehose-post article">
-    
-    
-    
-    
-  <a class="title-link" href="/2012/08/13/introduction">
-  <h1 class="title">The Perspective Camera - An Interactive Tour</h1>
-  </a>
-
-  <div class="date emphnext">August 13, 2012</div>
-    
-
-
-  
-    <div class='context-img' style='width:350px'>
-<img src='/img/1st_and_ten.jpg' />
-<div class='caption'>The "1st and Ten" system, one of the first successful applications of augmented reality in sports.
-<div class='credit'><a href="http://www.howstuffworks.com/first-down-line.htm">howstuffworks.com</a></div>
-</div>
-</div>
-
-
-<p>On September 27, 1998 a yellow line appeared across the gridiron during an otherwise ordinary football game between the Cincinnati Bengals and the Baltimore Ravens.  It had been added by a computer that analyzed the camera's position and the shape of the ground in real-time in order to overlay thin yellow strip onto the field.  The line marked marked the position of the next first-down, but it also marked the beginning of a new era of computer vision in live sports, from <a href="http://www.youtube.com/watch?v=p-y7N-giirQ">computerized pitch analysis</a> in baseball to <a href="http://www.youtube.com/watch?v=Cgeb61VIKvo">automatic line-refs</a> in tennis.</p>
-
-<p>In 2006, researchers from Microsoft and the University of Washington <a href="http://www.youtube.com/watch?v=IgBQCoEfiMs">automatically constructed a 3D tour of the Trevi Fountain in Rome</a> using only images obtained by searching Flickr for "trevi AND rome."</p>
-
-<p>In 2007, Carnegie Mellon PhD student Johnny Lee <a href="http://www.youtube.com/watch?v=Jd3-eiid-Uw">hacked a $40 Nintento Wii-mote</a> into an impressive head-tracking virtual reality interface.</p>
-
-<p>In 2010, <a href="http://en.wikipedia.org/wiki/Kinect">Microsoft released the Kinect</a>, a consumer stereo camera that rivaled the functionality of competitors sold for ten times its price, which continues to disrupt the worlds of both gaming and computer vision.</p>
-
-<p>What do all of these technologies have in common?  They all require a precise understanding of how the pixels in a 2D image relate to the 3D world they represent.  In other words, they all hinge on a strong camera model.  This is the first in a series of articles that explores one of the most important camera models in computer vision: the pinhole perspective camera.  We'll start by deconstructing the perspective camera to show how each of its parts affect the rendering of a 3D scene.  Next, we'll describe how to import your calibrated camera into OpenGL to render virtual objects into a real image.  Finally, we'll show how to use your perspective camera to implement rendering in a virtual-reality system, complete with stereo rendering and head-tracking.</p>
-
-<div class='context-img' style='width:180px'>
-    <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">
-    <img src='/img/h_and_z.jpg' />
-    </a>
-    <div class='caption'>
-        These articles won't cover everything.  This book does.
-    </div>
-</div>
-
-
-<p>This series of articles is intended as a supplement to a more rigorous treatment available in several excellent textbooks.  I will focus on providing what textbooks generally don't provide: interactive demos, runnable code, and practical advice on implementation.    I will assume the reader has a basic understanding of 3D graphics and OpenGL, as well as some background in computer vision.  In other words, if you've never heard of homogeneous coordinates or a camera matrix, you might want to start with an introductory book on computer vision.  I highly recommend <a href="http://www.amazon.com/Multiple-View-Geometry-Computer-Vision/dp/0521540518/ref=sr_1_fkmr1_1?ie=UTF8&amp;qid=1343611611&amp;sr=8-1-fkmr1&amp;keywords=harley+and+zisserman">Multiple View Geometry in Computer Vision</a> by Hartley and Zisserman, from which I borrow mathematical notation and conventions (e.g. column vectors, right-handed coordinates, etc.)</p>
-
-
-    <p> <a href="/2012/08/13/introduction/#more" class="more-link"><span class="readmore">more...</span></a></p>
+    <p> <a href="/2012/08/14/decompose//#more" class="more-link"><span class="readmore">more...</span></a></p>
   
 
 
@@ -264,6 +246,8 @@
 <div class="pagination">
   
   
+  
+    <a href="/page2" class="next ">Read Older Posts &gt;&gt;</a>
   
 </div>
 
@@ -281,7 +265,7 @@
   			(<a rel="licence" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Some rights reserved</a>)			
   		</span>
   		<span class="engine">
-  			Powered by <a href="http://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
+  			Powered by <a href="https://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
   		</span>
   	</address>
   </div>

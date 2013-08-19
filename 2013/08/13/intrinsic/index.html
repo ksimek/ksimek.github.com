@@ -1,0 +1,672 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <title>Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix &larr; </title>
+   <meta name="author" content="Kyle Simek" />
+
+   <link rel="start" href="/" />
+
+	
+	
+    <link rel="shortcut icon" href="/favicon.ico">
+
+	
+  	<link rel="alternate" type="application/atom+xml" href="http://feeds.feedburner.com/sightations" title="RSS feed" />
+	
+	
+
+   <!-- syntax highlighting CSS -->
+   <link rel="stylesheet" href="/assets/themes/mark-reid/css/syntax.css" type="text/css" />
+
+   <!-- Jquery UI CSS --!>
+	
+   <link media="screen" rel="stylesheet" href="/css/ui-smoothness/jquery-ui-1.8.22.custom.css" type="text/css" />
+	
+
+   <!-- Homepage CSS -->
+   <link media="screen" rel="stylesheet" href="/assets/themes/mark-reid/css/screen.css" type="text/css" />
+
+   <!-- Handheld CSS -->
+   <link media="handheld, only screen and (max-width: 480px), only screen and (max-device-width: 480px)" href="/assets/themes/mark-reid/css/handheld.css" type="text/css" rel="stylesheet" />
+
+
+<!--[if IEMobile]>
+<link rel="stylesheet" type="text/css" href="/assets/themes/mark-reid/css/handheld.css" media="screen" />
+<![endif]-->
+
+   <!-- Mathjax Javascript -->
+
+	
+   <script type="text/javascript"
+     src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+   </script>
+    
+
+   <!-- three.js Javascript -->
+	
+    <script src="/js/jquery.js"></script>
+	
+	
+    <script src="/js/jquery-ui-1.8.22.custom.min.js"></script>
+	
+	
+    <script src="/js/Detector.js"></script>
+    <script src="/js/Three.js"></script>
+    <script src="/js/calcam.js"></script>
+    
+
+	
+    <script type="text/javascript">
+        $(document).ready(function(){
+                $('#javascript_error').hide();
+        });
+    </script>
+    
+
+</head>
+<body id="">
+<div id="site">
+  
+  <div id="header">
+    <h1>
+    	<a href="/" title="Sightations">Sightations</a>
+    	<span class="byline">&larr; <a href="/">A Computer Vision Blog</a></span>
+    </h1>
+    <ul class="nav">
+      <li><a class="home" href="/">Home</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/code.html">Code</a></li>
+      <li><a  href="/archive.html">Archive</a></li>
+      <li><a  href="/feeds.html"><img src="/img/feed-icon.gif" /></a></li> 
+
+    </ul>
+  </div>
+
+  
+<div id="page" class="article">
+	
+  
+  
+  <h1 class="title">Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix</h1>
+
+  <div class="date emphnext">August 13, 2013</div>
+    
+
+
+  
+    
+
+<div class="clearer"></div>
+
+
+<div class='context-img' style='width:320px'>
+<img src='/img/kodak-camera.jpg' />
+<div class='caption'>
+<div class='credit'><a href="http://www.flickr.com/photos/alhazen/8587124359/">Credit: Dave6163 (via Flickr)</a></div>
+</div>
+</div>
+
+
+<p>Today we'll study the intrinsic camera matrix in our third and final chapter in the trilogy "Dissecting the Camera Matrix."  In <a href="/2012/08/14/decompose/">the first article</a>, we learned how to split the full camera matrix into the intrinsic and extrinsic matrices and how to properly handle ambiguities that arise in that process.  The <a href="/2012/08/22/extrinsic/">second article</a> examined the extrinsic matrix in greater detail, looking into several different interpretations of its 3D rotations and translations.   Today we'll give the same treatment to the intrinsic matrix, examining two equivalent interpretations: as a description of the virtual camera's geometry and as a sequence of simple 2D transformations.   Afterward, you'll see an interactive demo illustrating both interpretations.</p>
+
+<p>If you're not interested in delving into the theory and just want to use your intrinsic matrix with OpenGL, check out the articles <a href="/2013/06/03/calibrated_cameras_in_opengl/">Calibrated Cameras in OpenGL without glFrustum</a> and <a href="/2013/06/18/calibrated-cameras-and-gluperspective/">Calibrated Cameras and gluPerspective</a>.</p>
+
+<p>All of these articles are part of the series "<a href="/2012/08/13/introduction/">The Perspective Camera, an Interactive Tour</a>."  To read the other entries in the series, <a href="/2012/08/13/introduction/#toc">head over to the table of contents</a>.</p>
+
+<p><span id="more"></span></p>
+
+
+<h1>The Pinhole Camera</h1>
+
+<p>The intrinsic matrix transforms 3D camera cooordinates to 2D homogeneous image coordinates.  This perspective projection is modeled by the ideal pinhole camera, illustrated below.</p>
+
+<p><img src="/img/intrinsic-pinhole-camera.png" alt="pinhole camera" /></p>
+
+<p>The intrinsic matrix is parameterized by <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Hartley and Zisserman</a> as</p>
+
+<div>
+    \[
+    K = \left ( 
+                \begin{array}{ c c c}
+                f_x & s   & x_0 \\
+                 0  & f_y & y_0 \\
+                 0  & 0   & 1 \\
+                \end{array}
+            \right ) 
+    \]
+</div>
+
+
+<p>Each intrinsic parameter describes a geometric property of the camera.  Let's examine each of these properties in detail.</p>
+
+<h2>Focal Length, \(f_x\), \(f_y\)</h2>
+
+<p>The focal length is the distance between the pinhole and the film (a.k.a. image plane).  For reasons we'll discuss later, the focal length is measured in pixels.  In a true pinhole camera, both \(f_x\) and \(f_y\) have the same value, which is illustrated as \(f\) below.</p>
+
+<p><img src="/img/intrinsic-focal-length.png" alt="focal length" /></p>
+
+<p>In practice, \(f_x\) and \(f_y\) can differ for a number of reasons:</p>
+
+<ul>
+<li>Flaws in the digital camera sensor.</li>
+<li>The image has been non-uniformly scaled in post-processing.</li>
+<li>The camera's lens introduces unintentional distortion.</li>
+<li>The camera uses an <a href="http://en.wikipedia.org/wiki/Anamorphic_format">anamorphic format</a>, where the lens compresses a widescreen scene into a standard-sized sensor.</li>
+<li>Errors in camera calibration.</li>
+</ul>
+
+
+<p>In all of these cases, the resulting image has non-square pixels.</p>
+
+<p>Having two different focal lengths isn't terribly intuitive, so some texts (e.g. <a href="http://luthuli.cs.uiuc.edu/~daf/book/book.html">Forsyth and Ponce</a>) use a single focal length and an "aspect ratio" that describes the amount of deviation from a perfectly square pixel. Such a parameterization nicely separates the camera geometry (i.e. focal length) from distortion (aspect ratio).</p>
+
+<h2>Principal Point Offset, \(x_0\), \(y_0\)</h2>
+
+<p>The camera's "principal axis" is the line perpendicular to the image plane that passes through the pinhole.  Its itersection with the image plane is referred to as the "principal point," illustrated below.</p>
+
+<p><img src="/img/intrinsic-pp.png" alt="Principal point and principal axis" /></p>
+
+<p>The "principal point offset" is the location of the principal point relative to the film's origin.  The exact definition depends on which convention is used for the location of the origin; the illustration below assumes it's at the bottom-left of the film.</p>
+
+<p><img src="/img/intrinsic-pp-offset.png" alt="Principal point offset" /></p>
+
+<p>Increasing \(x_0\) shifts the pinhole to the right:</p>
+
+<p><img src="/img/intrinsic-pp-offset-delta-alt.png" alt="Principal point offset, pinhole shifted right" /></p>
+
+<p>This is equivalent to shifting the film to the left and leaving the pinhole unchanged.</p>
+
+<p><img src="/img/intrinsic-pp-offset-delta.png" alt="Principal point offset, film shifted left" /></p>
+
+<p>Notice that the box surrounding the camera is irrelevant, only the pinhole's position relative to the film matters.</p>
+
+<h2>Axis Skew, \(s\)</h2>
+
+<p>Axis skew causes shear distortion in the projected image.  As far as I know, there isn't any analogue to axis skew a true pinhole camera, but <a href="http://www.epixea.com/research/multi-view-coding-thesisse8.html#x13-320002.2.1">apparently some digitization processes can cause nonzero skew</a>.  We'll examine skew more later.</p>
+
+<h2>Other Geometric Properties</h2>
+
+<p>The focal length and principal point offset amount to simple translations of the film relative to the pinhole.  There must be other ways to transform the camera, right?  What about rotating or scaling the film?</p>
+
+<p>Rotating the film around the pinhole is equivalent to rotating the camera itself, which is handled by the <a href="/2012/08/22/extrinsic/">extrinsic matrix</a>.  Rotating the film around any other fixed point \(x\) is equivalent to rotating around the pinhole \(P\), then translating by \((x-P)\).</p>
+
+<p>What about scaling? It should be obvious that doubling all camera dimensions (film size and focal length) has no effect on the captured scene.  If instead, you double the film size and <em>not</em> the focal length, it is equivalent to doubling both (a no-op) and then halving the focal length.  Thus, representing the film's scale explicitly would be redundant; it is captured by the focal length.</p>
+
+<h2>Focal Length - From Pixels to World Units</h2>
+
+<p>This discussion of camera-scaling shows that there are an infinite number of pinhole cameras that produce the same image.  The intrinsic matrix is only concerned with the relationship between camera coordinates and image coordinates, so the absolute camera dimensions are irrelevant.  Using pixel units for focal length and principal point offset allows us to represent the relative dimensions of the camera, namely, the film's position relative to its size in pixels.</p>
+
+<p>Another way to say this is that the intrinsic camera transformation is invariant to uniform scaling of the camera geometry.   By representing dimensions in pixel units, we naturally capture this invariance.</p>
+
+<p>You can use similar triangles to convert pixel units to world units (e.g. mm) if you know at least one camera dimension in world units.  For example, if you know the camera's film (or digital sensor) has a width \(W\) in millimiters, and the image width in pixels is \(w\), you can convert the focal length \(f_x\) to world units using:</p>
+
+<div> \[ F_x = f_x  \frac{W}{w} \] </div>
+
+
+<p>Other parameters \(f_y\), \(x_0\), and \(y_0\) can be converted to their world-unit counterparts \(F_y\), \(X_0\), and \(Y_0\) using similar equations:</p>
+
+<div> \[
+\begin{array}{ccc}
+F_y = f_y  \frac{H}{h} \qquad
+X_0 = x_0  \frac{W}{w} \qquad
+Y_0 = y_0  \frac{H}{h} 
+\end{array}
+\] </div>
+
+
+<h1>The Camera Frustum - A Pinhole Camera Made Simple</h1>
+
+<p>As we discussed earlier, only the arrangement of the pinhole and the film matter, so the physical box surrounding the camera is irrelevant.  For this reason, many discussion of camera geometry use a simpler visual representation: the camera frustum.</p>
+
+<p>The camera's viewable region is pyramid shaped, and is sometimes called the "visibility cone."  Lets add some 3D spheres to our scene and show how they fall within the visibility cone and create an image.</p>
+
+<p><img src="/img/intrinsic-frustum.png" alt="frustum" /></p>
+
+<p>Since the camera's "box" is irrelevant, let's remove it.  Also, note that the film's image depicts a mirrored version of reality.  To fix this, we'll use a "virtual image" instead of the film itself.  The virtual image has the same properties as the film image, but unlike the true image, the virtual image appears in front of the camera, and the projected image is unflipped.</p>
+
+<p><img src="/img/intrinsic-frustum-no-box.png" alt="frustum without camera box" /></p>
+
+<p>Note that the position and size of the virtual image plane is arbitrary &mdash; we could have doubled its size as long as we also doubled its distance from the pinhole.</p>
+
+<p>After removing the true image we're left with the "viewing frustum" representation of our pinhole camera.</p>
+
+<p><img src="/img/intrinsic-frustum-final.png" alt="frustum representation, final " /></p>
+
+<p>The pinhole has been replaced by the tip of the visibility cone, and the film is now represented by the virtual image plane.  We'll use this representation for our demo later.</p>
+
+<h1>Intrinsic parameters as 2D transformations</h1>
+
+<p>In the previous sections, we interpreted our incoming 3-vectors as 3D image coordinates, which are transformed to homogeneous 2D image coordinates.  Alternatively, we can interpret these 3-vectors as 2D homogeneous coordinates which are transformed to a new set of 2D points.  This gives us a new view of the intrinsic matrix: a sequence of 2D affine transformations.</p>
+
+<p>We can decompose the intrinsic matrix into a sequence of shear, scaling, and translation transformations, corresponding to axis skew, focal length, and principal point offset,  respectively:</p>
+
+<div>
+\[
+    \begin{align}
+    K &= \left ( 
+                \begin{array}{ c c c}
+                f_x & s   & x_0 \\
+                 0  & f_y & y_0 \\
+                 0  & 0   & 1 \\
+                \end{array}
+            \right ) 
+        \\[0.5em]
+        &=
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                 1  &  0  & x_0 \\
+                 0  &  1  & y_0 \\
+                 0  &  0  & 1
+                \end{array}
+                \right )
+            }_\text{2D Translation}
+
+            \times
+
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                f_x &  0  & 0 \\
+                 0  & f_y & 0 \\
+                 0  &  0  & 1
+                \end{array}
+                \right )
+            }_\text{2D Scaling}
+
+            \times
+
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                 1  &  s/f_x  & 0 \\
+                 0  &    1    & 0 \\
+                 0  &    0    & 1
+                \end{array}
+                \right )
+            }_\text{2D Shear}
+
+    \end{align}
+\]
+</div>
+
+
+<p>An equivalent decomposition places shear <em>after</em> scaling:</p>
+
+<div>
+\[
+    \begin{align}
+        K &=
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                 1  &  0  & x_0 \\
+                 0  &  1  & y_0 \\
+                 0  &  0  & 1
+                \end{array}
+                \right )
+            }_\text{2D Translation}
+
+            \times
+
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                 1  &  s/f_y  & 0 \\
+                 0  &    1    & 0 \\
+                 0  &    0    & 1
+                \end{array}
+                \right )
+            }_\text{2D Shear}
+
+            \times
+
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                f_x &  0  & 0 \\
+                 0  & f_y & 0 \\
+                 0  &  0  & 1
+                \end{array}
+                \right )
+            }_\text{2D Scaling}
+    \end{align}
+\]
+</div>
+
+
+<p>This interpretation nicely separates the extrinsic and intrinsic parameters into the realms of 3D and 2D, respactively.  It also emphasizes that the intrinsic camera transformation occurs <em>post-projection</em>.  One notable result of this is that <strong>intrinsic parameters cannot affect visibility</strong> &mdash; occluded objects cannot be revealed by simple 2D transformations in image space.</p>
+
+<h1>Demo</h1>
+
+<p>The demo below illustrates both interpretations of the intrinsic matrix.  On the left is the "camera-geometry" interpretation.  Notice how the pinhole moves relative to the image plane as \(x_0\) and \(y_0\) are adjusted.</p>
+
+<p>On the right is the "2D transformation" interpretation.  Notice how changing focal length results causes the projected image to be scaled and changing principal point results in pure translation.</p>
+
+<script type="text/javascript" src="/js/geometry/FocalPlaneGeometry.js"></script>
+
+
+<script type="text/javascript" src="/js/geometry/FrustumGeometry.js"></script>
+
+
+<script type="text/javascript" src="/js/cam_demo.js"></script>
+
+
+
+
+<div id="webgl_error"></div>
+
+
+<div id="javascript_error">Javascript is required for this demo.</div>
+
+
+<div class="demo_3d" style="display:none">
+    <table style="width: 100%"><tr style="text-align:center;"><td width="50%">Scene</td><td>Image</td></tr></table>
+    <div id="3d_container" >
+    </div>
+    <div class="caption">
+    <em>Left</em>: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   <em>Right</em>: camera's image.</div>
+    <div id="demo_controls">
+        <ul>
+            <li><a href="#intrinsic-controls">Intrinsic</a></li>
+        </ul>
+        <div id="intrinsic-controls">
+            <div class="slider-control">
+                <div class="slider" id="focal_slider">
+                </div>
+                <div class="slider-label">
+                Focal Length
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="skew_slider">
+                </div>
+                <div class="slider-label">
+                Axis Skew 
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="x0_slider">
+                </div>
+                <div class="slider-label">
+                \(x_0\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            <div class="slider-control">
+                <div class="slider" id="y0_slider">
+                </div>
+                <div class="slider-label">
+                \(y_0\)
+                </div>
+                <div class="clearer"></div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+
+
+<br />
+
+
+<h1>Dissecting the Camera Matrix, A Summary</h1>
+
+<p>Over the course of this series of articles we've seen how to decompose</p>
+
+<ol>
+<li><a href="/2012/08/14/decompose/">the full camera matrix into intrinsic and extrinsic matrices</a>,</li>
+<li><a href="/2012/08/22/extrinsic/">the extrinsic matrix into 3D rotation followed by translation</a>, and</li>
+<li>the intrinsic matrix into three basic 2D transformations.</li>
+</ol>
+
+
+<p>We summarize this full decomposition below.</p>
+
+<div>
+\[
+    \begin{align}
+    P &= \overbrace{K}^\text{Intrinsic Matrix} \times \overbrace{[R \mid  \mathbf{t}]}^\text{Extrinsic Matrix} \\[0.5em]
+     &= 
+        \overbrace{
+
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                 1  &  0  & x_0 \\
+                 0  &  1  & y_0 \\
+                 0  &  0  & 1
+                \end{array}
+                \right )
+            }_\text{2D Translation}
+
+            \times
+
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                f_x &  0  & 0 \\
+                 0  & f_y & 0 \\
+                 0  &  0  & 1
+                \end{array}
+                \right )
+            }_\text{2D Scaling}
+
+            \times
+
+            \underbrace{
+                \left (
+                \begin{array}{ c c c}
+                 1  &  s/f_x  & 0 \\
+                 0  &    1    & 0 \\
+                 0  &    0    & 1
+                \end{array}
+                \right )
+            }_\text{2D Shear}
+
+        }^\text{Intrinsic Matrix}
+
+        \times
+
+        \overbrace{
+        \underbrace{
+             \left( \begin{array}{c | c} 
+            I & \mathbf{t}
+             \end{array}\right)
+        }_\text{3D Translation}
+        \times
+        \underbrace{
+             \left( \begin{array}{c | c} 
+            R & 0 \\ \hline
+            0 & 1
+             \end{array}\right)
+        }_\text{3D Rotation}
+        }^\text{Extrinsic Matrix}
+    \end{align}
+\]
+</div>
+
+
+<p>To see all of these transformations in action, head over to my <a href="/perspective_camera_toy.html">Perpective Camera Toy</a> page for an interactive demo of the full perspective camera.</p>
+
+<p>Do you have other ways of interpreting the intrinsic camera matrix?   Leave a comment or <a href="/contact.html">drop me a line</a>!</p>
+
+<p>Next time, we'll show how to prepare your calibrated camera to generate stereo image pairs.  See you then!</p>
+
+      <address class="signature">
+        Posted by
+        <a class="author" href="/">Kyle Simek</a> 
+      </address>
+  
+
+
+  
+  <div class="prev-next">
+  
+  
+    <a href="/2013/06/18/calibrated-cameras-and-gluperspective/" class="prev" title="Calibrated Cameras and gluPerspective">&larr; Calibrated Cameras and gluPerspective</a>
+  
+  </div>
+  <div class="clearer"> </div>
+
+<div class="post-sharing">
+ 
+
+  
+  		<div id="fb-root"></div>
+
+<div class="post-share ulno mob">
+
+<!-- Hacker News -->
+<span class="hn"><span id="hnews"></span></span>
+
+<!-- Twitter -->
+<span class="tw"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix" data-via="" data-related="" data-count="" data-size="">Tweet</a></span>
+
+<!-- Google+ -->
+<span class="gp"><div class="g-plusone" data-size="medium" data-annotation="bubble" data-width=""></div></span>
+
+<!-- Facebook -->
+<!--
+<span class="fb"><div class="fb-like" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false" data-font=""></div></span>
+-->
+
+<!-- Reddit -->
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>
+</div>
+
+<script>
+  
+(function(doc, script) {
+ 	
+	//Async Social Buttons
+    var js, 
+        fjs = doc.getElementsByTagName(script)[0],
+        add = function(url, id) {
+            if (doc.getElementById(id)) {return;}
+            js = doc.createElement(script);
+            js.src = url;
+            id && (js.id = id);
+            fjs.parentNode.insertBefore(js, fjs);
+        };
+    
+    // Twitter SDK
+    add('//platform.twitter.com/widgets.js', 'twitter-wjs');
+
+    // Google+ button
+    add('https://apis.google.com/js/plusone.js');
+    
+    // Facebook SDK
+    add('//connect.facebook.net/en_GB/all.js#xfbml=1&appId=123', 'facebook-jssdk');
+    
+    //Hacker News Button 	
+ 	var hn_like = document.createElement('iframe');
+      hn_like.frameborder="no";
+      hn_like.scrolling="no";
+      hn_like.height="28px";
+      hn_like.width="110px";
+      hn_like.style="border:0px;";
+      hn_like.src = "http://hnlike.com/upvote.php?link="
+                    + encodeURIComponent(document.location)
+                    + "&title="
+                    + encodeURIComponent("Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix");
+      hn_like.innerHTML="iframes not supported by your browser";
+      
+      var where = document.getElementById("hnews");
+      where.parentNode.insertBefore(
+        hn_like,
+        where
+      );
+}(document, 'script'));
+
+</script>
+
+  
+
+
+
+</div>
+
+
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'sightations'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  
+</div><!-- End Page -->
+
+
+
+  
+  <div id="footer">
+  	<address>
+  		<span class="copyright">
+  			Content by <a href="/about.html">Kyle Simek</a>. Original design by 
+  			<a href="http://mark.reid.name/">Mark Reid</a>
+  			<br/>
+  			(<a rel="licence" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Some rights reserved</a>)			
+  		</span>
+  		<span class="engine">
+  			Powered by <a href="https://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
+  		</span>
+  	</address>
+  </div>
+  
+</div>
+
+<!--[if IE 6]>
+<script type="text/javascript"> 
+	/*Load jQuery if not already loaded*/ if(typeof jQuery == 'undefined'){ document.write("<script type=\"text/javascript\"   src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js\"></"+"script>"); var __noconflict = true; } 
+	var IE6UPDATE_OPTIONS = {
+		icons_path: "http://static.ie6update.com/hosted/ie6update/images/"
+	}
+</script>
+<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+  
+
+
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-33692744-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+
+
+</body>
+</html>
+
