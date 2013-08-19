@@ -10,6 +10,7 @@ http://ksimek.github.io/feeds.html
 http://ksimek.github.io/index.html
 http://ksimek.github.io/pages.html
 http://ksimek.github.io/perspective_camera_toy.html
+http://ksimek.github.io/pinhole_camera_diagram/index.html
 http://ksimek.github.io/sitemap.txt
 http://ksimek.github.io/tags.html
 http://ksimek.github.io/page2/index.html

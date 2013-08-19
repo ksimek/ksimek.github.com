@@ -1,0 +1,282 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <title>Pinhole Camera Diagram &larr; </title>
+   <meta name="author" content="Kyle Simek" />
+
+   <link rel="start" href="/" />
+
+	
+	
+    <link rel="shortcut icon" href="/favicon.ico">
+
+	
+  	<link rel="alternate" type="application/atom+xml" href="http://feeds.feedburner.com/sightations" title="RSS feed" />
+	
+	
+
+   <!-- syntax highlighting CSS -->
+   <link rel="stylesheet" href="/assets/themes/mark-reid/css/syntax.css" type="text/css" />
+
+   <!-- Jquery UI CSS --!>
+	
+
+   <!-- Homepage CSS -->
+   <link media="screen" rel="stylesheet" href="/assets/themes/mark-reid/css/screen.css" type="text/css" />
+
+   <!-- Handheld CSS -->
+   <link media="handheld, only screen and (max-width: 480px), only screen and (max-device-width: 480px)" href="/assets/themes/mark-reid/css/handheld.css" type="text/css" rel="stylesheet" />
+
+
+<!--[if IEMobile]>
+<link rel="stylesheet" type="text/css" href="/assets/themes/mark-reid/css/handheld.css" media="screen" />
+<![endif]-->
+
+   <!-- Mathjax Javascript -->
+
+	
+
+   <!-- three.js Javascript -->
+	
+	
+	
+
+	
+
+</head>
+<body id="">
+<div id="site">
+  
+  <div id="header">
+    <h1>
+    	<a href="/" title="Sightations">Sightations</a>
+    	<span class="byline">&larr; <a href="/">A Computer Vision Blog</a></span>
+    </h1>
+    <ul class="nav">
+      <li><a class="home" href="/">Home</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/code.html">Code</a></li>
+      <li><a  href="/archive.html">Archive</a></li>
+      <li><a  href="/feeds.html"><img src="/img/feed-icon.gif" /></a></li> 
+
+    </ul>
+  </div>
+
+  
+<div id="page">
+	
+
+<h1 class="emphnext">Pinhole Camera Diagram</h1>
+
+
+
+<div class='context-img' style='width:272px'>
+<img src='/img/intrinsic-pinhole-camera.png' />
+</div>
+
+
+<p>When writing an article on <a href="/2013/08/13/intrinsic/">the intrinsic camera matrix</a>, I created a diagram to illustrate various properties of the pinhole camera.  I've made the Adobe Illustrator source file available under a <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">creative commons license</a>.  My hope is that others can use this for instructional purposes and hopefully improve upon it.  Feel free to modify it to your needs, and if you use it in your project, <a href="/contact.html">I'd love to hear about it</a>.</p>
+
+<h2><a href="https://github.com/ksimek/ksimek.github.com/blob/source/resources/intrinsic.ai">Download it here</a></h2>
+
+<br />
+
+
+<h1>Details</h1>
+
+<p>The file is split into several layers, which include</p>
+
+<ul>
+<li>Pinhole camera w/ labels</li>
+<li>Principal axis / Principal point</li>
+<li>Principal point offset</li>
+<li>Focal Length</li>
+<li>3D scene</li>
+<li>Scene image on film</li>
+<li>Scene image on virtual image plane</li>
+</ul>
+
+
+<p>You can use the "saved views" feature in Illustrator to see some example configurations, which you can see below.</p>
+
+<p><img src="/img/intrinsic-pinhole-camera.png" alt="pinhole camera" />
+Basic pinhole camera.</p>
+
+<p><img src="/img/intrinsic-focal-length.png" alt="focal length" />
+Focal length</p>
+
+<p><img src="/img/intrinsic-pp.png" alt="Principal point and principal axis" />
+Principal point and axis</p>
+
+<p><img src="/img/intrinsic-pp-offset.png" alt="Principal point offset" />
+Principal point offset</p>
+
+<p><img src="/img/intrinsic-pp-offset-delta-alt.png" alt="Principal point offset, pinhole shifted right" />
+Principal point offset, shifted pinhole</p>
+
+<p><img src="/img/intrinsic-pp-offset-delta.png" alt="Principal point offset, film shifted left" />
+Principal point offset, shifted film</p>
+
+<p><img src="/img/intrinsic-frustum.png" alt="frustum" />
+Pinhole camera with frustum</p>
+
+<p><img src="/img/intrinsic-frustum-no-box.png" alt="frustum without camera box" />
+Frustum only, with true image plane</p>
+
+<p><img src="/img/intrinsic-frustum-final.png" alt="frustum representation, final " />
+Frustum only, virtual image plane only.</p>
+
+<div class="post-sharing">
+ 
+
+  
+        <div id="fb-root"></div>
+
+<div class="post-share ulno mob">
+
+<!-- Hacker News -->
+<span class="hn"><span id="hnews"></span></span>
+
+<!-- Twitter -->
+<span class="tw"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Pinhole Camera Diagram" data-via="" data-related="" data-count="" data-size="">Tweet</a></span>
+
+<!-- Google+ -->
+<span class="gp"><div class="g-plusone" data-size="medium" data-annotation="bubble" data-width=""></div></span>
+
+<!-- Facebook -->
+<!--
+<span class="fb"><div class="fb-like" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false" data-font=""></div></span>
+-->
+
+<!-- Reddit -->
+<script type="text/javascript" src="http://www.reddit.com/static/button/button1.js"></script>
+</div>
+
+<script>
+  
+(function(doc, script) {
+    
+    //Async Social Buttons
+    var js, 
+        fjs = doc.getElementsByTagName(script)[0],
+        add = function(url, id) {
+            if (doc.getElementById(id)) {return;}
+            js = doc.createElement(script);
+            js.src = url;
+            id && (js.id = id);
+            fjs.parentNode.insertBefore(js, fjs);
+        };
+    
+    // Twitter SDK
+    add('//platform.twitter.com/widgets.js', 'twitter-wjs');
+
+    // Google+ button
+    add('https://apis.google.com/js/plusone.js');
+    
+    // Facebook SDK
+    add('//connect.facebook.net/en_GB/all.js#xfbml=1&appId=123', 'facebook-jssdk');
+    
+    //Hacker News Button    
+    var hn_like = document.createElement('iframe');
+      hn_like.frameborder="no";
+      hn_like.scrolling="no";
+      hn_like.height="28px";
+      hn_like.width="110px";
+      hn_like.style="border:0px;";
+      hn_like.src = "http://hnlike.com/upvote.php?link="
+                    + encodeURIComponent(document.location)
+                    + "&title="
+                    + encodeURIComponent("Pinhole Camera Diagram");
+      hn_like.innerHTML="iframes not supported by your browser";
+      
+      var where = document.getElementById("hnews");
+      where.parentNode.insertBefore(
+        hn_like,
+        where
+      );
+}(document, 'script'));
+
+</script>
+
+  
+
+
+
+</div>
+
+
+<p>  <div id="disqus_thread"></div></p>
+
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'sightations'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+
+<p><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a></p>
+
+
+</div><!-- End Page -->
+
+
+  
+  <div id="footer">
+  	<address>
+  		<span class="copyright">
+  			Content by <a href="/about.html">Kyle Simek</a>. Original design by 
+  			<a href="http://mark.reid.name/">Mark Reid</a>
+  			<br/>
+  			(<a rel="licence" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Some rights reserved</a>)			
+  		</span>
+  		<span class="engine">
+  			Powered by <a href="https://github.com/mojombo/jekyll/" title="A static, minimalist CMS">Jekyll</a>
+  		</span>
+  	</address>
+  </div>
+  
+</div>
+
+<!--[if IE 6]>
+<script type="text/javascript"> 
+	/*Load jQuery if not already loaded*/ if(typeof jQuery == 'undefined'){ document.write("<script type=\"text/javascript\"   src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js\"></"+"script>"); var __noconflict = true; } 
+	var IE6UPDATE_OPTIONS = {
+		icons_path: "http://static.ie6update.com/hosted/ie6update/images/"
+	}
+</script>
+<script type="text/javascript" src="http://static.ie6update.com/hosted/ie6update/ie6update.js"></script>
+<![endif]-->
+
+  
+
+
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-33692744-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+
+
+</body>
+</html>
+
