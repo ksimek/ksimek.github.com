@@ -11,7 +11,7 @@ description: ""
 
 When writing an article on [the intrinsic camera matrix]({{site.baseurl}}/2013/08/13/intrinsic/), I created a diagram to illustrate various properties of the pinhole camera.  I've made the Adobe Illustrator source file available under a [creative commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/).  My hope is that others can use this for instructional purposes and hopefully improve upon it.  Feel free to modify it to your needs, and if you use it in your project, [I'd love to hear about it]({{site.baseurl}}/contact.html).
  
-[Download it here](https://github.com/ksimek/ksimek.github.com/blob/source/resources/intrinsic.ai)
+[Download it here](https://github.com/ksimek/ksimek.github.com/raw/source/_resources/intrinsic.ai)
 -----
 <br />
 
