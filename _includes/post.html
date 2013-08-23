@@ -15,7 +15,7 @@
 
   {% if excerpt and post.excerpt %}
     {{ post.excerpt }}
-    <p> <a href="{{ post.url }}/#more" class="more-link"><span class="readmore">more...</span></a></p>
+    <p> <a href="{{ post.url }}#more" class="more-link"><span class="readmore">more...</span></a></p>
   {% else %}
     {{ content | mark_excerpt }}
       <address class="signature">
