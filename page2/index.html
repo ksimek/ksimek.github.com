@@ -76,6 +76,42 @@
     
     
     
+  <a class="title-link" href="/2012/08/14/decompose/">
+  <h1 class="title">Dissecting the Camera Matrix, Part 1: Extrinsic/Intrinsic Decomposition</h1>
+  </a>
+
+  <div class="date emphnext">August 14, 2012</div>
+    
+
+
+  
+    <div class="clearer"></div>
+
+
+<div class='context-img' style='width:320px'>
+<img src='/img/decompose.jpg' />
+<div class='caption'>Not this kind of decomposition.
+<div class='credit'><a href="http://www.flickr.com/photos/dhollister/2596483147/">Credit: Daniel Hollister</a></div>
+</div>
+</div>
+
+
+<p>So, you've been playing around a new computer vision library, and you've managed to calibrate your camera...  now what do you do with it?  It would be a lot more useful if you could get at the camera's position or find out it's field-of view.  You crack open your trusty copy of <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Hartley and Zisserman</a>, which tells you how to decompose your camera into an intrinsic and extrinsic matrix --- great! But when you look at the results, something isn't quite right.  Maybe your rotation matrix has a determinant of -1, causing your matrix-to-quaternion function to barf.  Maybe your focal-length is negative, and you can't understand why.  Maybe your translation vector mistakenly claims that the world origin in <em>behind</em> the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don't see <em>anything</em>.</p>
+
+<p>Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the <a href="/2013/08/13/intrinsic/">intrinsic</a> and <a href="/2012/08/22/extrinsic/">extrinsic</a> matrices in more detail, and I'll cover <a href="/2013/06/03/calibrated_cameras_in_opengl/">how to convert them into a form usable by OpenGL</a>.</p>
+
+
+    <p> <a href="/2012/08/14/decompose/#more" class="more-link"><span class="readmore">more...</span></a></p>
+  
+
+
+</div>
+
+<div class="firehose-post article">
+    
+    
+    
+    
   <a class="title-link" href="/2012/08/13/introduction/">
   <h1 class="title">The Perspective Camera - An Interactive Tour</h1>
   </a>
@@ -126,7 +162,7 @@
 <!-- Pagination links -->
 <div class="pagination">
   
-    <a href="/" class="previous">&lt;&lt; Read Newer Posts</a>
+    <a href="//index.html" class="previous">&lt;&lt; Read Newer Posts</a>
   
   
   

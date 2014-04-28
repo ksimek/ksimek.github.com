@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
 <head>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-   <title>Pinhole Camera Diagram &larr; </title>
+   <title>Compiling ELSD (Ellipse and Line Segment Detector) on OS X &larr; </title>
    <meta name="author" content="Kyle Simek" />
 
    <link rel="start" href="/" />
@@ -68,73 +68,85 @@
   </div>
 
   
-<div id="page">
+<div id="page" class="article">
 	
+  
+  
+  <h1 class="title">Compiling ELSD (Ellipse and Line Segment Detector) on OS X</h1>
 
-<h1 class="emphnext">Pinhole Camera Diagram</h1>
+  <div class="date emphnext">April 28, 2014</div>
+    
 
 
+  
+    
 
-<div class='context-img' style='width:272px'>
-<img src='/img/intrinsic-pinhole-camera.png' />
+<div class="clearer"></div>
+
+
+<div class='context-img' style='width:317px'>
+<img src='/img/elsd_before_small.jpg' width="317" />
+<div class='caption'>Input image
+</div>
+<br />
+
+<img src='/img/elsd_after_small.png' width="317" />
+<div class='caption'>ELSD results
+</div>
 </div>
 
 
-<p>When writing an article on <a href="/2013/08/13/intrinsic/">the intrinsic camera matrix</a>, I created a diagram to illustrate various properties of the pinhole camera.  I've made the Adobe Illustrator source file available under a <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">creative commons license</a>.  My hope is that others can use this for instructional purposes and hopefully improve upon it.  Feel free to modify it to your needs, and if you use it in your project, <a href="/contact.html">I'd love to hear about it</a>.</p>
+<p><a href="http://ubee.enseeiht.fr/vision/ELSD/">ELSD is a new program</a> for detecting line segments and elliptical curves in images.  It gives <a href="/misc/elsd_results.html">very impressive results</a> by using a novel model selection criterion to distinguish noise curves from foreground, as detailed in the author's <a href="http://ubee.enseeiht.fr/vision/ELSD/eccv2012-ID576.pdf">ICCV 2012 paper</a>.  Most impressive, it works out of the box <strong>with no parameter tuning.</strong></p>
 
-<h2><a href="https://github.com/ksimek/ksimek.github.com/raw/source/_resources/intrinsic.ai">Download it here</a></h2>
+<p>The authors have generously released their code under <a href="http://www.gnu.org/licenses/why-affero-gpl.html">Affero GPL</a>, but it requires a few tweaks to compile on OSX.</p>
 
-<p><br /></p>
+<p>First, in <code>process_curve.c</code>, replace this line:</p>
 
-<h1>Details</h1>
+<pre><code>#include &lt;clapack.h&gt;
+</code></pre>
 
-<p>The file is split into several layers, which include</p>
+<p>with this:</p>
 
-<ul>
-<li>Pinhole camera w/ labels</li>
-<li>Principal axis / Principal point</li>
-<li>Principal point offset</li>
-<li>Focal Length</li>
-<li>3D scene</li>
-<li>Scene image on film</li>
-<li>Scene image on virtual image plane</li>
-</ul>
+<pre><code>#ifdef __APPLE__
+#include &lt;Accelerate/Accelerate.h&gt;
+#else
+#include &lt;clapack.h&gt;
+#endif
+</code></pre>
+
+<p>Second, in <code>makefile</code>, change this line</p>
+
+<pre><code>cc -o elsd elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -llapack_LINUX -lblas_LINUX -llibf2c -lm
+</code></pre>
+
+<p>to this:</p>
+
+<pre><code>cc -o elsd -framework accelerate  elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -lf2c -lm 
+</code></pre>
+
+<p>Thanks to authors Viorica Pătrăucean, Pierre Gurdjos, and Rafael Grompone von Gioi for sharing this valuable new tool!</p>
+
+      <address class="signature">
+        Posted by
+        <a class="author" href="/">Kyle Simek</a> 
+      </address>
+  
 
 
-<p>You can use the "saved views" feature in Illustrator to see some example configurations, which you can see below.</p>
-
-<p><img src="/img/intrinsic-pinhole-camera.png" alt="pinhole camera" />
-Basic pinhole camera.</p>
-
-<p><img src="/img/intrinsic-focal-length.png" alt="focal length" />
-Focal length</p>
-
-<p><img src="/img/intrinsic-pp.png" alt="Principal point and principal axis" />
-Principal point and axis</p>
-
-<p><img src="/img/intrinsic-pp-offset.png" alt="Principal point offset" />
-Principal point offset</p>
-
-<p><img src="/img/intrinsic-pp-offset-delta-alt.png" alt="Principal point offset, pinhole shifted right" />
-Principal point offset, shifted pinhole</p>
-
-<p><img src="/img/intrinsic-pp-offset-delta.png" alt="Principal point offset, film shifted left" />
-Principal point offset, shifted film</p>
-
-<p><img src="/img/intrinsic-frustum.png" alt="frustum" />
-Pinhole camera with frustum</p>
-
-<p><img src="/img/intrinsic-frustum-no-box.png" alt="frustum without camera box" />
-Frustum only, with true image plane</p>
-
-<p><img src="/img/intrinsic-frustum-final.png" alt="frustum representation, final " />
-Frustum only, virtual image plane only.</p>
+  
+  <div class="prev-next">
+  
+  
+    <a href="/2013/08/13/intrinsic/" class="prev" title="Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix">&larr; Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix</a>
+  
+  </div>
+  <div class="clearer"> </div>
 
 <div class="post-sharing">
  
 
   
-        <div id="fb-root"></div>
+  		<div id="fb-root"></div>
 
 <div class="post-share ulno mob">
 
@@ -142,7 +154,7 @@ Frustum only, virtual image plane only.</p>
 <span class="hn"><span id="hnews"></span></span>
 
 <!-- Twitter -->
-<span class="tw"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Pinhole Camera Diagram" data-via="" data-related="" data-count="" data-size="">Tweet</a></span>
+<span class="tw"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Compiling ELSD (Ellipse and Line Segment Detector) on OS X" data-via="" data-related="" data-count="" data-size="">Tweet</a></span>
 
 <!-- Google+ -->
 <span class="gp"><div class="g-plusone" data-size="medium" data-annotation="bubble" data-width=""></div></span>
@@ -159,8 +171,8 @@ Frustum only, virtual image plane only.</p>
 <script>
   
 (function(doc, script) {
-    
-    //Async Social Buttons
+ 	
+	//Async Social Buttons
     var js, 
         fjs = doc.getElementsByTagName(script)[0],
         add = function(url, id) {
@@ -180,8 +192,8 @@ Frustum only, virtual image plane only.</p>
     // Facebook SDK
     add('//connect.facebook.net/en_GB/all.js#xfbml=1&appId=123', 'facebook-jssdk');
     
-    //Hacker News Button    
-    var hn_like = document.createElement('iframe');
+    //Hacker News Button 	
+ 	var hn_like = document.createElement('iframe');
       hn_like.frameborder="no";
       hn_like.scrolling="no";
       hn_like.height="28px";
@@ -190,7 +202,7 @@ Frustum only, virtual image plane only.</p>
       hn_like.src = "http://hnlike.com/upvote.php?link="
                     + encodeURIComponent(document.location)
                     + "&title="
-                    + encodeURIComponent("Pinhole Camera Diagram");
+                    + encodeURIComponent("Compiling ELSD (Ellipse and Line Segment Detector) on OS X");
       hn_like.innerHTML="iframes not supported by your browser";
       
       var where = document.getElementById("hnews");
@@ -209,8 +221,9 @@ Frustum only, virtual image plane only.</p>
 </div>
 
 
-<p>  <div id="disqus_thread"></div></p>
 
+
+  <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_developer = 1;
     var disqus_shortname = 'sightations'; // required: replace example with your forum shortname
@@ -222,13 +235,15 @@ Frustum only, virtual image plane only.</p>
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
 </script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
-<p><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a></p>
 
 
+  
 </div><!-- End Page -->
+
 
 
   

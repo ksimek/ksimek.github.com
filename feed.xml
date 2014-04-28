@@ -7,23 +7,77 @@
 		<atom:link href="http://ksimek.github.io/feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
+				<title>Compiling ELSD (Ellipse and Line Segment Detector) on OS X</title>
+				<description>
+
+&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
+
+
+&lt;div class=&#39;context-img&#39; style=&#39;width:317px&#39;&gt;
+&lt;img src=&#39;/img/elsd_before_small.jpg&#39; width=&quot;317&quot; /&gt;
+&lt;div class=&#39;caption&#39;&gt;Input image
+&lt;/div&gt;
+&lt;br /&gt;
+
+&lt;img src=&#39;/img/elsd_after_small.png&#39; width=&quot;317&quot; /&gt;
+&lt;div class=&#39;caption&#39;&gt;ELSD results
+&lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;&lt;a href=&quot;http://ubee.enseeiht.fr/vision/ELSD/&quot;&gt;ELSD is a new program&lt;/a&gt; for detecting line segments and elliptical curves in images.  It gives &lt;a href=&quot;/misc/elsd_results.html&quot;&gt;very impressive results&lt;/a&gt; by using a novel model selection criterion to distinguish noise curves from foreground, as detailed in the author&#39;s &lt;a href=&quot;http://ubee.enseeiht.fr/vision/ELSD/eccv2012-ID576.pdf&quot;&gt;ICCV 2012 paper&lt;/a&gt;.  Most impressive, it works out of the box &lt;strong&gt;with no parameter tuning.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The authors have generously released their code under &lt;a href=&quot;http://www.gnu.org/licenses/why-affero-gpl.html&quot;&gt;Affero GPL&lt;/a&gt;, but it requires a few tweaks to compile on OSX.&lt;/p&gt;
+
+&lt;p&gt;First, in &lt;code&gt;process_curve.c&lt;/code&gt;, replace this line:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;clapack.h&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;with this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#ifdef __APPLE__
+#include &amp;lt;Accelerate/Accelerate.h&amp;gt;
+#else
+#include &amp;lt;clapack.h&amp;gt;
+#endif
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Second, in &lt;code&gt;makefile&lt;/code&gt;, change this line&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cc -o elsd elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -llapack_LINUX -lblas_LINUX -llibf2c -lm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;to this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cc -o elsd -framework accelerate  elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -lf2c -lm 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Thanks to authors Viorica Pătrăucean, Pierre Gurdjos, and Rafael Grompone von Gioi for sharing this valuable new tool!&lt;/p&gt;
+</description>
+				<pubDate>Mon, 28 Apr 2014 00:00:00 -0700</pubDate>
+				<link>http://ksimek.github.io/2014/04/28/compiling-elsd-on-osx/</link>
+				<guid isPermaLink="true">http://ksimek.github.io/2014/04/28/compiling-elsd-on-osx/</guid>
+			</item>
+		
+			<item>
 				<title>Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix</title>
 				<description>
 
 &lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
 
 
-&lt;div class='context-img' style='width:320px'&gt;
-&lt;img src='/img/kodak-camera.jpg' /&gt;
-&lt;div class='caption'&gt;
-&lt;div class='credit'&gt;&lt;a href=&quot;http://www.flickr.com/photos/alhazen/8587124359/&quot;&gt;Credit: Dave6163 (via Flickr)&lt;/a&gt;&lt;/div&gt;
+&lt;div class=&#39;context-img&#39; style=&#39;width:320px&#39;&gt;
+&lt;img src=&#39;/img/kodak-camera.jpg&#39; /&gt;
+&lt;div class=&#39;caption&#39;&gt;
+&lt;div class=&#39;credit&#39;&gt;&lt;a href=&quot;http://www.flickr.com/photos/alhazen/8587124359/&quot;&gt;Credit: Dave6163 (via Flickr)&lt;/a&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
 
-&lt;p&gt;Today we'll study the intrinsic camera matrix in our third and final chapter in the trilogy &quot;Dissecting the Camera Matrix.&quot;  In &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;the first article&lt;/a&gt;, we learned how to split the full camera matrix into the intrinsic and extrinsic matrices and how to properly handle ambiguities that arise in that process.  The &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;second article&lt;/a&gt; examined the extrinsic matrix in greater detail, looking into several different interpretations of its 3D rotations and translations.   Today we'll give the same treatment to the intrinsic matrix, examining two equivalent interpretations: as a description of the virtual camera's geometry and as a sequence of simple 2D transformations.   Afterward, you'll see an interactive demo illustrating both interpretations.&lt;/p&gt;
+&lt;p&gt;Today we&#39;ll study the intrinsic camera matrix in our third and final chapter in the trilogy &quot;Dissecting the Camera Matrix.&quot;  In &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;the first article&lt;/a&gt;, we learned how to split the full camera matrix into the intrinsic and extrinsic matrices and how to properly handle ambiguities that arise in that process.  The &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;second article&lt;/a&gt; examined the extrinsic matrix in greater detail, looking into several different interpretations of its 3D rotations and translations.   Today we&#39;ll give the same treatment to the intrinsic matrix, examining two equivalent interpretations: as a description of the virtual camera&#39;s geometry and as a sequence of simple 2D transformations.   Afterward, you&#39;ll see an interactive demo illustrating both interpretations.&lt;/p&gt;
 
-&lt;p&gt;If you're not interested in delving into the theory and just want to use your intrinsic matrix with OpenGL, check out the articles &lt;a href=&quot;/2013/06/03/calibrated_cameras_in_opengl/&quot;&gt;Calibrated Cameras in OpenGL without glFrustum&lt;/a&gt; and &lt;a href=&quot;/2013/06/18/calibrated-cameras-and-gluperspective/&quot;&gt;Calibrated Cameras and gluPerspective&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you&#39;re not interested in delving into the theory and just want to use your intrinsic matrix with OpenGL, check out the articles &lt;a href=&quot;/2013/06/03/calibrated_cameras_in_opengl/&quot;&gt;Calibrated Cameras in OpenGL without glFrustum&lt;/a&gt; and &lt;a href=&quot;/2013/06/18/calibrated-cameras-and-gluperspective/&quot;&gt;Calibrated Cameras and gluPerspective&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;All of these articles are part of the series &quot;&lt;a href=&quot;/2012/08/13/introduction/&quot;&gt;The Perspective Camera, an Interactive Tour&lt;/a&gt;.&quot;  To read the other entries in the series, &lt;a href=&quot;/2012/08/13/introduction/#toc&quot;&gt;head over to the table of contents&lt;/a&gt;.&lt;/p&gt;
 
@@ -51,11 +105,11 @@
 &lt;/div&gt;
 
 
-&lt;p&gt;Each intrinsic parameter describes a geometric property of the camera.  Let's examine each of these properties in detail.&lt;/p&gt;
+&lt;p&gt;Each intrinsic parameter describes a geometric property of the camera.  Let&#39;s examine each of these properties in detail.&lt;/p&gt;
 
 &lt;h2&gt;Focal Length, \(f_x\), \(f_y\)&lt;/h2&gt;
 
-&lt;p&gt;The focal length is the distance between the pinhole and the film (a.k.a. image plane).  For reasons we'll discuss later, the focal length is measured in pixels.  In a true pinhole camera, both \(f_x\) and \(f_y\) have the same value, which is illustrated as \(f\) below.&lt;/p&gt;
+&lt;p&gt;The focal length is the distance between the pinhole and the film (a.k.a. image plane).  For reasons we&#39;ll discuss later, the focal length is measured in pixels.  In a true pinhole camera, both \(f_x\) and \(f_y\) have the same value, which is illustrated as \(f\) below.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/intrinsic-focal-length.png&quot; alt=&quot;focal length&quot; /&gt;&lt;/p&gt;
 
@@ -64,7 +118,7 @@
 &lt;ul&gt;
 &lt;li&gt;Flaws in the digital camera sensor.&lt;/li&gt;
 &lt;li&gt;The image has been non-uniformly scaled in post-processing.&lt;/li&gt;
-&lt;li&gt;The camera's lens introduces unintentional distortion.&lt;/li&gt;
+&lt;li&gt;The camera&#39;s lens introduces unintentional distortion.&lt;/li&gt;
 &lt;li&gt;The camera uses an &lt;a href=&quot;http://en.wikipedia.org/wiki/Anamorphic_format&quot;&gt;anamorphic format&lt;/a&gt;, where the lens compresses a widescreen scene into a standard-sized sensor.&lt;/li&gt;
 &lt;li&gt;Errors in camera calibration.&lt;/li&gt;
 &lt;/ul&gt;
@@ -72,15 +126,15 @@
 
 &lt;p&gt;In all of these cases, the resulting image has non-square pixels.&lt;/p&gt;
 
-&lt;p&gt;Having two different focal lengths isn't terribly intuitive, so some texts (e.g. &lt;a href=&quot;http://luthuli.cs.uiuc.edu/~daf/book/book.html&quot;&gt;Forsyth and Ponce&lt;/a&gt;) use a single focal length and an &quot;aspect ratio&quot; that describes the amount of deviation from a perfectly square pixel. Such a parameterization nicely separates the camera geometry (i.e. focal length) from distortion (aspect ratio).&lt;/p&gt;
+&lt;p&gt;Having two different focal lengths isn&#39;t terribly intuitive, so some texts (e.g. &lt;a href=&quot;http://luthuli.cs.uiuc.edu/~daf/book/book.html&quot;&gt;Forsyth and Ponce&lt;/a&gt;) use a single focal length and an &quot;aspect ratio&quot; that describes the amount of deviation from a perfectly square pixel. Such a parameterization nicely separates the camera geometry (i.e. focal length) from distortion (aspect ratio).&lt;/p&gt;
 
 &lt;h2&gt;Principal Point Offset, \(x_0\), \(y_0\)&lt;/h2&gt;
 
-&lt;p&gt;The camera's &quot;principal axis&quot; is the line perpendicular to the image plane that passes through the pinhole.  Its itersection with the image plane is referred to as the &quot;principal point,&quot; illustrated below.&lt;/p&gt;
+&lt;p&gt;The camera&#39;s &quot;principal axis&quot; is the line perpendicular to the image plane that passes through the pinhole.  Its itersection with the image plane is referred to as the &quot;principal point,&quot; illustrated below.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/intrinsic-pp.png&quot; alt=&quot;Principal point and principal axis&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;The &quot;principal point offset&quot; is the location of the principal point relative to the film's origin.  The exact definition depends on which convention is used for the location of the origin; the illustration below assumes it's at the bottom-left of the film.&lt;/p&gt;
+&lt;p&gt;The &quot;principal point offset&quot; is the location of the principal point relative to the film&#39;s origin.  The exact definition depends on which convention is used for the location of the origin; the illustration below assumes it&#39;s at the bottom-left of the film.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/intrinsic-pp-offset.png&quot; alt=&quot;Principal point offset&quot; /&gt;&lt;/p&gt;
 
@@ -92,11 +146,11 @@
 
 &lt;p&gt;&lt;img src=&quot;/img/intrinsic-pp-offset-delta.png&quot; alt=&quot;Principal point offset, film shifted left&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Notice that the box surrounding the camera is irrelevant, only the pinhole's position relative to the film matters.&lt;/p&gt;
+&lt;p&gt;Notice that the box surrounding the camera is irrelevant, only the pinhole&#39;s position relative to the film matters.&lt;/p&gt;
 
 &lt;h2&gt;Axis Skew, \(s\)&lt;/h2&gt;
 
-&lt;p&gt;Axis skew causes shear distortion in the projected image.  As far as I know, there isn't any analogue to axis skew a true pinhole camera, but &lt;a href=&quot;http://www.epixea.com/research/multi-view-coding-thesisse8.html#x13-320002.2.1&quot;&gt;apparently some digitization processes can cause nonzero skew&lt;/a&gt;.  We'll examine skew more later.&lt;/p&gt;
+&lt;p&gt;Axis skew causes shear distortion in the projected image.  As far as I know, there isn&#39;t any analogue to axis skew a true pinhole camera, but &lt;a href=&quot;http://www.epixea.com/research/multi-view-coding-thesisse8.html#x13-320002.2.1&quot;&gt;apparently some digitization processes can cause nonzero skew&lt;/a&gt;.  We&#39;ll examine skew more later.&lt;/p&gt;
 
 &lt;h2&gt;Other Geometric Properties&lt;/h2&gt;
 
@@ -104,15 +158,15 @@
 
 &lt;p&gt;Rotating the film around the pinhole is equivalent to rotating the camera itself, which is handled by the &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;extrinsic matrix&lt;/a&gt;.  Rotating the film around any other fixed point \(x\) is equivalent to rotating around the pinhole \(P\), then translating by \((x-P)\).&lt;/p&gt;
 
-&lt;p&gt;What about scaling? It should be obvious that doubling all camera dimensions (film size and focal length) has no effect on the captured scene.  If instead, you double the film size and &lt;em&gt;not&lt;/em&gt; the focal length, it is equivalent to doubling both (a no-op) and then halving the focal length.  Thus, representing the film's scale explicitly would be redundant; it is captured by the focal length.&lt;/p&gt;
+&lt;p&gt;What about scaling? It should be obvious that doubling all camera dimensions (film size and focal length) has no effect on the captured scene.  If instead, you double the film size and &lt;em&gt;not&lt;/em&gt; the focal length, it is equivalent to doubling both (a no-op) and then halving the focal length.  Thus, representing the film&#39;s scale explicitly would be redundant; it is captured by the focal length.&lt;/p&gt;
 
 &lt;h2&gt;Focal Length - From Pixels to World Units&lt;/h2&gt;
 
-&lt;p&gt;This discussion of camera-scaling shows that there are an infinite number of pinhole cameras that produce the same image.  The intrinsic matrix is only concerned with the relationship between camera coordinates and image coordinates, so the absolute camera dimensions are irrelevant.  Using pixel units for focal length and principal point offset allows us to represent the relative dimensions of the camera, namely, the film's position relative to its size in pixels.&lt;/p&gt;
+&lt;p&gt;This discussion of camera-scaling shows that there are an infinite number of pinhole cameras that produce the same image.  The intrinsic matrix is only concerned with the relationship between camera coordinates and image coordinates, so the absolute camera dimensions are irrelevant.  Using pixel units for focal length and principal point offset allows us to represent the relative dimensions of the camera, namely, the film&#39;s position relative to its size in pixels.&lt;/p&gt;
 
 &lt;p&gt;Another way to say this is that the intrinsic camera transformation is invariant to uniform scaling of the camera geometry.   By representing dimensions in pixel units, we naturally capture this invariance.&lt;/p&gt;
 
-&lt;p&gt;You can use similar triangles to convert pixel units to world units (e.g. mm) if you know at least one camera dimension in world units.  For example, if you know the camera's film (or digital sensor) has a width \(W\) in millimiters, and the image width in pixels is \(w\), you can convert the focal length \(f_x\) to world units using:&lt;/p&gt;
+&lt;p&gt;You can use similar triangles to convert pixel units to world units (e.g. mm) if you know at least one camera dimension in world units.  For example, if you know the camera&#39;s film (or digital sensor) has a width \(W\) in millimiters, and the image width in pixels is \(w\), you can convert the focal length \(f_x\) to world units using:&lt;/p&gt;
 
 &lt;div&gt; \[ F_x = f_x  \frac{W}{w} \] &lt;/div&gt;
 
@@ -132,21 +186,21 @@ Y_0 = y_0  \frac{H}{h}
 
 &lt;p&gt;As we discussed earlier, only the arrangement of the pinhole and the film matter, so the physical box surrounding the camera is irrelevant.  For this reason, many discussion of camera geometry use a simpler visual representation: the camera frustum.&lt;/p&gt;
 
-&lt;p&gt;The camera's viewable region is pyramid shaped, and is sometimes called the &quot;visibility cone.&quot;  Lets add some 3D spheres to our scene and show how they fall within the visibility cone and create an image.&lt;/p&gt;
+&lt;p&gt;The camera&#39;s viewable region is pyramid shaped, and is sometimes called the &quot;visibility cone.&quot;  Lets add some 3D spheres to our scene and show how they fall within the visibility cone and create an image.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/intrinsic-frustum.png&quot; alt=&quot;frustum&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Since the camera's &quot;box&quot; is irrelevant, let's remove it.  Also, note that the film's image depicts a mirrored version of reality.  To fix this, we'll use a &quot;virtual image&quot; instead of the film itself.  The virtual image has the same properties as the film image, but unlike the true image, the virtual image appears in front of the camera, and the projected image is unflipped.&lt;/p&gt;
+&lt;p&gt;Since the camera&#39;s &quot;box&quot; is irrelevant, let&#39;s remove it.  Also, note that the film&#39;s image depicts a mirrored version of reality.  To fix this, we&#39;ll use a &quot;virtual image&quot; instead of the film itself.  The virtual image has the same properties as the film image, but unlike the true image, the virtual image appears in front of the camera, and the projected image is unflipped.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/intrinsic-frustum-no-box.png&quot; alt=&quot;frustum without camera box&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Note that the position and size of the virtual image plane is arbitrary &amp;mdash; we could have doubled its size as long as we also doubled its distance from the pinhole.&lt;/p&gt;
 
-&lt;p&gt;After removing the true image we're left with the &quot;viewing frustum&quot; representation of our pinhole camera.&lt;/p&gt;
+&lt;p&gt;After removing the true image we&#39;re left with the &quot;viewing frustum&quot; representation of our pinhole camera.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/intrinsic-frustum-final.png&quot; alt=&quot;frustum representation, final &quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;The pinhole has been replaced by the tip of the visibility cone, and the film is now represented by the virtual image plane.  We'll use this representation for our demo later.&lt;/p&gt;
+&lt;p&gt;The pinhole has been replaced by the tip of the visibility cone, and the film is now represented by the virtual image plane.  We&#39;ll use this representation for our demo later.&lt;/p&gt;
 
 &lt;h1&gt;Intrinsic parameters as 2D transformations&lt;/h1&gt;
 
@@ -279,7 +333,7 @@ Y_0 = y_0  \frac{H}{h}
     &lt;div id=&quot;3d_container&quot; &gt;
     &lt;/div&gt;
     &lt;div class=&quot;caption&quot;&gt;
-    &lt;em&gt;Left&lt;/em&gt;: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   &lt;em&gt;Right&lt;/em&gt;: camera's image.&lt;/div&gt;
+    &lt;em&gt;Left&lt;/em&gt;: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   &lt;em&gt;Right&lt;/em&gt;: camera&#39;s image.&lt;/div&gt;
     &lt;div id=&quot;demo_controls&quot;&gt;
         &lt;ul&gt;
             &lt;li&gt;&lt;a href=&quot;#intrinsic-controls&quot;&gt;Intrinsic&lt;/a&gt;&lt;/li&gt;
@@ -323,14 +377,11 @@ Y_0 = y_0  \frac{H}{h}
 &lt;/div&gt;
 
 
-
-
-&lt;br /&gt;
-
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
 &lt;h1&gt;Dissecting the Camera Matrix, A Summary&lt;/h1&gt;
 
-&lt;p&gt;Over the course of this series of articles we've seen how to decompose&lt;/p&gt;
+&lt;p&gt;Over the course of this series of articles we&#39;ve seen how to decompose&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;the full camera matrix into intrinsic and extrinsic matrices&lt;/a&gt;,&lt;/li&gt;
@@ -409,7 +460,7 @@ Y_0 = y_0  \frac{H}{h}
 
 &lt;p&gt;Do you have other ways of interpreting the intrinsic camera matrix?   Leave a comment or &lt;a href=&quot;/contact.html&quot;&gt;drop me a line&lt;/a&gt;!&lt;/p&gt;
 
-&lt;p&gt;Next time, we'll show how to prepare your calibrated camera to generate stereo image pairs.  See you then!&lt;/p&gt;
+&lt;p&gt;Next time, we&#39;ll show how to prepare your calibrated camera to generate stereo image pairs.  See you then!&lt;/p&gt;
 </description>
 				<pubDate>Tue, 13 Aug 2013 00:00:00 -0700</pubDate>
 				<link>http://ksimek.github.io/2013/08/13/intrinsic/</link>
@@ -418,7 +469,7 @@ Y_0 = y_0  \frac{H}{h}
 		
 			<item>
 				<title>Calibrated Cameras and gluPerspective</title>
-				<description>&lt;p&gt;After posting my last article &lt;a href=&quot;/2013/06/03/calibrated_cameras_in_opengl/&quot;&gt;relating glFrustum to the intrinsic camera matrix&lt;/a&gt;, I receieved some emails asking how the (now deprecated) &lt;a href=&quot;http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluPerspective.htm&quot;&gt;gluPerspective&lt;/a&gt; function relates to the intrinsic matrix.  We can show a similar result with &lt;code&gt;gluPerspective&lt;/code&gt; as we did with &lt;code&gt;glFrustum&lt;/code&gt;, namely that it is the product of a &lt;code&gt;glOrtho&lt;/code&gt; matrix and a (modified) intrinsic camera matrix, but in this case the intrinsic matrix has different constraints.  I'll be re-using notation and concepts from the previous article, so if you aren't familiar with them, I recommend reading it first.&lt;/p&gt;
+				<description>&lt;p&gt;After posting my last article &lt;a href=&quot;/2013/06/03/calibrated_cameras_in_opengl/&quot;&gt;relating glFrustum to the intrinsic camera matrix&lt;/a&gt;, I receieved some emails asking how the (now deprecated) &lt;a href=&quot;http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluPerspective.htm&quot;&gt;gluPerspective&lt;/a&gt; function relates to the intrinsic matrix.  We can show a similar result with &lt;code&gt;gluPerspective&lt;/code&gt; as we did with &lt;code&gt;glFrustum&lt;/code&gt;, namely that it is the product of a &lt;code&gt;glOrtho&lt;/code&gt; matrix and a (modified) intrinsic camera matrix, but in this case the intrinsic matrix has different constraints.  I&#39;ll be re-using notation and concepts from the previous article, so if you aren&#39;t familiar with them, I recommend reading it first.&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -434,7 +485,7 @@ Y_0 = y_0  \frac{H}{h}
         \begin{array}{cccc}
         \frac{f}{\text{aspect}} &amp; 0 &amp; 0 &amp; 0 \\
         0 &amp; f &amp; 0 &amp; 0 \\
-        0 &amp; 0 &amp; C' &amp; D' \\
+        0 &amp; 0 &amp; C&#39; &amp; D&#39; \\
         0 &amp; 0 &amp; -1 &amp; 0
         \end{array}
 \right )
@@ -449,14 +500,14 @@ Y_0 = y_0  \frac{H}{h}
 &lt;div&gt; \[
 \begin{align}
 f &amp;= \cot(fovy/2) \\
-C' &amp;= -\frac{far + near}{far - near}  \\
-D' &amp;= -\frac{2 \; far \; near}{far - near}  \\
+C&#39; &amp;= -\frac{far + near}{far - near}  \\
+D&#39; &amp;= -\frac{2 \; far \; near}{far - near}  \\
 \end{align}
 \]
 &lt;/div&gt;
 
 
-&lt;p&gt;Like with &lt;code&gt;glFrustum&lt;/code&gt;, &lt;code&gt;gluPerspective&lt;/code&gt; permits no axis skew, but it also restricts the viewing volume to be centered around the camera's principal (viewing) axis.  This means that the principal point offsets \(x_0\) and \(y_0\) must be zero, &lt;em&gt;and&lt;/em&gt; the matrix generated by &lt;code&gt;glOrtho&lt;/code&gt; must be centered, i.e. &lt;code&gt;bottom = -top&lt;/code&gt; and &lt;code&gt;left = -right&lt;/code&gt;.  The &lt;em&gt;Persp&lt;/em&gt; matrix corresponding to the intrinsic matrix is:&lt;/p&gt;
+&lt;p&gt;Like with &lt;code&gt;glFrustum&lt;/code&gt;, &lt;code&gt;gluPerspective&lt;/code&gt; permits no axis skew, but it also restricts the viewing volume to be centered around the camera&#39;s principal (viewing) axis.  This means that the principal point offsets \(x_0\) and \(y_0\) must be zero, &lt;em&gt;and&lt;/em&gt; the matrix generated by &lt;code&gt;glOrtho&lt;/code&gt; must be centered, i.e. &lt;code&gt;bottom = -top&lt;/code&gt; and &lt;code&gt;left = -right&lt;/code&gt;.  The &lt;em&gt;Persp&lt;/em&gt; matrix corresponding to the intrinsic matrix is:&lt;/p&gt;
 
 &lt;div&gt;\[ Persp = \left( \begin{array}{cccc} \alpha &amp; 0 &amp; 0 &amp; 0 \\ 0 &amp; \beta &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; A &amp; B \\ 0 &amp; 0 &amp; -1 &amp; 0 \end{array} \right)  \]&lt;/div&gt;
 
@@ -524,21 +575,21 @@ t_z &amp;= -\frac{far + near}{far - near}
 				<description>&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
 
 
-&lt;div class='context-img' style='width:317px'&gt;
-&lt;img src='/img/augmented_reality.jpg' /&gt;
-&lt;div class='caption'&gt;Simulating a calibrated camera for augmented reality.
-&lt;div class='credit'&gt;&lt;a href=&quot;http://www.flickr.com/photos/thp4/8060086636/&quot;&gt;Credit: thp4&lt;/a&gt;&lt;/div&gt;
+&lt;div class=&#39;context-img&#39; style=&#39;width:317px&#39;&gt;
+&lt;img src=&#39;/img/augmented_reality.jpg&#39; /&gt;
+&lt;div class=&#39;caption&#39;&gt;Simulating a calibrated camera for augmented reality.
+&lt;div class=&#39;credit&#39;&gt;&lt;a href=&quot;http://www.flickr.com/photos/thp4/8060086636/&quot;&gt;Credit: thp4&lt;/a&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
 
-&lt;p&gt;You've calibrated your camera.  You've decomposed it into intrinsic and extrinsic camera matrices. Now you need to use it to render a synthetic scene in OpenGL.  You know the extrinsic matrix corresponds to the modelview matrix and the intrinsic is the projection matrix, but beyond that you're stumped.  You remember something about &lt;code&gt;gluPerspective&lt;/code&gt;, but it only permits two degrees of freedom, and your intrinsic camera matrix has five.  glFrustum looks promising, but the mapping between its parameters and the camera matrix aren't obvious and it looks like you'll have to ignore your camera's axis skew.  You may be asking yourself, &quot;I have a matrix, why can't I just use it?&quot;&lt;/p&gt;
+&lt;p&gt;You&#39;ve calibrated your camera.  You&#39;ve decomposed it into intrinsic and extrinsic camera matrices. Now you need to use it to render a synthetic scene in OpenGL.  You know the extrinsic matrix corresponds to the modelview matrix and the intrinsic is the projection matrix, but beyond that you&#39;re stumped.  You remember something about &lt;code&gt;gluPerspective&lt;/code&gt;, but it only permits two degrees of freedom, and your intrinsic camera matrix has five.  glFrustum looks promising, but the mapping between its parameters and the camera matrix aren&#39;t obvious and it looks like you&#39;ll have to ignore your camera&#39;s axis skew.  You may be asking yourself, &quot;I have a matrix, why can&#39;t I just use it?&quot;&lt;/p&gt;
 
-&lt;p&gt;You can.  And you don't have to jettison your axis skew, either.  In this article, I'll show how to use your intrinsic camera matrix in OpenGL with minimal modification.  For illustration, I'll use OpenGL 2.1 API calls, but the same matrices can be sent to your shaders in modern OpenGL.&lt;/p&gt;
+&lt;p&gt;You can.  And you don&#39;t have to jettison your axis skew, either.  In this article, I&#39;ll show how to use your intrinsic camera matrix in OpenGL with minimal modification.  For illustration, I&#39;ll use OpenGL 2.1 API calls, but the same matrices can be sent to your shaders in modern OpenGL.&lt;/p&gt;
 
 &lt;h2&gt;glFrustum:  Two Transforms in One&lt;/h2&gt;
 
-&lt;p&gt;To better understand perspective projection in OpenGL, let's examine &lt;code&gt;glFrustum&lt;/code&gt;. According to the OpenGL documentation,&lt;/p&gt;
+&lt;p&gt;To better understand perspective projection in OpenGL, let&#39;s examine &lt;code&gt;glFrustum&lt;/code&gt;. According to the OpenGL documentation,&lt;/p&gt;
 
 &lt;blockquote&gt;&lt;p&gt;glFrustum describes a perspective matrix that produces a perspective projection.&lt;/p&gt;&lt;/blockquote&gt;
 
@@ -549,23 +600,23 @@ t_z &amp;= -\frac{far + near}{far - near}
 
 &lt;p&gt;In reality, &lt;code&gt;glFrustum&lt;/code&gt; does two things: first it performs perspective projection, and then it converts to &lt;a href=&quot;http://medialab.di.unipi.it/web/IUM/Waterloo/node15.html&quot;&gt;normalized device coordinates (NDC)&lt;/a&gt;.  The former is a common operation in projective geometry,  while the latter is OpenGL arcana, an implementation detail.&lt;/p&gt;
 
-&lt;p&gt;To give us finer-grained control over these operations, we'll separate projection matrix into two matrices &lt;em&gt;Persp&lt;/em&gt; and &lt;em&gt;NDC&lt;/em&gt;:&lt;/p&gt;
+&lt;p&gt;To give us finer-grained control over these operations, we&#39;ll separate projection matrix into two matrices &lt;em&gt;Persp&lt;/em&gt; and &lt;em&gt;NDC&lt;/em&gt;:&lt;/p&gt;
 
 &lt;div&gt;\[ Proj = NDC \times Persp \]&lt;/div&gt;
 
 
-&lt;p&gt;Our intrinsic camera matrix describes a perspective projection, so it will be the key to the &lt;em&gt;Persp&lt;/em&gt; matrix.  For the &lt;em&gt;NDC&lt;/em&gt; matrix, we'll (ab)use OpenGL's &lt;code&gt;glOrtho&lt;/code&gt; routine.&lt;/p&gt;
+&lt;p&gt;Our intrinsic camera matrix describes a perspective projection, so it will be the key to the &lt;em&gt;Persp&lt;/em&gt; matrix.  For the &lt;em&gt;NDC&lt;/em&gt; matrix, we&#39;ll (ab)use OpenGL&#39;s &lt;code&gt;glOrtho&lt;/code&gt; routine.&lt;/p&gt;
 
 &lt;h2&gt;Step 1: Projective Transform&lt;/h2&gt;
 
-&lt;p&gt;Our 3x3 intrinsic camera matrix &lt;em&gt;K&lt;/em&gt; needs two modifications before it's ready to use in OpenGL.  First, for proper clipping, the (3,3) element of &lt;em&gt;K&lt;/em&gt; &lt;em&gt;must&lt;/em&gt; be -1. OpenGL's camera looks down the &lt;em&gt;negative&lt;/em&gt; z-axis, so if \(K_{33}\) is positive, vertices in front of the camera will have a negative &lt;em&gt;w&lt;/em&gt; coordinate after projection.  In principle, this is okay, but &lt;a href=&quot;http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix&quot;&gt;because of how OpenGL performs clipping&lt;/a&gt;, all of these points will be clipped.&lt;/p&gt;
+&lt;p&gt;Our 3x3 intrinsic camera matrix &lt;em&gt;K&lt;/em&gt; needs two modifications before it&#39;s ready to use in OpenGL.  First, for proper clipping, the (3,3) element of &lt;em&gt;K&lt;/em&gt; &lt;em&gt;must&lt;/em&gt; be -1. OpenGL&#39;s camera looks down the &lt;em&gt;negative&lt;/em&gt; z-axis, so if \(K_{33}\) is positive, vertices in front of the camera will have a negative &lt;em&gt;w&lt;/em&gt; coordinate after projection.  In principle, this is okay, but &lt;a href=&quot;http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix&quot;&gt;because of how OpenGL performs clipping&lt;/a&gt;, all of these points will be clipped.&lt;/p&gt;
 
-&lt;p&gt;If \(K_{33}\) isn't -1, your intrinsic and extrinsic matrices need some modifications.  Getting the camera decomposition right isn't trivial, so I'll refer the reader to &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;my earlier article on camera decomposition&lt;/a&gt;, which will walk you through the steps.   Part of the result will be the negation of the third column of the intrinsic matrix, so you'll see those elements negated below.&lt;/p&gt;
+&lt;p&gt;If \(K_{33}\) isn&#39;t -1, your intrinsic and extrinsic matrices need some modifications.  Getting the camera decomposition right isn&#39;t trivial, so I&#39;ll refer the reader to &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;my earlier article on camera decomposition&lt;/a&gt;, which will walk you through the steps.   Part of the result will be the negation of the third column of the intrinsic matrix, so you&#39;ll see those elements negated below.&lt;/p&gt;
 
 &lt;div&gt;\[ K = \left( \begin{array}{ccc} \alpha &amp; s &amp; -x_0 \\ 0 &amp; \beta &amp; -y_0  \\ 0 &amp; 0 &amp; -1 \end{array} \right) \]&lt;/div&gt;
 
 
-&lt;p&gt;For the second modification, we need to prevent losing Z-depth information, so we'll add an extra row and column to the intrinsic matrix.&lt;/p&gt;
+&lt;p&gt;For the second modification, we need to prevent losing Z-depth information, so we&#39;ll add an extra row and column to the intrinsic matrix.&lt;/p&gt;
 
 &lt;div&gt;\[ Persp = \left( \begin{array}{cccc} \alpha &amp; s &amp; -x_0 &amp; 0 \\ 0 &amp; \beta &amp; -y_0 &amp; 0 \\ 0 &amp; 0 &amp; A &amp; B \\ 0 &amp; 0 &amp; -1 &amp; 0 \end{array} \right)  \]&lt;/div&gt;
 
@@ -614,7 +665,7 @@ glOrtho(-W/2, W/2, -H/2, H/2, near, far);
 glMultMatrix(persp);
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Note that there is a strong relationship between the &lt;code&gt;glOrtho&lt;/code&gt; parameters and the perspective matrix.  For example, shifting the viewing volume left by X is equivalent to shifting the principal point right by X.  Doubling \(\alpha\) is equivalent to dividing &lt;em&gt;left&lt;/em&gt; and &lt;em&gt;right&lt;/em&gt; by two.  This is the same relationship that exists in a pinhole camera between the camera's geometry and the geometry of its film--shifting the pinhole right is equivalent to shifting the film left; doubling the focal length is equivalent to halving the dimensions of the film.  Clearly the two-matrix representation of projection is redundant, but keeping these matrices separate allows us to maintain the logical separation between the camera geometry and the image geometry.&lt;/p&gt;
+&lt;p&gt;Note that there is a strong relationship between the &lt;code&gt;glOrtho&lt;/code&gt; parameters and the perspective matrix.  For example, shifting the viewing volume left by X is equivalent to shifting the principal point right by X.  Doubling \(\alpha\) is equivalent to dividing &lt;em&gt;left&lt;/em&gt; and &lt;em&gt;right&lt;/em&gt; by two.  This is the same relationship that exists in a pinhole camera between the camera&#39;s geometry and the geometry of its film--shifting the pinhole right is equivalent to shifting the film left; doubling the focal length is equivalent to halving the dimensions of the film.  Clearly the two-matrix representation of projection is redundant, but keeping these matrices separate allows us to maintain the logical separation between the camera geometry and the image geometry.&lt;/p&gt;
 
 &lt;h2&gt;Equivalence to glFrustum&lt;/h2&gt;
 
@@ -628,7 +679,7 @@ Proj &amp;= NDC * Persp \\[1.5em]
         \left( \begin{array}{cccc} \frac{2}{right - left} &amp; 0 &amp; 0 &amp; t_x \\ 0 &amp; \frac{2}{top - bottom} &amp; 0 &amp; t_y \\ 0 &amp; 0 &amp; -\frac{2}{far - near} &amp; t_z \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{array} \right)
         *
         \left( \begin{array}{cccc} near &amp; 0 &amp; 0 &amp; 0 \\ 0 &amp; near &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; A &amp; B \\ 0 &amp; 0 &amp; -1 &amp; 0 \end{array} \right) \\[1.5em]
-    &amp;= \left( \begin{array}{cccc} \frac{2 near}{right - left} &amp; 0 &amp; A' &amp; 0 \\ 0 &amp; \frac{2 near}{top - bottom} &amp; B' &amp; 0 \\ 0 &amp; 0 &amp; C' &amp; D' \\ 0 &amp; 0 &amp; -1 &amp; 0 \end{array} \right)
+    &amp;= \left( \begin{array}{cccc} \frac{2 near}{right - left} &amp; 0 &amp; A&#39; &amp; 0 \\ 0 &amp; \frac{2 near}{top - bottom} &amp; B&#39; &amp; 0 \\ 0 &amp; 0 &amp; C&#39; &amp; D&#39; \\ 0 &amp; 0 &amp; -1 &amp; 0 \end{array} \right)
     \end{align} \]
 &lt;/div&gt;
 
@@ -636,10 +687,10 @@ Proj &amp;= NDC * Persp \\[1.5em]
 &lt;p&gt;where&lt;/p&gt;
 
 &lt;div&gt; \[ \begin{align}
-A' &amp;= \frac{right + left}{right - left} \\
-B' &amp;= \frac{top + bottom}{top - bottom} \\
-C' &amp;= -\frac{far + near}{far - near}  \\
-D' &amp;= -\frac{2 \; far \; near}{far - near}  \\
+A&#39; &amp;= \frac{right + left}{right - left} \\
+B&#39; &amp;= \frac{top + bottom}{top - bottom} \\
+C&#39; &amp;= -\frac{far + near}{far - near}  \\
+D&#39; &amp;= -\frac{2 \; far \; near}{far - near}  \\
 \end{align} \] &lt;/div&gt;
 
 
@@ -648,20 +699,20 @@ D' &amp;= -\frac{2 \; far \; near}{far - near}  \\
 &lt;p&gt;By tweaking the frame bounds we can relax the constraints imposed above.  We can implement focal lengths other than &lt;em&gt;near&lt;/em&gt; by scaling the frame:&lt;/p&gt;
 
 &lt;div&gt; \[ \begin{align}
-    left' &amp;= \left( \frac{near}{\alpha} \right) left \\
-    right' &amp;= \left( \frac{near}{\alpha} \right) right \\
-    top' &amp;= \left( \frac{near}{\beta} \right) top \\
-    bottom' &amp;= \left( \frac{near}{\beta} \right) bottom
+    left&#39; &amp;= \left( \frac{near}{\alpha} \right) left \\
+    right&#39; &amp;= \left( \frac{near}{\alpha} \right) right \\
+    top&#39; &amp;= \left( \frac{near}{\beta} \right) top \\
+    bottom&#39; &amp;= \left( \frac{near}{\beta} \right) bottom
 \end{align} \] &lt;/div&gt;
 
 
 &lt;p&gt;Non-zero principal point offsets are achieved by shifting the frame window:&lt;/p&gt;
 
 &lt;div&gt; \[ \begin{align}
-    left'' &amp;= left' - x_0 \\
-    right'' &amp;= right' - x_0 \\
-    top'' &amp;= top' - y_0 \\
-    bottom'' &amp;= bottom' - y_0
+    left&#39;&#39; &amp;= left&#39; - x_0 \\
+    right&#39;&#39; &amp;= right&#39; - x_0 \\
+    top&#39;&#39; &amp;= top&#39; - y_0 \\
+    bottom&#39;&#39; &amp;= bottom&#39; - y_0
 \end{align} \] &lt;/div&gt;
 
 
@@ -669,13 +720,13 @@ D' &amp;= -\frac{2 \; far \; near}{far - near}  \\
 
 &lt;h2&gt;The Extrinsic Matrix&lt;/h2&gt;
 
-&lt;p&gt;The extrinsic matrix can be used as the modelview matrix without modification, just convert it to a 4x4 matrix by adding an extra row of &lt;em&gt;(0,0,0,1)&lt;/em&gt;, and pass it to &lt;code&gt;glLoadMatrix&lt;/code&gt; or send it to your shader.    If lighting or back-face culling are acting strangely, it's likely that your rotation matrix has a determinant of -1.  This results in the geometry rendering in the right place, but with normal-vectors reversed so your scene is inside-out.  The &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;previous article on camera decomposition&lt;/a&gt; should help you prevent this.&lt;/p&gt;
+&lt;p&gt;The extrinsic matrix can be used as the modelview matrix without modification, just convert it to a 4x4 matrix by adding an extra row of &lt;em&gt;(0,0,0,1)&lt;/em&gt;, and pass it to &lt;code&gt;glLoadMatrix&lt;/code&gt; or send it to your shader.    If lighting or back-face culling are acting strangely, it&#39;s likely that your rotation matrix has a determinant of -1.  This results in the geometry rendering in the right place, but with normal-vectors reversed so your scene is inside-out.  The &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;previous article on camera decomposition&lt;/a&gt; should help you prevent this.&lt;/p&gt;
 
 &lt;p&gt;Alternatively, you can convert your rotation matrix to axis-angle form and use &lt;code&gt;glRotate&lt;/code&gt;.  Remember that the fourth column of the extrinsic matrix is the translation &lt;em&gt;after&lt;/em&gt; rotating, so your call to &lt;code&gt;glTranslate&lt;/code&gt; should come &lt;em&gt;before&lt;/em&gt; &lt;code&gt;glRotate&lt;/code&gt;.  Check out &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;this previous article&lt;/a&gt; for a longer discussion of the extrinsic matrix, including how to it with &lt;code&gt;glLookAt&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;We've seen two different ways to simulate a calibrated camera in OpenGL, one using glFrustum and one using the intrinsic camera matrix directly.    If you need to implement radial distortion, it should be possible with a vertex shader, but you'll probably want a high poly count so the curved distortions appear smooth--does anyone have experience with this?  In a future article, I'll cover how to accomplish stereo and head-tracked rendering using simple modifications to your intrinsic camera parameters.&lt;/p&gt;
+&lt;p&gt;We&#39;ve seen two different ways to simulate a calibrated camera in OpenGL, one using glFrustum and one using the intrinsic camera matrix directly.    If you need to implement radial distortion, it should be possible with a vertex shader, but you&#39;ll probably want a high poly count so the curved distortions appear smooth--does anyone have experience with this?  In a future article, I&#39;ll cover how to accomplish stereo and head-tracked rendering using simple modifications to your intrinsic camera parameters.&lt;/p&gt;
 </description>
 				<pubDate>Mon, 03 Jun 2013 00:00:00 -0700</pubDate>
 				<link>http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl/</link>
@@ -684,11 +735,11 @@ D' &amp;= -\frac{2 \; far \; near}{far - near}  \\
 		
 			<item>
 				<title>Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</title>
-				<description>&lt;p&gt;Welcome to the third post in the series &quot;&lt;a href=&quot;/2012/08/13/introduction/&quot;&gt;The Perspecive Camera - An Interactive Tour&lt;/a&gt;.&quot;  In the last post, &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;we learned how to decompose the camera matrix&lt;/a&gt; into a product of intrinsic and extrinsic matrices.  In the next two posts, we'll explore the extrinsic and intrinsic matrices in greater detail.  First we'll explore various ways of looking at the extrinsic matrix, with an interactive demo at the end.&lt;/p&gt;
+				<description>&lt;p&gt;Welcome to the third post in the series &quot;&lt;a href=&quot;/2012/08/13/introduction/&quot;&gt;The Perspecive Camera - An Interactive Tour&lt;/a&gt;.&quot;  In the last post, &lt;a href=&quot;/2012/08/14/decompose/&quot;&gt;we learned how to decompose the camera matrix&lt;/a&gt; into a product of intrinsic and extrinsic matrices.  In the next two posts, we&#39;ll explore the extrinsic and intrinsic matrices in greater detail.  First we&#39;ll explore various ways of looking at the extrinsic matrix, with an interactive demo at the end.&lt;/p&gt;
 
 &lt;h2&gt;The Extrinsic Camera Matrix&lt;/h2&gt;
 
-&lt;p&gt;The camera's extrinsic matrix describes the camera's location in the world, and what direction it's pointing.  Those familiar with OpenGL know this as the &quot;view matrix&quot; (or rolled into the &quot;modelview matrix&quot;).  It has two components: a rotation matrix, &lt;em&gt;R&lt;/em&gt;, and a translation vector &lt;strong&gt;&lt;em&gt;t&lt;/em&gt;&lt;/strong&gt;, but as we'll soon see, these don't exactly correspond to the camera's rotation and translation.  First we'll examine the parts of the extrinsic matrix, and later we'll look at alternative ways of describing the camera's pose that are more intuitive.&lt;/p&gt;
+&lt;p&gt;The camera&#39;s extrinsic matrix describes the camera&#39;s location in the world, and what direction it&#39;s pointing.  Those familiar with OpenGL know this as the &quot;view matrix&quot; (or rolled into the &quot;modelview matrix&quot;).  It has two components: a rotation matrix, &lt;em&gt;R&lt;/em&gt;, and a translation vector &lt;strong&gt;&lt;em&gt;t&lt;/em&gt;&lt;/strong&gt;, but as we&#39;ll soon see, these don&#39;t exactly correspond to the camera&#39;s rotation and translation.  First we&#39;ll examine the parts of the extrinsic matrix, and later we&#39;ll look at alternative ways of describing the camera&#39;s pose that are more intuitive.&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -705,7 +756,7 @@ r_{3,1} &amp; r_{3,2} &amp; r_{3,3} &amp; t_3 \\
 &lt;/div&gt;
 
 
-&lt;p&gt;It's common to see a version of this matrix with extra row of (0,0,0,1) added to the bottom.  This makes the matrix square, which allows us to further decompose this matrix into a rotation &lt;em&gt;followed by&lt;/em&gt; translation:&lt;/p&gt;
+&lt;p&gt;It&#39;s common to see a version of this matrix with extra row of (0,0,0,1) added to the bottom.  This makes the matrix square, which allows us to further decompose this matrix into a rotation &lt;em&gt;followed by&lt;/em&gt; translation:&lt;/p&gt;
 
 &lt;div&gt;
 \[ 
@@ -754,13 +805,13 @@ r_{3,1} &amp; r_{3,2} &amp; r_{3,3} &amp; 0 \\
 
 &lt;p&gt;This matrix describes how to transform points in world coordinates to camera coordinates.  The vector &lt;strong&gt;&lt;em&gt;t&lt;/em&gt;&lt;/strong&gt; can be interpreted as the position of the world origin in camera coordinates, and the columns of &lt;em&gt;R&lt;/em&gt; represent represent the directions of the world-axes in camera coordinates.&lt;/p&gt;
 
-&lt;p&gt;The important thing to remember about the extrinsic matrix is that it describes how the &lt;em&gt;world&lt;/em&gt; is transformed relative to the &lt;em&gt;camera&lt;/em&gt;.  This is often counter-intuitive, because we usually want to specify how the &lt;em&gt;camera&lt;/em&gt; is transformed relative to the &lt;em&gt;world&lt;/em&gt;.    Next, we'll examine two alternative ways to describe the camera's extrinsic parameters that are more intuitive and how to convert them into the form of an extrinsic matrix.&lt;/p&gt;
+&lt;p&gt;The important thing to remember about the extrinsic matrix is that it describes how the &lt;em&gt;world&lt;/em&gt; is transformed relative to the &lt;em&gt;camera&lt;/em&gt;.  This is often counter-intuitive, because we usually want to specify how the &lt;em&gt;camera&lt;/em&gt; is transformed relative to the &lt;em&gt;world&lt;/em&gt;.    Next, we&#39;ll examine two alternative ways to describe the camera&#39;s extrinsic parameters that are more intuitive and how to convert them into the form of an extrinsic matrix.&lt;/p&gt;
 
 &lt;h2&gt;Building the Extrinsic Matrix from Camera Pose&lt;/h2&gt;
 
-&lt;p&gt;It's often more natural to specify the camera's pose directly rather than specifying how world points should transform to camera coordinates.  Luckily, building an extrinsic camera matrix this way is easy: just build a rigid transformation matrix that describes the camera's pose and then take it's inverse.&lt;/p&gt;
+&lt;p&gt;It&#39;s often more natural to specify the camera&#39;s pose directly rather than specifying how world points should transform to camera coordinates.  Luckily, building an extrinsic camera matrix this way is easy: just build a rigid transformation matrix that describes the camera&#39;s pose and then take it&#39;s inverse.&lt;/p&gt;
 
-&lt;p&gt;Let &lt;em&gt;C&lt;/em&gt; be a column vector describing the location of the camera-center in world coordinates, and let \(R_c\) be the rotation matrix describing the camera's orientation with respect to the world coordinate axes.  The transformation matrix that describes the camera's pose is then \([R_c \,|\, C ]\).  Like before, we make the matrix square by adding an extra row of (0,0,0,1).  Then the extrinsic matrix is obtained by inverting the camera's pose matrix:&lt;/p&gt;
+&lt;p&gt;Let &lt;em&gt;C&lt;/em&gt; be a column vector describing the location of the camera-center in world coordinates, and let \(R_c\) be the rotation matrix describing the camera&#39;s orientation with respect to the world coordinate axes.  The transformation matrix that describes the camera&#39;s pose is then \([R_c \,|\, C ]\).  Like before, we make the matrix square by adding an extra row of (0,0,0,1).  Then the extrinsic matrix is obtained by inverting the camera&#39;s pose matrix:&lt;/p&gt;
 
 &lt;div&gt;
 \begin{align}
@@ -840,7 +891,7 @@ R_c^T &amp; -R_c^TC \\
 &lt;/div&gt;
 
 
-&lt;p&gt;When applying the inverse, we use the fact that the inverse of a rotation matrix is it's transpose, and inverting a translation matrix simply negates the translation vector.  Thus, we see that the relationship between the extrinsic matrix parameters and the camera's pose is straightforward:&lt;/p&gt;
+&lt;p&gt;When applying the inverse, we use the fact that the inverse of a rotation matrix is it&#39;s transpose, and inverting a translation matrix simply negates the translation vector.  Thus, we see that the relationship between the extrinsic matrix parameters and the camera&#39;s pose is straightforward:&lt;/p&gt;
 
 &lt;div&gt;
 \[
@@ -856,26 +907,26 @@ R  &amp;= R_c^T \\
 
 &lt;h2&gt;The &quot;Look-At&quot; Camera&lt;/h2&gt;
 
-&lt;p&gt;Readers familiar with OpenGL might prefer a third way of specifying the camera's pose using &lt;em&gt;(a)&lt;/em&gt; the camera's position, &lt;em&gt;(b)&lt;/em&gt; what it's looking at, and &lt;em&gt;(c)&lt;/em&gt; the &quot;up&quot; direction.  In legacy OpenGL, this is accomplished by the gluLookAt() function, so we'll call this the &quot;look-at&quot; camera.  Let &lt;em&gt;C&lt;/em&gt; be the camera center, &lt;strong&gt;&lt;em&gt;p&lt;/em&gt;&lt;/strong&gt; be the target point, and &lt;strong&gt;&lt;em&gt;u&lt;/em&gt;&lt;/strong&gt; be up-direction.   The algorithm for computing the rotation matrix is (paraphrased from the &lt;a href=&quot;http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluLookAt.htm&quot;&gt;OpenGL documentation&lt;/a&gt;):&lt;/p&gt;
+&lt;p&gt;Readers familiar with OpenGL might prefer a third way of specifying the camera&#39;s pose using &lt;em&gt;(a)&lt;/em&gt; the camera&#39;s position, &lt;em&gt;(b)&lt;/em&gt; what it&#39;s looking at, and &lt;em&gt;(c)&lt;/em&gt; the &quot;up&quot; direction.  In legacy OpenGL, this is accomplished by the gluLookAt() function, so we&#39;ll call this the &quot;look-at&quot; camera.  Let &lt;em&gt;C&lt;/em&gt; be the camera center, &lt;strong&gt;&lt;em&gt;p&lt;/em&gt;&lt;/strong&gt; be the target point, and &lt;strong&gt;&lt;em&gt;u&lt;/em&gt;&lt;/strong&gt; be up-direction.   The algorithm for computing the rotation matrix is (paraphrased from the &lt;a href=&quot;http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluLookAt.htm&quot;&gt;OpenGL documentation&lt;/a&gt;):&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;Compute L = p - C.&lt;/li&gt;
 &lt;li&gt;Normalize L.&lt;/li&gt;
 &lt;li&gt;Compute s = L x u. (cross product)&lt;/li&gt;
 &lt;li&gt;Normalize s.&lt;/li&gt;
-&lt;li&gt;Compute u' = s x L.&lt;/li&gt;
+&lt;li&gt;Compute u&#39; = s x L.&lt;/li&gt;
 &lt;/ol&gt;
 
 
-&lt;p&gt;The extrinsic matrix's rotation matrix is then given by:&lt;/p&gt;
+&lt;p&gt;The extrinsic matrix&#39;s rotation matrix is then given by:&lt;/p&gt;
 
 &lt;div&gt;
 \[
 R = \left[ 
 \begin{array}{ccc}
-s_1 &amp; u_1' &amp; -L_1 \\
-s_2 &amp; u_2' &amp; -L_2 \\
-s_3 &amp; u_3' &amp; -L_3 
+s_1 &amp; u_1&#39; &amp; -L_1 \\
+s_2 &amp; u_2&#39; &amp; -L_2 \\
+s_3 &amp; u_3&#39; &amp; -L_3 
 \end{array}
 \right]
 \]
@@ -886,7 +937,7 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;h2&gt;Try it out!&lt;/h2&gt;
 
-&lt;p&gt;Below is an interactive demonstration of the three different ways of parameterizing a camera's extrinsic parameters.  Note how the camera moves differently as you switch between the three parameterizations.&lt;/p&gt;
+&lt;p&gt;Below is an interactive demonstration of the three different ways of parameterizing a camera&#39;s extrinsic parameters.  Note how the camera moves differently as you switch between the three parameterizations.&lt;/p&gt;
 
 &lt;p&gt;This requires a WebGL-enabled browser with Javascript enabled.&lt;/p&gt;
 
@@ -912,7 +963,7 @@ s_3 &amp; u_3' &amp; -L_3
     &lt;div id=&quot;3d_container&quot; &gt;
     &lt;/div&gt;
     &lt;div class=&quot;caption&quot;&gt;
-    &lt;em&gt;Left&lt;/em&gt;: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   &lt;em&gt;Right&lt;/em&gt;: camera's image.&lt;/div&gt;
+    &lt;em&gt;Left&lt;/em&gt;: scene with camera and viewing volume.  Virtual image plane is shown in yellow.   &lt;em&gt;Right&lt;/em&gt;: camera&#39;s image.&lt;/div&gt;
     &lt;div id=&quot;demo_controls&quot;&gt;
         &lt;ul&gt;
             &lt;li&gt;&lt;a href=&quot;#extrinsic-world-controls&quot;&gt;Extrinsic (World)&lt;/a&gt;&lt;/li&gt;
@@ -975,7 +1026,7 @@ s_3 &amp; u_3' &amp; -L_3
             
             &lt;p&gt;As you adjust these parameters, note how the camera moves in the world (left pane) and contrast with the &quot;camera-centric&quot; parameterization:&lt;/p&gt;
             &lt;ul&gt;
-            &lt;li&gt;Rotating affects the camera's position (the blue box).&lt;/li&gt;
+            &lt;li&gt;Rotating affects the camera&#39;s position (the blue box).&lt;/li&gt;
             &lt;li&gt;The direction of camera motion depends on the current rotation.&lt;/li&gt;
             &lt;li&gt;Positive rotations move the camera clockwise (or equivalently, rotate the world counter-clockwise).&lt;/li&gt;
             &lt;/ul&gt;
@@ -1043,7 +1094,7 @@ s_3 &amp; u_3' &amp; -L_3
             
             &lt;p&gt;As you adjust these parameters, note how the camera moves in the world (left pane) and contrast with the &quot;world-centric&quot; parameterization:&lt;/p&gt;
             &lt;ul&gt;
-            &lt;li&gt;Rotation occurs about the camera's position (the blue box).&lt;/li&gt;
+            &lt;li&gt;Rotation occurs about the camera&#39;s position (the blue box).&lt;/li&gt;
             &lt;li&gt;The direction of camera motion is independent of the current rotation.&lt;/li&gt;
             &lt;li&gt;A positive rotation rotates the camera counter-clockwise (or equivalently, rotates the world clockwise).&lt;/li&gt;
             &lt;li&gt;Increasing \(C_y\) always moves the camera toward the sky, regardless of rotation. &lt;/li&gt;
@@ -1108,7 +1159,7 @@ s_3 &amp; u_3' &amp; -L_3
             &lt;/div&gt;
             &lt;p&gt;Adjust extrinsic parameters above.&lt;/p&gt;
 
-            &lt;p&gt;This is a &quot;look-at&quot; parameterization, which describes the camera's orientation in terms of what it is looking at.  Adjust \(p_x\), \(p_y\), and \(p_z\) to change where the camera is looking (orange dot).  The up vector is fixed at (0,1,0)'.  Notice that moving the camera center, *C*, causes the camera to rotate.&lt;/p&gt;
+            &lt;p&gt;This is a &quot;look-at&quot; parameterization, which describes the camera&#39;s orientation in terms of what it is looking at.  Adjust \(p_x\), \(p_y\), and \(p_z\) to change where the camera is looking (orange dot).  The up vector is fixed at (0,1,0)&#39;.  Notice that moving the camera center, *C*, causes the camera to rotate.&lt;/p&gt;
 
             &lt;p&gt;
             &lt;/p&gt;
@@ -1168,19 +1219,15 @@ s_3 &amp; u_3' &amp; -L_3
 &lt;/div&gt;
 
 
-
-
-&lt;br /&gt;
-
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
 &lt;h2&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;We've just explored three different ways of parameterizing a camera's extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you're writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along (t_z) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren't sure which you prefer, play with the tool above and decide which approach feels the most natural.&lt;/p&gt;
+&lt;p&gt;We&#39;ve just explored three different ways of parameterizing a camera&#39;s extrinsic state.  Which parameterization you prefer to use will depend on your application.  If you&#39;re writing a Wolfenstein-style FPS, you might like the world-centric parameterization, because moving along (t_z) always corresponds to walking forward.  Or you might be interpolating a camera through waypoints in your scene, in which case, the camera-centric parameterization is preferred, since you can specify the position of your camera directly.  If you aren&#39;t sure which you prefer, play with the tool above and decide which approach feels the most natural.&lt;/p&gt;
 
-&lt;p&gt;Join us next time &lt;a href=&quot;/2013/08/13/intrinsic/&quot;&gt;when we explore the intrinsic matrix&lt;/a&gt;, and we'll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!&lt;/p&gt;
+&lt;p&gt;Join us next time &lt;a href=&quot;/2013/08/13/intrinsic/&quot;&gt;when we explore the intrinsic matrix&lt;/a&gt;, and we&#39;ll learn why hidden parts of your scene can never be revealed by zooming your camera.  See you then!&lt;/p&gt;
 
-&lt;br /&gt;
-
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 </description>
 				<pubDate>Wed, 22 Aug 2012 00:00:00 -0700</pubDate>
 				<link>http://ksimek.github.io/2012/08/22/extrinsic/</link>
@@ -1192,17 +1239,17 @@ s_3 &amp; u_3' &amp; -L_3
 				<description>&lt;div class=&quot;clearer&quot;&gt;&lt;/div&gt;
 
 
-&lt;div class='context-img' style='width:320px'&gt;
-&lt;img src='/img/decompose.jpg' /&gt;
-&lt;div class='caption'&gt;Not this kind of decomposition.
-&lt;div class='credit'&gt;&lt;a href=&quot;http://www.flickr.com/photos/dhollister/2596483147/&quot;&gt;Credit: Daniel Hollister&lt;/a&gt;&lt;/div&gt;
+&lt;div class=&#39;context-img&#39; style=&#39;width:320px&#39;&gt;
+&lt;img src=&#39;/img/decompose.jpg&#39; /&gt;
+&lt;div class=&#39;caption&#39;&gt;Not this kind of decomposition.
+&lt;div class=&#39;credit&#39;&gt;&lt;a href=&quot;http://www.flickr.com/photos/dhollister/2596483147/&quot;&gt;Credit: Daniel Hollister&lt;/a&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
 
-&lt;p&gt;So, you've been playing around a new computer vision library, and you've managed to calibrate your camera...  now what do you do with it?  It would be a lot more useful if you could get at the camera's position or find out it's field-of view.  You crack open your trusty copy of &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Hartley and Zisserman&lt;/a&gt;, which tells you how to decompose your camera into an intrinsic and extrinsic matrix --- great! But when you look at the results, something isn't quite right.  Maybe your rotation matrix has a determinant of -1, causing your matrix-to-quaternion function to barf.  Maybe your focal-length is negative, and you can't understand why.  Maybe your translation vector mistakenly claims that the world origin in &lt;em&gt;behind&lt;/em&gt; the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don't see &lt;em&gt;anything&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;So, you&#39;ve been playing around a new computer vision library, and you&#39;ve managed to calibrate your camera...  now what do you do with it?  It would be a lot more useful if you could get at the camera&#39;s position or find out it&#39;s field-of view.  You crack open your trusty copy of &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Hartley and Zisserman&lt;/a&gt;, which tells you how to decompose your camera into an intrinsic and extrinsic matrix --- great! But when you look at the results, something isn&#39;t quite right.  Maybe your rotation matrix has a determinant of -1, causing your matrix-to-quaternion function to barf.  Maybe your focal-length is negative, and you can&#39;t understand why.  Maybe your translation vector mistakenly claims that the world origin in &lt;em&gt;behind&lt;/em&gt; the camera.  Or worst of all, everything looks fine, but when you plug it into OpenGL, you just don&#39;t see &lt;em&gt;anything&lt;/em&gt;.&lt;/p&gt;
 
-&lt;p&gt;Today we'll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we'll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we'll study the &lt;a href=&quot;/2013/08/13/intrinsic/&quot;&gt;intrinsic&lt;/a&gt; and &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;extrinsic&lt;/a&gt; matrices in more detail, and I'll cover &lt;a href=&quot;/2013/06/03/calibrated_cameras_in_opengl/&quot;&gt;how to convert them into a form usable by OpenGL&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Today we&#39;ll cover the process of decomposing a camera matrix into intrinsic and extrinsic matrices, and we&#39;ll try to untangle the issues that can crop-up with different coordinate conventions.  In later articles, we&#39;ll study the &lt;a href=&quot;/2013/08/13/intrinsic/&quot;&gt;intrinsic&lt;/a&gt; and &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;extrinsic&lt;/a&gt; matrices in more detail, and I&#39;ll cover &lt;a href=&quot;/2013/06/03/calibrated_cameras_in_opengl/&quot;&gt;how to convert them into a form usable by OpenGL&lt;/a&gt;.&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -1211,26 +1258,26 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;h2&gt;Prologue: Getting a Camera Matrix&lt;/h2&gt;
 
-&lt;p&gt;I'll assume you've already obtained your camera matrix beforehand, but if you're looking for help with camera calibration, I recommend looking into the &lt;a href=&quot;http://www.vision.caltech.edu/bouguetj/calib_doc/&quot;&gt;Camera Calibration Toolbox for Matlab&lt;/a&gt;.  OpenCV also seems to have &lt;a href=&quot;http://opencv.willowgarage.com/documentation/python/camera_calibration_and_3d_reconstruction.html&quot;&gt;some useful routines&lt;/a&gt; for automatic camera calibration from a sequences of chessboard images, although I haven't personally used them.  As usual, &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Hartley and Zisserman's&lt;/a&gt; has a nice treatment of the topic.&lt;/p&gt;
+&lt;p&gt;I&#39;ll assume you&#39;ve already obtained your camera matrix beforehand, but if you&#39;re looking for help with camera calibration, I recommend looking into the &lt;a href=&quot;http://www.vision.caltech.edu/bouguetj/calib_doc/&quot;&gt;Camera Calibration Toolbox for Matlab&lt;/a&gt;.  OpenCV also seems to have &lt;a href=&quot;http://opencv.willowgarage.com/documentation/python/camera_calibration_and_3d_reconstruction.html&quot;&gt;some useful routines&lt;/a&gt; for automatic camera calibration from a sequences of chessboard images, although I haven&#39;t personally used them.  As usual, &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Hartley and Zisserman&#39;s&lt;/a&gt; has a nice treatment of the topic.&lt;/p&gt;
 
-&lt;h2&gt;Cut 'em Up: Camera Decomposition &lt;a href=&quot;http://www.break.com/video/ugc/mitch-hedberg-on-pringles-169072&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
+&lt;h2&gt;Cut &#39;em Up: Camera Decomposition &lt;a href=&quot;http://www.break.com/video/ugc/mitch-hedberg-on-pringles-169072&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
 
 
-&lt;p&gt;To start, we'll assume your camera matrix is 3x4, which transforms homogeneous 3D world coordinates to homogeneous 2D image coordinates.  Following Hartley and Zisserman, we'll denote the matrix as &lt;em&gt;P&lt;/em&gt;, and occasionally it will be useful to use the block-form:&lt;/p&gt;
+&lt;p&gt;To start, we&#39;ll assume your camera matrix is 3x4, which transforms homogeneous 3D world coordinates to homogeneous 2D image coordinates.  Following Hartley and Zisserman, we&#39;ll denote the matrix as &lt;em&gt;P&lt;/em&gt;, and occasionally it will be useful to use the block-form:&lt;/p&gt;
 
 &lt;div&gt;
 \[ P = [M \,| -MC] \]
 &lt;/div&gt;
 
 
-&lt;p&gt;where &lt;em&gt;M&lt;/em&gt; is an invertible 3x3 matrix, and &lt;em&gt;C&lt;/em&gt; is a column-vector representing the camera's position in world coordinates.  Some calibration software provides a 4x4 matrix, which adds an extra row to preserve the &lt;em&gt;z&lt;/em&gt;-coordinate.  In this case, just drop the third row to get a 3x4 matrix.&lt;/p&gt;
+&lt;p&gt;where &lt;em&gt;M&lt;/em&gt; is an invertible 3x3 matrix, and &lt;em&gt;C&lt;/em&gt; is a column-vector representing the camera&#39;s position in world coordinates.  Some calibration software provides a 4x4 matrix, which adds an extra row to preserve the &lt;em&gt;z&lt;/em&gt;-coordinate.  In this case, just drop the third row to get a 3x4 matrix.&lt;/p&gt;
 
 &lt;p&gt;The camera matrix by itself is useful for projecting 3D points into 2D, but it has several drawbacks:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;It doesn't tell you where the camera's pose.&lt;/li&gt;
-&lt;li&gt;It doesn't tell you about the camera's internal geometry.&lt;/li&gt;
-&lt;li&gt;Specular lighting isn't possible, since you can't get surface normals in camera coordinates.&lt;/li&gt;
+&lt;li&gt;It doesn&#39;t tell you where the camera&#39;s pose.&lt;/li&gt;
+&lt;li&gt;It doesn&#39;t tell you about the camera&#39;s internal geometry.&lt;/li&gt;
+&lt;li&gt;Specular lighting isn&#39;t possible, since you can&#39;t get surface normals in camera coordinates.&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -1239,14 +1286,14 @@ s_3 &amp; u_3' &amp; -L_3
 &lt;div&gt;\[P = K [R  \,| -RC ] \]&lt;/div&gt;
 
 
-&lt;p&gt;The matrix &lt;em&gt;K&lt;/em&gt; is a 3x3 upper-triangular matrix that describes the camera's internal parameters like focal length.  &lt;em&gt;R&lt;/em&gt; is a 3x3 rotation matrix whose columns are the directions of the world axes in the camera's reference frame. The vector &lt;em&gt;C&lt;/em&gt; is the camera center in world coordinates; the vector &lt;em&gt;&lt;strong&gt;t&lt;/strong&gt; = -RC&lt;/em&gt; gives the position of the world origin in camera coordinates.   We'll study each of these matrices in more detail in later articles, today we'll just discuss how to get them from &lt;em&gt;P&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;The matrix &lt;em&gt;K&lt;/em&gt; is a 3x3 upper-triangular matrix that describes the camera&#39;s internal parameters like focal length.  &lt;em&gt;R&lt;/em&gt; is a 3x3 rotation matrix whose columns are the directions of the world axes in the camera&#39;s reference frame. The vector &lt;em&gt;C&lt;/em&gt; is the camera center in world coordinates; the vector &lt;em&gt;&lt;strong&gt;t&lt;/strong&gt; = -RC&lt;/em&gt; gives the position of the world origin in camera coordinates.   We&#39;ll study each of these matrices in more detail in later articles, today we&#39;ll just discuss how to get them from &lt;em&gt;P&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;Recovering the camera center, &lt;em&gt;C&lt;/em&gt;, is straightforward.  Note that the last column of &lt;em&gt;P&lt;/em&gt; is &lt;em&gt;-MC&lt;/em&gt;, so just left-multiply it by \(-M&amp;#94;{-1}\).&lt;/p&gt;
 
 &lt;h2&gt;Before You RQ-ze Me... &lt;a href=&quot;http://www.youtube.com/watch?v=jQAvWte8w0c&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
 
 
-&lt;p&gt;To recover R and K, we note that R is orthogonal by virtue of being a rotation matrix, and K is upper-triangular.  Any full-rank matrix can be decomposed into the product of an upper-triangular matrix and an orthogonal matrix by using &lt;a href=&quot;http://en.wikipedia.org/wiki/QR_decomposition&quot;&gt;RQ-decomposition&lt;/a&gt;.  Unfortunately RQ-decomposition isn't available in many libraries including Matlab, but luckily, it's friend QR-decomposition usually is.  &lt;a href=&quot;http://www.janeriksolem.net/2011/03/rq-factorization-of-camera-matrices.html&quot;&gt;Solem's vision blog&lt;/a&gt; has a nice article implementing the missing function using a few matrix flips; here's a Matlab version (thanks to Solem for letting me repost this!):&lt;/p&gt;
+&lt;p&gt;To recover R and K, we note that R is orthogonal by virtue of being a rotation matrix, and K is upper-triangular.  Any full-rank matrix can be decomposed into the product of an upper-triangular matrix and an orthogonal matrix by using &lt;a href=&quot;http://en.wikipedia.org/wiki/QR_decomposition&quot;&gt;RQ-decomposition&lt;/a&gt;.  Unfortunately RQ-decomposition isn&#39;t available in many libraries including Matlab, but luckily, it&#39;s friend QR-decomposition usually is.  &lt;a href=&quot;http://www.janeriksolem.net/2011/03/rq-factorization-of-camera-matrices.html&quot;&gt;Solem&#39;s vision blog&lt;/a&gt; has a nice article implementing the missing function using a few matrix flips; here&#39;s a Matlab version (thanks to Solem for letting me repost this!):&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;[R Q] &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;M&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
 &lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;qr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;flipud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -1260,18 +1307,18 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;p&gt; Easy!&lt;/p&gt;
 
-&lt;h2&gt; I'm seeing double...  FOUR decompositions!  &lt;a href=&quot;http://imgur.com/1pAsu&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
+&lt;h2&gt; I&#39;m seeing double...  FOUR decompositions!  &lt;a href=&quot;http://imgur.com/1pAsu&quot; class=&quot;huh&quot;&gt;[?]&lt;/a&gt;&lt;/h2&gt;
 
 
-&lt;p&gt;There's only one problem: the result of RQ-decomposition isn't unique.  To see this, try negating any column of &lt;em&gt;K&lt;/em&gt; and the corresponding row of &lt;em&gt;R&lt;/em&gt;: the resulting camera matrix is unchanged.  Most people simply force the diagonal elements of &lt;em&gt;K&lt;/em&gt; to be positive, which is the correct approach if two conditions are true:&lt;/p&gt;
+&lt;p&gt;There&#39;s only one problem: the result of RQ-decomposition isn&#39;t unique.  To see this, try negating any column of &lt;em&gt;K&lt;/em&gt; and the corresponding row of &lt;em&gt;R&lt;/em&gt;: the resulting camera matrix is unchanged.  Most people simply force the diagonal elements of &lt;em&gt;K&lt;/em&gt; to be positive, which is the correct approach if two conditions are true:&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;your image's X/Y axes point in the same direction as your camera's X/Y axes.&lt;/li&gt;
+&lt;li&gt;your image&#39;s X/Y axes point in the same direction as your camera&#39;s X/Y axes.&lt;/li&gt;
 &lt;li&gt;your camera looks in the positive-&lt;em&gt;z&lt;/em&gt; direction.&lt;/li&gt;
 &lt;/ol&gt;
 
 
-&lt;p&gt;Solem's blog elegantly gives us positive diagonal entries in three lines of code:&lt;/p&gt;
+&lt;p&gt;Solem&#39;s blog elegantly gives us positive diagonal entries in three lines of code:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;# &lt;span class=&quot;n&quot;&gt;make&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;diagonal&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;positive&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)));&lt;/span&gt;
@@ -1281,25 +1328,25 @@ s_3 &amp; u_3' &amp; -L_3
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;   In practice, the camera and image axes won't agree, and the diagonal elements of &lt;em&gt;K&lt;/em&gt; shouldn't be positive.   Forcing them to be positive can result in nasty side-effect, including:&lt;/p&gt;
+&lt;p&gt;   In practice, the camera and image axes won&#39;t agree, and the diagonal elements of &lt;em&gt;K&lt;/em&gt; shouldn&#39;t be positive.   Forcing them to be positive can result in nasty side-effect, including:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt; The objects appear on the wrong side of the camera.&lt;/li&gt;
 &lt;li&gt; The rotation matrix has a determinant of -1 instead of 1.&lt;/li&gt;
 &lt;li&gt; Incorrect specular lighting.&lt;/li&gt;
-&lt;li&gt; Visible geometry won't render &lt;a href=&quot;http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix&quot;&gt;due to a having negative &lt;em&gt;w&lt;/em&gt; coordinate&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt; Visible geometry won&#39;t render &lt;a href=&quot;http://stackoverflow.com/questions/2286529/why-does-sign-matter-in-opengl-projection-matrix&quot;&gt;due to a having negative &lt;em&gt;w&lt;/em&gt; coordinate&lt;/a&gt;.&lt;/li&gt;
 &lt;/ul&gt;
 
 
-&lt;div class='context-img' style='width:321px'&gt;
-&lt;img src='/img/hz_camera.png' /&gt;
-&lt;div class='caption'&gt;Hartley and Zisserman's  coordinate conventions.  Note that camera and image &lt;em&gt;x&lt;/em&gt;-axes point left when viewed from the camera's POV.  
-&lt;div class='credit'&gt;&lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;From &quot;Multiple View Geometry in Computer Vision&quot;&lt;/a&gt;&lt;/div&gt;
+&lt;div class=&#39;context-img&#39; style=&#39;width:321px&#39;&gt;
+&lt;img src=&#39;/img/hz_camera.png&#39; /&gt;
+&lt;div class=&#39;caption&#39;&gt;Hartley and Zisserman&#39;s  coordinate conventions.  Note that camera and image &lt;em&gt;x&lt;/em&gt;-axes point left when viewed from the camera&#39;s POV.  
+&lt;div class=&#39;credit&#39;&gt;&lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;From &quot;Multiple View Geometry in Computer Vision&quot;&lt;/a&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
 
-&lt;p&gt;   In this case, you've got some fixing to do.  Start by making sure that your camera and world coordinates both have the same &lt;a href=&quot;http://en.wikipedia.org/wiki/Right-hand_rule&quot;&gt;handedness&lt;/a&gt;.    Then take note of the axis conventions you used when you calibrated your camera.   What direction did the image &lt;em&gt;y&lt;/em&gt;-axis point, up or down?  The &lt;em&gt;x&lt;/em&gt;-axis?  Now consider your camera's coordinate axes.  Does your camera look down the negative-&lt;em&gt;z&lt;/em&gt; axis (OpenGL-style)?  Positive-&lt;em&gt;z&lt;/em&gt; (like Hartley and Zisserman)?  Does the &lt;em&gt;x&lt;/em&gt;-axis point left or right?  The &lt;em&gt;y&lt;/em&gt;-axis?  Okay, okay, you get the idea.&lt;/p&gt;
+&lt;p&gt;   In this case, you&#39;ve got some fixing to do.  Start by making sure that your camera and world coordinates both have the same &lt;a href=&quot;http://en.wikipedia.org/wiki/Right-hand_rule&quot;&gt;handedness&lt;/a&gt;.    Then take note of the axis conventions you used when you calibrated your camera.   What direction did the image &lt;em&gt;y&lt;/em&gt;-axis point, up or down?  The &lt;em&gt;x&lt;/em&gt;-axis?  Now consider your camera&#39;s coordinate axes.  Does your camera look down the negative-&lt;em&gt;z&lt;/em&gt; axis (OpenGL-style)?  Positive-&lt;em&gt;z&lt;/em&gt; (like Hartley and Zisserman)?  Does the &lt;em&gt;x&lt;/em&gt;-axis point left or right?  The &lt;em&gt;y&lt;/em&gt;-axis?  Okay, okay, you get the idea.&lt;/p&gt;
 
 &lt;p&gt;   Starting from an all-positive diagonal, follow these four steps:&lt;/p&gt;
 
@@ -1313,28 +1360,28 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;p&gt;Note that each of these steps leaves the combined camera matrix unchanged.  The last step is equivalent to multiplying the entire camera matrix, &lt;em&gt;P&lt;/em&gt;, by -1.  Since &lt;em&gt;P&lt;/em&gt; operates on homogeneous coordinates, multiplying it by any constant has no effect.&lt;/p&gt;
 
-&lt;p&gt;Regarding step 3, Hartley and Zisserman's camera looks down the positive-&lt;em&gt;z&lt;/em&gt; direction, but in some real-world systems, (e.g. OpenGL) the camera looks down the negative-&lt;em&gt;z&lt;/em&gt; axis.  This allows the &lt;em&gt;x&lt;/em&gt; and &lt;em&gt;y&lt;/em&gt; axis to point right and up, resulting in a coordinate system that feels natural while still being right-handed.  Step 3 above corrects for this, by causing &lt;em&gt;w&lt;/em&gt; to be positive when &lt;em&gt;z&lt;/em&gt; is negative.  You may balk at the fact that \(K_{3,3}\) is negative, but OpenGL &lt;em&gt;requires&lt;/em&gt; this for proper clipping.  We'll discuss OpenGL more in a future article.&lt;/p&gt;
+&lt;p&gt;Regarding step 3, Hartley and Zisserman&#39;s camera looks down the positive-&lt;em&gt;z&lt;/em&gt; direction, but in some real-world systems, (e.g. OpenGL) the camera looks down the negative-&lt;em&gt;z&lt;/em&gt; axis.  This allows the &lt;em&gt;x&lt;/em&gt; and &lt;em&gt;y&lt;/em&gt; axis to point right and up, resulting in a coordinate system that feels natural while still being right-handed.  Step 3 above corrects for this, by causing &lt;em&gt;w&lt;/em&gt; to be positive when &lt;em&gt;z&lt;/em&gt; is negative.  You may balk at the fact that \(K_{3,3}\) is negative, but OpenGL &lt;em&gt;requires&lt;/em&gt; this for proper clipping.  We&#39;ll discuss OpenGL more in a future article.&lt;/p&gt;
 
 &lt;p&gt;You can double-check the result by inspecting the vector \(\mathbf{t} = -RC\), which is the location of the world origin in camera coordinates.  If everything is correct, the sign of \(t_x, t_y, t_z\) should reflect where the world origin appears in the camera (left/right of center, above/below center, in front/behind camera, respectively).&lt;/p&gt;
 
 &lt;h2&gt;&lt;a id=&quot;flipaxis&quot;&gt;&lt;/a&gt; Who Flipped my Axes? &lt;/h2&gt;
 
-&lt;p&gt;Until now, our discussion of 2D coordinate conventions have referred to the coordinates used during calibration.  If your application uses a different 2D coordinate convention, you'll need to transform K using 2D translation and reflection.&lt;/p&gt;
+&lt;p&gt;Until now, our discussion of 2D coordinate conventions have referred to the coordinates used during calibration.  If your application uses a different 2D coordinate convention, you&#39;ll need to transform K using 2D translation and reflection.&lt;/p&gt;
 
-&lt;p&gt;For example, consider a camera matrix that was calibrated with the origin in the top-left and the &lt;em&gt;y&lt;/em&gt;-axis pointing downward, but you prefer a bottom-left origin with the &lt;em&gt;y-axis&lt;/em&gt; pointing upward.   To convert, you'll first negate the image &lt;em&gt;y&lt;/em&gt;-coordinate and then translate upward by the image height, &lt;em&gt;h&lt;/em&gt;.  The resulting intrinsic matrix &lt;em&gt;K'&lt;/em&gt; is given by:&lt;/p&gt;
+&lt;p&gt;For example, consider a camera matrix that was calibrated with the origin in the top-left and the &lt;em&gt;y&lt;/em&gt;-axis pointing downward, but you prefer a bottom-left origin with the &lt;em&gt;y-axis&lt;/em&gt; pointing upward.   To convert, you&#39;ll first negate the image &lt;em&gt;y&lt;/em&gt;-coordinate and then translate upward by the image height, &lt;em&gt;h&lt;/em&gt;.  The resulting intrinsic matrix &lt;em&gt;K&#39;&lt;/em&gt; is given by:&lt;/p&gt;
 
 &lt;div&gt;
 \[
-    K' = \begin{bmatrix}1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; h \\  0 &amp; 0 &amp; 1 \end{bmatrix} \times \begin{bmatrix}1 &amp; 0 &amp; 0 \\ 0 &amp; -1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \; K
+    K&#39; = \begin{bmatrix}1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; h \\  0 &amp; 0 &amp; 1 \end{bmatrix} \times \begin{bmatrix}1 &amp; 0 &amp; 0 \\ 0 &amp; -1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \; K
 \] 
 &lt;/div&gt;
 
 
 &lt;h2&gt;Summary&lt;/h2&gt;
 
-&lt;p&gt;The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I've tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I'm eager to hear about them, just leave a message in the comments, or &lt;a href=&quot;/contact.html&quot;&gt;email me&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The procedure above should give you a correct camera decomposition regardless of the coordinate conventions you use.  I&#39;ve tested it in a handful of scenarios in my own research, and it has worked so far.  Of course, if you have any problems with this approach, I&#39;m eager to hear about them, just leave a message in the comments, or &lt;a href=&quot;/contact.html&quot;&gt;email me&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;In the next article, we'll &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;investigate the extrinsic matrix&lt;/a&gt; in more detail, with interactive demos.&lt;/p&gt;
+&lt;p&gt;In the next article, we&#39;ll &lt;a href=&quot;/2012/08/22/extrinsic/&quot;&gt;investigate the extrinsic matrix&lt;/a&gt; in more detail, with interactive demos.&lt;/p&gt;
 </description>
 				<pubDate>Tue, 14 Aug 2012 00:00:00 -0700</pubDate>
 				<link>http://ksimek.github.io/2012/08/14/decompose/</link>
@@ -1343,15 +1390,15 @@ s_3 &amp; u_3' &amp; -L_3
 		
 			<item>
 				<title>The Perspective Camera - An Interactive Tour</title>
-				<description>&lt;div class='context-img' style='width:350px'&gt;
-&lt;img src='/img/1st_and_ten.jpg' /&gt;
-&lt;div class='caption'&gt;The &quot;1st and Ten&quot; system, one of the first successful applications of augmented reality in sports.
-&lt;div class='credit'&gt;&lt;a href=&quot;http://www.howstuffworks.com/first-down-line.htm&quot;&gt;howstuffworks.com&lt;/a&gt;&lt;/div&gt;
+				<description>&lt;div class=&#39;context-img&#39; style=&#39;width:350px&#39;&gt;
+&lt;img src=&#39;/img/1st_and_ten.jpg&#39; /&gt;
+&lt;div class=&#39;caption&#39;&gt;The &quot;1st and Ten&quot; system, one of the first successful applications of augmented reality in sports.
+&lt;div class=&#39;credit&#39;&gt;&lt;a href=&quot;http://www.howstuffworks.com/first-down-line.htm&quot;&gt;howstuffworks.com&lt;/a&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 
 
-&lt;p&gt;On September 27, 1998 a yellow line appeared across the gridiron during an otherwise ordinary football game between the Cincinnati Bengals and the Baltimore Ravens.  It had been added by a computer that analyzed the camera's position and the shape of the ground in real-time in order to overlay thin yellow strip onto the field.  The line marked marked the position of the next first-down, but it also marked the beginning of a new era of computer vision in live sports, from &lt;a href=&quot;http://www.youtube.com/watch?v=p-y7N-giirQ&quot;&gt;computerized pitch analysis&lt;/a&gt; in baseball to &lt;a href=&quot;http://www.youtube.com/watch?v=Cgeb61VIKvo&quot;&gt;automatic line-refs&lt;/a&gt; in tennis.&lt;/p&gt;
+&lt;p&gt;On September 27, 1998 a yellow line appeared across the gridiron during an otherwise ordinary football game between the Cincinnati Bengals and the Baltimore Ravens.  It had been added by a computer that analyzed the camera&#39;s position and the shape of the ground in real-time in order to overlay thin yellow strip onto the field.  The line marked marked the position of the next first-down, but it also marked the beginning of a new era of computer vision in live sports, from &lt;a href=&quot;http://www.youtube.com/watch?v=p-y7N-giirQ&quot;&gt;computerized pitch analysis&lt;/a&gt; in baseball to &lt;a href=&quot;http://www.youtube.com/watch?v=Cgeb61VIKvo&quot;&gt;automatic line-refs&lt;/a&gt; in tennis.&lt;/p&gt;
 
 &lt;p&gt;In 2006, researchers from Microsoft and the University of Washington &lt;a href=&quot;http://www.youtube.com/watch?v=IgBQCoEfiMs&quot;&gt;automatically constructed a 3D tour of the Trevi Fountain in Rome&lt;/a&gt; using only images obtained by searching Flickr for &quot;trevi AND rome.&quot;&lt;/p&gt;
 
@@ -1359,26 +1406,26 @@ s_3 &amp; u_3' &amp; -L_3
 
 &lt;p&gt;In 2010, &lt;a href=&quot;http://en.wikipedia.org/wiki/Kinect&quot;&gt;Microsoft released the Kinect&lt;/a&gt;, a consumer stereo camera that rivaled the functionality of competitors sold for ten times its price, which continues to disrupt the worlds of both gaming and computer vision.&lt;/p&gt;
 
-&lt;p&gt;What do all of these technologies have in common?  They all require a precise understanding of how the pixels in a 2D image relate to the 3D world they represent.  In other words, they all hinge on a strong camera model.  This is the first in a series of articles that explores one of the most important camera models in computer vision: the pinhole perspective camera.  We'll start by deconstructing the perspective camera to show how each of its parts affect the rendering of a 3D scene.  Next, we'll describe how to import your calibrated camera into OpenGL to render virtual objects into a real image.  Finally, we'll show how to use your perspective camera to implement rendering in a virtual-reality system, complete with stereo rendering and head-tracking.&lt;/p&gt;
+&lt;p&gt;What do all of these technologies have in common?  They all require a precise understanding of how the pixels in a 2D image relate to the 3D world they represent.  In other words, they all hinge on a strong camera model.  This is the first in a series of articles that explores one of the most important camera models in computer vision: the pinhole perspective camera.  We&#39;ll start by deconstructing the perspective camera to show how each of its parts affect the rendering of a 3D scene.  Next, we&#39;ll describe how to import your calibrated camera into OpenGL to render virtual objects into a real image.  Finally, we&#39;ll show how to use your perspective camera to implement rendering in a virtual-reality system, complete with stereo rendering and head-tracking.&lt;/p&gt;
 
-&lt;div class='context-img' style='width:180px'&gt;
+&lt;div class=&#39;context-img&#39; style=&#39;width:180px&#39;&gt;
     &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;
-    &lt;img src='/img/h_and_z.jpg' /&gt;
+    &lt;img src=&#39;/img/h_and_z.jpg&#39; /&gt;
     &lt;/a&gt;
-    &lt;div class='caption'&gt;
-        These articles won't cover everything.  This book does.
+    &lt;div class=&#39;caption&#39;&gt;
+        These articles won&#39;t cover everything.  This book does.
     &lt;/div&gt;
 &lt;/div&gt;
 
 
-&lt;p&gt;This series of articles is intended as a supplement to a more rigorous treatment available in several excellent textbooks.  I will focus on providing what textbooks generally don't provide: interactive demos, runnable code, and practical advice on implementation.    I will assume the reader has a basic understanding of 3D graphics and OpenGL, as well as some background in computer vision.  In other words, if you've never heard of homogeneous coordinates or a camera matrix, you might want to start with an introductory book on computer vision.  I highly recommend &lt;a href=&quot;http://www.amazon.com/Multiple-View-Geometry-Computer-Vision/dp/0521540518/ref=sr_1_fkmr1_1?ie=UTF8&amp;amp;qid=1343611611&amp;amp;sr=8-1-fkmr1&amp;amp;keywords=harley+and+zisserman&quot;&gt;Multiple View Geometry in Computer Vision&lt;/a&gt; by Hartley and Zisserman, from which I borrow mathematical notation and conventions (e.g. column vectors, right-handed coordinates, etc.)&lt;/p&gt;
+&lt;p&gt;This series of articles is intended as a supplement to a more rigorous treatment available in several excellent textbooks.  I will focus on providing what textbooks generally don&#39;t provide: interactive demos, runnable code, and practical advice on implementation.    I will assume the reader has a basic understanding of 3D graphics and OpenGL, as well as some background in computer vision.  In other words, if you&#39;ve never heard of homogeneous coordinates or a camera matrix, you might want to start with an introductory book on computer vision.  I highly recommend &lt;a href=&quot;http://www.amazon.com/Multiple-View-Geometry-Computer-Vision/dp/0521540518/ref=sr_1_fkmr1_1?ie=UTF8&amp;amp;qid=1343611611&amp;amp;sr=8-1-fkmr1&amp;amp;keywords=harley+and+zisserman&quot;&gt;Multiple View Geometry in Computer Vision&lt;/a&gt; by Hartley and Zisserman, from which I borrow mathematical notation and conventions (e.g. column vectors, right-handed coordinates, etc.)&lt;/p&gt;
 
 &lt;!--more--&gt;
 
 
 &lt;h2&gt;Technical Requirements&lt;/h2&gt;
 
-&lt;p&gt;Equations in these articles are typeset using MathJax, which won't display if you've disabled JavaScript or &lt;a href=&quot;http://www.mathjax.org/resources/browser-compatibility/&quot;&gt;are using a browser that is woefully out of date&lt;/a&gt; (sorry IE 5 users).  If everything is working, you should see a matrix below:&lt;/p&gt;
+&lt;p&gt;Equations in these articles are typeset using MathJax, which won&#39;t display if you&#39;ve disabled JavaScript or &lt;a href=&quot;http://www.mathjax.org/resources/browser-compatibility/&quot;&gt;are using a browser that is woefully out of date&lt;/a&gt; (sorry IE 5 users).  If everything is working, you should see a matrix below:&lt;/p&gt;
 
 &lt;div&gt;
 \[
@@ -1393,7 +1440,7 @@ g^2 &amp;  h^2 &amp; i^2
 &lt;/div&gt;
 
 
-&lt;p&gt;3D interactive demos are provided by &lt;a href=&quot;https://github.com/mrdoob/three.js/&quot;&gt;three.js&lt;/a&gt;, which also needs JavaScript and prefers a browser that supports WebGL ( &lt;a href=&quot;https://www.google.com/intl/en/chrome/browser/&quot;&gt;Google Chrome&lt;/a&gt; works great, as does &lt;a href=&quot;http://www.mozilla.org/en-US/firefox/fx/#desktop&quot;&gt;the latest version of Firefox&lt;/a&gt;).  Older browsers will render using canvas, which will run slowly, look ugly, and hurl vicious insults at you.  But it should work.   If you see two spheres below, you're in business.&lt;/p&gt;
+&lt;p&gt;3D interactive demos are provided by &lt;a href=&quot;https://github.com/mrdoob/three.js/&quot;&gt;three.js&lt;/a&gt;, which also needs JavaScript and prefers a browser that supports WebGL ( &lt;a href=&quot;https://www.google.com/intl/en/chrome/browser/&quot;&gt;Google Chrome&lt;/a&gt; works great, as does &lt;a href=&quot;http://www.mozilla.org/en-US/firefox/fx/#desktop&quot;&gt;the latest version of Firefox&lt;/a&gt;).  Older browsers will render using canvas, which will run slowly, look ugly, and hurl vicious insults at you.  But it should work.   If you see two spheres below, you&#39;re in business.&lt;/p&gt;
 
 &lt;script&gt;
 
@@ -1425,7 +1472,7 @@ g^2 &amp;  h^2 &amp; i^2
       FAR = 10000;
 
     // get the DOM element to attach to
-    // - assume we've got jQuery to hand
+    // - assume we&#39;ve got jQuery to hand
 
     // create a WebGL renderer, camera
     // and a scene
@@ -1464,7 +1511,7 @@ g^2 &amp;  h^2 &amp; i^2
         segments = 16,
         rings = 16;
 
-    // create the sphere's material
+    // create the sphere&#39;s material
     var sphereMaterial =
       new THREE.MeshLambertMaterial(
         {
@@ -1549,9 +1596,9 @@ g^2 &amp;  h^2 &amp; i^2
 
     function removeListeners()
     {
-        $(document).unbind( 'mousemove');
-        $(document).unbind( 'mouseup');
-        $(document).unbind( 'mouseout');
+        $(document).unbind( &#39;mousemove&#39;);
+        $(document).unbind( &#39;mouseup&#39;);
+        $(document).unbind( &#39;mouseout&#39;);
     }
 
     function onTouchStart(event)
@@ -1590,7 +1637,7 @@ g^2 &amp;  h^2 &amp; i^2
         camera.updateProjectionMatrix();
     }
 
-    // move camera's principal point
+    // move camera&#39;s principal point
     function moveCameraPP(param1, param2)
     {
         camera.x0 = param1;
@@ -1618,12 +1665,12 @@ g^2 &amp;  h^2 &amp; i^2
 
     // attach the render-supplied DOM element
     $(document).ready(function(){
-        $container = $('#3d_container');
+        $container = $(&#39;#3d_container&#39;);
         $container.prepend(renderer.domElement);
 
         $container.mousedown(onMouseDown);
-        $container.bind( 'touchstart', onTouchStart);
-        $container.bind( 'touchmove', onTouchMove);
+        $container.bind( &#39;touchstart&#39;, onTouchStart);
+        $container.bind( &#39;touchmove&#39;, onTouchMove);
 
         render();
     });
