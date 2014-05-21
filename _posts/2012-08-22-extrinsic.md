@@ -188,19 +188,21 @@ Readers familiar with OpenGL might prefer a third way of specifying the camera's
 4. Normalize s.
 5. Compute u' = s x L.
 
-The extrinsic matrix's rotation matrix is then given by:
+The extrinsic rotation matrix is then given by:
 
 <div>
 \[
 R = \left[ 
 \begin{array}{ccc}
-s_1 & u_1' & -L_1 \\
-s_2 & u_2' & -L_2 \\
-s_3 & u_3' & -L_3 
+s_1 & s_2 & s_3 \\
+u_1' & u_2' & u_3' \\
+-L_1 & -L_2 & -L_3  
 \end{array}
 \right]
 \]
 </div>
+
+*(Updated May 21, 2014 -- transposed matrix)*
 
 You can get the translation vector the same way as before, ***t** = -RC*.
 
