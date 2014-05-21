@@ -918,20 +918,22 @@ R  &amp;= R_c^T \\
 &lt;/ol&gt;
 
 
-&lt;p&gt;The extrinsic matrix&#39;s rotation matrix is then given by:&lt;/p&gt;
+&lt;p&gt;The extrinsic rotation matrix is then given by:&lt;/p&gt;
 
 &lt;div&gt;
 \[
 R = \left[ 
 \begin{array}{ccc}
-s_1 &amp; u_1&#39; &amp; -L_1 \\
-s_2 &amp; u_2&#39; &amp; -L_2 \\
-s_3 &amp; u_3&#39; &amp; -L_3 
+s_1 &amp; s_2 &amp; s_3 \\
+u_1&#39; &amp; u_2&#39; &amp; u_3&#39; \\
+-L_1 &amp; -L_2 &amp; -L_3  
 \end{array}
 \right]
 \]
 &lt;/div&gt;
 
+
+&lt;p&gt;&lt;em&gt;(Updated May 21, 2014 -- transposed matrix)&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;You can get the translation vector the same way as before, &lt;em&gt;&lt;strong&gt;t&lt;/strong&gt; = -RC&lt;/em&gt;.&lt;/p&gt;
 
