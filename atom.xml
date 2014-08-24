@@ -4,7 +4,7 @@
  <title>Sightations</title>
  <link href="http://ksimek.github.io/atom.xml" rel="self"/>
  <link href="http://ksimek.github.io"/>
- <updated>2014-08-10T15:55:11-07:00</updated>
+ <updated>2014-08-24T10:40:03-07:00</updated>
  <id>http://ksimek.github.io</id>
  <author>
    <name>Kyle Simek</name>
@@ -63,6 +63,8 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Thanks to authors Viorica Pătrăucean, Pierre Gurdjos, and Rafael Grompone von Gioi for sharing this valuable new tool!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: I&#39;ve written a python script to convert ELSD&#39;s output into polylines, check out the &lt;a href=&quot;/code.html&quot;&gt;code page&lt;/a&gt;&lt;/p&gt;
 </content>
  </entry>
  

@@ -54,6 +54,8 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Thanks to authors Viorica Pătrăucean, Pierre Gurdjos, and Rafael Grompone von Gioi for sharing this valuable new tool!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: I&#39;ve written a python script to convert ELSD&#39;s output into polylines, check out the &lt;a href=&quot;/code.html&quot;&gt;code page&lt;/a&gt;&lt;/p&gt;
 </description>
 				<pubDate>Mon, 28 Apr 2014 00:00:00 -0700</pubDate>
 				<link>http://ksimek.github.io/2014/04/28/compiling-elsd-on-osx/</link>
