@@ -45,3 +45,5 @@ to this:
     cc -o elsd -framework accelerate  elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -lf2c -lm 
 
 Thanks to authors Viorica Pătrăucean, Pierre Gurdjos, and Rafael Grompone von Gioi for sharing this valuable new tool!
+
+**Update**: I've written a python script to convert ELSD's output into polylines, check out the [code page]({{site.baseurl}}/code.html)
