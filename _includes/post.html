@@ -17,7 +17,16 @@
     {{ post.excerpt }}
     <p> <a href="{{ post.url }}#more" class="more-link"><span class="readmore">more...</span></a></p>
   {% else %}
+    {% if excerpt != true and site.enable_hiring %}
+    {% include hire %}
+    {% endif %}
+
     {{ content | mark_excerpt }}
+
+    {% if excerpt and site.enable_hiring %}
+    {% include hire %}
+    {% endif %}
+
       <address class="signature">
         Posted by
         <a class="author" href="{{ HOME_PATH }}">{{ site.author.name }}</a> 

@@ -2,6 +2,7 @@
 # For more see: https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink: /:categories/:year/:month/:day/:title/
 baseurl: 
+enable_hiring: "true"
 
 paginate: 5
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
