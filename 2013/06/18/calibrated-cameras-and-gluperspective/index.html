@@ -83,6 +83,11 @@
 
 
   
+    
+    <div class="notice">Is your company looking to hire a software engineer in computer vision? Let's talk!   I'm approaching the end of my PhD and am considering positions starting Summer 2015.  Check out the <a href="/contact.html">contact page</a> for more info.</div>
+
+    
+
     <p>After posting my last article <a href="/2013/06/03/calibrated_cameras_in_opengl/">relating glFrustum to the intrinsic camera matrix</a>, I receieved some emails asking how the (now deprecated) <a href="http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluPerspective.htm">gluPerspective</a> function relates to the intrinsic matrix.  We can show a similar result with <code>gluPerspective</code> as we did with <code>glFrustum</code>, namely that it is the product of a <code>glOrtho</code> matrix and a (modified) intrinsic camera matrix, but in this case the intrinsic matrix has different constraints.  I'll be re-using notation and concepts from the previous article, so if you aren't familiar with them, I recommend reading it first.</p>
 
 <p><span id="more"></span></p>
@@ -178,6 +183,9 @@ t_z &= -\frac{far + near}{far - near}
 <h2>glFrustum vs. gluPerpsective </h2>
 
 <p>In my experience, the zero-skew assumption is usually reasonable, so <code>glFrustum</code> can provide a decent approximation to the full intrinsic matrix.  However there is quite often a non-negligible principal point offset (~ 2% of the image size), even in high-quality cameras.  For this reason, <code>gluPerspective</code> might be a good choice for quick-and-dirty demos, but for the most accurate simulation, you should use the full camera  matrix <a href="/2013/06/03/calibrated_cameras_in_opengl/">like I described previously</a>.</p>
+
+
+    
 
       <address class="signature">
         Posted by
