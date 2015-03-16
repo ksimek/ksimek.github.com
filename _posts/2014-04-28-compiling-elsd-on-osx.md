@@ -19,7 +19,7 @@ tags: []
 </div>
 </div>
 
-[ELSD is a new program](http://ubee.enseeiht.fr/vision/ELSD/) for detecting line segments and elliptical curves in images.  It gives [very impressive results]({{site.baseurl}}/misc/elsd_results.html) by using a novel model selection criterion to distinguish noise curves from foreground, as detailed in the author's [ICCV 2012 paper](http://ubee.enseeiht.fr/vision/ELSD/eccv2012-ID576.pdf).  Most impressive, it works out of the box **with no parameter tuning.**
+[ELSD is a new program](http://ubee.enseeiht.fr/vision/ELSD/) for detecting line segments and elliptical curves in images.  It gives [very impressive results]({{site.baseurl}}/misc/elsd_results.html) by using a novel model selection criterion to distinguish noise curves from foreground, as detailed in the author's [ECCV 2012 paper](http://ubee.enseeiht.fr/vision/ELSD/eccv2012-ID576.pdf).  Most impressive, it works out of the box **with no parameter tuning.**
 
 
 The authors have generously released their code under [Affero GPL](http://www.gnu.org/licenses/why-affero-gpl.html), but it requires a few tweaks to compile on OSX.  
