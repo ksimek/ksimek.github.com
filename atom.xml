@@ -4,7 +4,7 @@
  <title>Sightations</title>
  <link href="http://ksimek.github.io/atom.xml" rel="self"/>
  <link href="http://ksimek.github.io"/>
- <updated>2015-02-02T21:44:23-07:00</updated>
+ <updated>2015-03-16T09:13:54-07:00</updated>
  <id>http://ksimek.github.io</id>
  <author>
    <name>Kyle Simek</name>
@@ -34,7 +34,7 @@
 &lt;/div&gt;
 
 
-&lt;p&gt;&lt;a href=&quot;http://ubee.enseeiht.fr/vision/ELSD/&quot;&gt;ELSD is a new program&lt;/a&gt; for detecting line segments and elliptical curves in images.  It gives &lt;a href=&quot;/misc/elsd_results.html&quot;&gt;very impressive results&lt;/a&gt; by using a novel model selection criterion to distinguish noise curves from foreground, as detailed in the author&#39;s &lt;a href=&quot;http://ubee.enseeiht.fr/vision/ELSD/eccv2012-ID576.pdf&quot;&gt;ICCV 2012 paper&lt;/a&gt;.  Most impressive, it works out of the box &lt;strong&gt;with no parameter tuning.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://ubee.enseeiht.fr/vision/ELSD/&quot;&gt;ELSD is a new program&lt;/a&gt; for detecting line segments and elliptical curves in images.  It gives &lt;a href=&quot;/misc/elsd_results.html&quot;&gt;very impressive results&lt;/a&gt; by using a novel model selection criterion to distinguish noise curves from foreground, as detailed in the author&#39;s &lt;a href=&quot;http://ubee.enseeiht.fr/vision/ELSD/eccv2012-ID576.pdf&quot;&gt;ECCV 2012 paper&lt;/a&gt;.  Most impressive, it works out of the box &lt;strong&gt;with no parameter tuning.&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;The authors have generously released their code under &lt;a href=&quot;http://www.gnu.org/licenses/why-affero-gpl.html&quot;&gt;Affero GPL&lt;/a&gt;, but it requires a few tweaks to compile on OSX.&lt;/p&gt;
 
