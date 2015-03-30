@@ -16,6 +16,7 @@ http://ksimek.github.io/sitemap.txt
 http://ksimek.github.io/tags.html
 http://ksimek.github.io/page2/index.html
 
+http://ksimek.github.io/2015/03/29/QA-recovering-pose-of-calibrated-camera/
 http://ksimek.github.io/2014/04/28/compiling-elsd-on-osx/
 http://ksimek.github.io/2013/08/13/intrinsic/
 http://ksimek.github.io/2013/06/18/calibrated-cameras-and-gluperspective/

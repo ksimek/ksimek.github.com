@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
 <head>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-   <title>Compiling ELSD (Ellipse and Line Segment Detector) on OS X &larr; </title>
+   <title>Q & A: Recovering pose of a calibrated camera - Algebraic vs. Geometric method? &larr; </title>
    <meta name="author" content="Kyle Simek" />
 
    <link rel="start" href="/" />
@@ -39,6 +39,10 @@
    <!-- Mathjax Javascript -->
 
 	
+   <script type="text/javascript"
+     src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+   </script>
+    
 
    <!-- three.js Javascript -->
 	
@@ -72,9 +76,9 @@
 	
   
   
-  <h1 class="title">Compiling ELSD (Ellipse and Line Segment Detector) on OS X</h1>
+  <h1 class="title">Q & A: Recovering pose of a calibrated camera - Algebraic vs. Geometric method?</h1>
 
-  <div class="date emphnext">April 28, 2014</div>
+  <div class="date emphnext">March 29, 2015</div>
     
 
 
@@ -84,61 +88,39 @@
 
     
 
-    
+    <p>This week I received an email with a question about recovering camera pose:</p>
 
-<div class="clearer"></div>
-
-
-
-
-<div class='context-img' style='width:317px'>
-<div class='noexcerpt'>
-<img src='/img/elsd_before_small.jpg' width="317" />
-<div class='caption'>Input image
-</div>
-<br />
-</div>
-
-<img src='/img/elsd_after_small.png' width="317" />
-<div class='caption'>ELSD results
-</div>
-</div>
-
-
-<p><a href="http://ubee.enseeiht.fr/vision/ELSD/">ELSD is a new program</a> for detecting line segments and elliptical curves in images.  It gives <a href="/misc/elsd_results.html">very impressive results</a> by using a novel model selection criterion to distinguish noise curves from foreground, as detailed in the author's <a href="http://ubee.enseeiht.fr/vision/ELSD/eccv2012-ID576.pdf">ECCV 2012 paper</a>.  Most impressive, it works out of the box <strong>with no parameter tuning.</strong></p>
-
-<p>The authors have generously released their code under <a href="http://www.gnu.org/licenses/why-affero-gpl.html">Affero GPL</a>, but it requires a few tweaks to compile on OSX.</p>
+<p><strong>Q: I have images with a known intrinsic matrix, and corresponding points in world and image coordinates.  What's the best technique to resolve the extrinsic matrix?  Hartley and Zisserman cover geometric and algebraic approaches.  What are the tradeoffs between the geometric and algebraic approaches?  Under what applications would we choose one or the other?</strong></p>
 
 <p><span id="more"></span></p>
 
 
-<p>First, in <code>process_curve.c</code>, replace this line:</p>
+<p>This topic is covered in Section 7.3 of <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Multiple View Geometry in Computer Vision</a>, "Restricted camera estimation."  The authors describe a method for estimating a subset of camera parameters when the others are known beforehand.  One common scenario is recovering pose (position and orientation) given intrinsic parameters.</p>
 
-<pre><code>#include &lt;clapack.h&gt;
-</code></pre>
+<p>Assume you have multiple 2D image points whose corresponding 3D position is known.  The authors outline two different error functions for the camera: a geometric error function which measures the distance between the 3D point's projection and the 2D observation, and an algebraic error function, which is the residual of a homogeneous least-squares problem (constructed in section 7.1).  The choice of error function can be seen as a trade-off between quality and speed.  First I will describe why the geometric solution is better for quality and then why the algebraic solution is faster.</p>
 
-<p>with this:</p>
+<div class='context-img' style='width:317px'>
+<div class='noexcerpt'>
+<img src='/img/algebraic_geometric_error.png' width="317" />
+<div class='caption'>Let \(X_i\) be a 3D point and \(x_i\) be its observation.  The plane \(w\) contains \(X_i\) and is parallel to the image plane.  The algebraic error is \(\Delta\), the distance between \(X_i\) and the backprojection ray in the plane \(w\).  The geometric error \(d\) is the distance between \(x_i\) and projection of \(X_i\) onto the image plane, \(f\).    Note that as the 3D point moves farther from the camera, the algebraic error increases, while the geometric error remains constant.
+</div>
+<br />
+</div>
 
-<pre><code>#ifdef __APPLE__
-#include &lt;Accelerate/Accelerate.h&gt;
-#else
-#include &lt;clapack.h&gt;
-#endif
-</code></pre>
+</div>
 
-<p>Second, in <code>makefile</code>, change this line</p>
 
-<pre><code>cc -o elsd elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -llapack_LINUX -lblas_LINUX -llibf2c -lm
-</code></pre>
+<p>The geometric solution is generally considered the "right" solution, in the sense that the assumptions about noise are the most sensible in the majority of cases.  Penalizing the squared distance between the 2D observation and the projection of the 3D point amounts to assuming noise arises from the imaging process (e.g. due to camera/lens/sensor imperfections) and is i.i.d. Gaussian distributed in the image plane.  In contrast, roughly speaking, the algebraic error measures the distance between the known 3D point and the observation’s backprojection ray.  This implies errors arise from noise in 3D points as opposed to the camera itself, and tends to overemphasize distant points when finding a solution.  For this reason, Hartley and Zisserman call the solution with minimal geometric error the "gold standard" solution.</p>
 
-<p>to this:</p>
+<p>The geometric approach also has an advantage of letting you use different cost functions if necessary.  For example, if your correspondences include outliers, they could wreak havok on your calibration under a squared-error cost function.  Using the geometric approach, you could swap-in a robust cost function (e.g. the Huber function), which will minimize the influence of outliers.</p>
 
-<pre><code>cc -o elsd -framework accelerate  elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -lf2c -lm 
-</code></pre>
+<p>The cost of doing the "right thing" is running time.  Both solutions require costly iterative minimization, but the geometric solution's cost function grows linearly with the number of observations, whereas the algebraic cost function is constant (after an SVD operation in preprocessing).  In Hartley and Zisserman's example, the two approaches give very similar results.</p>
 
-<p>Thanks to authors Viorica Pătrăucean, Pierre Gurdjos, and Rafael Grompone von Gioi for sharing this valuable new tool!</p>
+<p>If speed isn't a concern (e.g. if calibration is performed off-line), the geometric solution is the way to go.  The geometric approach may also be easier to implement -- just take an existing bundle adjustment routine like the one provided by <a href="http://ceres-solver.org/">Ceres Solver</a>, and hold the 3D points and intrinsic parameters fixed.  Also, if the number of observations is small, the algebraic approach loses its advantages, because the SVD required for preprocessing could eclipse the gains of its efficient cost function.  So the geometric solution could be preferable, even in real time scenarios.</p>
 
-<p><strong>Update</strong>: I've written a python script to convert ELSD's output into polylines, check out the <a href="/code.html">code page</a></p>
+<p>If speed is a concern and you have many observations, a two-pass approach might work well.   First solve using the algebraic technique, then use it to initialize a few iterations of the geometric approach.  Your mileage may vary.  Finally, if you are recovering multiple poses of a moving camera, you will likely want to run bundle adjustment as a final step anyway, which jointly minimizes the geometric error of all camera poses and the 3D point locations.  In this case, the algebraic solution is almost certainly a "good enough" first pass.</p>
+
+<p>I hope that helps!</p>
 
 
     
@@ -153,10 +135,8 @@
   
   <div class="prev-next">
   
-    <a href="/2015/03/29/QA-recovering-pose-of-calibrated-camera/" class="next" title="Q & A: Recovering pose of a calibrated camera - Algebraic vs. Geometric method?">Q & A: Recovering pose of a calibrated camera - Algebraic vs. Geometric method? &rarr;</a>
   
-  
-    <a href="/2013/08/13/intrinsic/" class="prev" title="Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix">&larr; Dissecting the Camera Matrix, Part 3: The Intrinsic Matrix</a>
+    <a href="/2014/04/28/compiling-elsd-on-osx/" class="prev" title="Compiling ELSD (Ellipse and Line Segment Detector) on OS X">&larr; Compiling ELSD (Ellipse and Line Segment Detector) on OS X</a>
   
   </div>
   <div class="clearer"> </div>
@@ -173,7 +153,7 @@
 <span class="hn"><span id="hnews"></span></span>
 
 <!-- Twitter -->
-<span class="tw"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Compiling ELSD (Ellipse and Line Segment Detector) on OS X" data-via="" data-related="" data-count="" data-size="">Tweet</a></span>
+<span class="tw"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Q & A: Recovering pose of a calibrated camera - Algebraic vs. Geometric method?" data-via="" data-related="" data-count="" data-size="">Tweet</a></span>
 
 <!-- Google+ -->
 <span class="gp"><div class="g-plusone" data-size="medium" data-annotation="bubble" data-width=""></div></span>
@@ -221,7 +201,7 @@
       hn_like.src = "http://hnlike.com/upvote.php?link="
                     + encodeURIComponent(document.location)
                     + "&title="
-                    + encodeURIComponent("Compiling ELSD (Ellipse and Line Segment Detector) on OS X");
+                    + encodeURIComponent("Q & A: Recovering pose of a calibrated camera - Algebraic vs. Geometric method?");
       hn_like.innerHTML="iframes not supported by your browser";
       
       var where = document.getElementById("hnews");

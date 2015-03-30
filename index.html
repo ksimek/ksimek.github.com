@@ -70,6 +70,36 @@
   
 <div id="page">
 	
+<style>
+.noexcerpt {
+  display: none;
+}
+</style>
+
+<div class="firehose-post article">
+    
+    
+    
+    
+  <a class="title-link" href="/2015/03/29/QA-recovering-pose-of-calibrated-camera/">
+  <h1 class="title">Q & A: Recovering pose of a calibrated camera - Algebraic vs. Geometric method?</h1>
+  </a>
+
+  <div class="date emphnext">March 29, 2015</div>
+    
+
+
+  
+    <p>This week I received an email with a question about recovering camera pose:</p>
+
+<p><strong>Q: I have images with a known intrinsic matrix, and corresponding points in world and image coordinates.  What's the best technique to resolve the extrinsic matrix?  Hartley and Zisserman cover geometric and algebraic approaches.  What are the tradeoffs between the geometric and algebraic approaches?  Under what applications would we choose one or the other?</strong></p>
+
+
+    <p> <a href="/2015/03/29/QA-recovering-pose-of-calibrated-camera/#more" class="more-link"><span class="readmore">more...</span></a></p>
+  
+
+
+</div>
 
 <div class="firehose-post article">
     
@@ -87,16 +117,18 @@
   
     
 
-    
-
 <div class="clearer"></div>
 
 
+
+
 <div class='context-img' style='width:317px'>
+<div class='noexcerpt'>
 <img src='/img/elsd_before_small.jpg' width="317" />
 <div class='caption'>Input image
 </div>
 <br />
+</div>
 
 <img src='/img/elsd_after_small.png' width="317" />
 <div class='caption'>ELSD results
@@ -108,44 +140,8 @@
 
 <p>The authors have generously released their code under <a href="http://www.gnu.org/licenses/why-affero-gpl.html">Affero GPL</a>, but it requires a few tweaks to compile on OSX.</p>
 
-<p>First, in <code>process_curve.c</code>, replace this line:</p>
 
-<pre><code>#include &lt;clapack.h&gt;
-</code></pre>
-
-<p>with this:</p>
-
-<pre><code>#ifdef __APPLE__
-#include &lt;Accelerate/Accelerate.h&gt;
-#else
-#include &lt;clapack.h&gt;
-#endif
-</code></pre>
-
-<p>Second, in <code>makefile</code>, change this line</p>
-
-<pre><code>cc -o elsd elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -llapack_LINUX -lblas_LINUX -llibf2c -lm
-</code></pre>
-
-<p>to this:</p>
-
-<pre><code>cc -o elsd -framework accelerate  elsd.c valid_curve.c process_curve.c process_line.c write_svg.c -lf2c -lm 
-</code></pre>
-
-<p>Thanks to authors Viorica Pătrăucean, Pierre Gurdjos, and Rafael Grompone von Gioi for sharing this valuable new tool!</p>
-
-<p><strong>Update</strong>: I've written a python script to convert ELSD's output into polylines, check out the <a href="/code.html">code page</a></p>
-
-
-    
-    <div class="notice">Is your company looking to hire a software engineer in computer vision? Let's talk!   I'm approaching the end of my PhD and am considering positions starting Summer 2015.  Check out the <a href="/contact.html">contact page</a> for more info.</div>
-
-    
-
-      <address class="signature">
-        Posted by
-        <a class="author" href="">Kyle Simek</a> 
-      </address>
+    <p> <a href="/2014/04/28/compiling-elsd-on-osx/#more" class="more-link"><span class="readmore">more...</span></a></p>
   
 
 
@@ -243,43 +239,8 @@
 
 <p>You can.  And you don't have to jettison your axis skew, either.  In this article, I'll show how to use your intrinsic camera matrix in OpenGL with minimal modification.  For illustration, I'll use OpenGL 2.1 API calls, but the same matrices can be sent to your shaders in modern OpenGL.</p>
 
-<h2>glFrustum:  Two Transforms in One</h2>
-
-<p>To better understand perspective projection in OpenGL, let's examine <code>glFrustum</code>. According to the OpenGL documentation,</p>
-
-<blockquote><p>glFrustum describes a perspective matrix that produces a perspective projection.</p></blockquote>
-
-<p>While this is true, it only tells half of the story.</p>
-
 
     <p> <a href="/2013/06/03/calibrated_cameras_in_opengl/#more" class="more-link"><span class="readmore">more...</span></a></p>
-  
-
-
-</div>
-
-<div class="firehose-post article">
-    
-    
-    
-    
-  <a class="title-link" href="/2012/08/22/extrinsic/">
-  <h1 class="title">Dissecting the Camera Matrix, Part 2: The Extrinsic Matrix</h1>
-  </a>
-
-  <div class="date emphnext">August 22, 2012</div>
-    
-
-
-  
-    <p>Welcome to the third post in the series "<a href="/2012/08/13/introduction/">The Perspecive Camera - An Interactive Tour</a>."  In the last post, <a href="/2012/08/14/decompose/">we learned how to decompose the camera matrix</a> into a product of intrinsic and extrinsic matrices.  In the next two posts, we'll explore the extrinsic and intrinsic matrices in greater detail.  First we'll explore various ways of looking at the extrinsic matrix, with an interactive demo at the end.</p>
-
-<h2>The Extrinsic Camera Matrix</h2>
-
-<p>The camera's extrinsic matrix describes the camera's location in the world, and what direction it's pointing.  Those familiar with OpenGL know this as the "view matrix" (or rolled into the "modelview matrix").  It has two components: a rotation matrix, <em>R</em>, and a translation vector <strong><em>t</em></strong>, but as we'll soon see, these don't exactly correspond to the camera's rotation and translation.  First we'll examine the parts of the extrinsic matrix, and later we'll look at alternative ways of describing the camera's pose that are more intuitive.</p>
-
-
-    <p> <a href="/2012/08/22/extrinsic/#more" class="more-link"><span class="readmore">more...</span></a></p>
   
 
 

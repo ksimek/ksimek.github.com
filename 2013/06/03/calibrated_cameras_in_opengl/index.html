@@ -88,7 +88,7 @@
 
   
     
-    <div class="notice">Is your company looking to hire a software engineer in computer vision? Let's talk!   I'm approaching the end of my PhD and am considering positions starting Summer 2015.  Check out the <a href="/contact.html">contact page</a> for more info.</div>
+    <div class="notice">Is your company looking to hire a software engineer in computer vision? Let's talk!   I'm approaching the end of my PhD and am considering positions starting Fall 2015.  Check out the <a href="/contact.html">contact page</a> for more info.</div>
 
     
 
@@ -107,6 +107,9 @@
 
 <p>You can.  And you don't have to jettison your axis skew, either.  In this article, I'll show how to use your intrinsic camera matrix in OpenGL with minimal modification.  For illustration, I'll use OpenGL 2.1 API calls, but the same matrices can be sent to your shaders in modern OpenGL.</p>
 
+<p><span id="more"></span></p>
+
+
 <h2>glFrustum:  Two Transforms in One</h2>
 
 <p>To better understand perspective projection in OpenGL, let's examine <code>glFrustum</code>. According to the OpenGL documentation,</p>
@@ -114,9 +117,6 @@
 <blockquote><p>glFrustum describes a perspective matrix that produces a perspective projection.</p></blockquote>
 
 <p>While this is true, it only tells half of the story.</p>
-
-<p><span id="more"></span></p>
-
 
 <p>In reality, <code>glFrustum</code> does two things: first it performs perspective projection, and then it converts to <a href="http://medialab.di.unipi.it/web/IUM/Waterloo/node15.html">normalized device coordinates (NDC)</a>.  The former is a common operation in projective geometry,  while the latter is OpenGL arcana, an implementation detail.</p>
 
