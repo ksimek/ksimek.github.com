@@ -8,11 +8,14 @@ tags: []
 {% include JB/setup %}
 
 <div class="clearer"></div>
+
 <div class='context-img' style='width:317px'>
+<div class='noexcerpt'>
 <img src='{{site.baseurl}}/img/elsd_before_small.jpg' width="317" />
 <div class='caption'>Input image
 </div>
 <br />
+</div>
 
 <img src='{{site.baseurl}}/img/elsd_after_small.png' width="317" />
 <div class='caption'>ELSD results
@@ -23,6 +26,8 @@ tags: []
 
 
 The authors have generously released their code under [Affero GPL](http://www.gnu.org/licenses/why-affero-gpl.html), but it requires a few tweaks to compile on OSX.  
+
+<!--more-->
 
 First, in `process_curve.c`, replace this line:
     

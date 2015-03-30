@@ -17,6 +17,8 @@ You've calibrated your camera.  You've decomposed it into intrinsic and extrinsi
 
 You can.  And you don't have to jettison your axis skew, either.  In this article, I'll show how to use your intrinsic camera matrix in OpenGL with minimal modification.  For illustration, I'll use OpenGL 2.1 API calls, but the same matrices can be sent to your shaders in modern OpenGL.
 
+<!--more-->
+
 glFrustum:  Two Transforms in One
 ----------------------------------------------------
 
@@ -27,7 +29,6 @@ To better understand perspective projection in OpenGL, let's examine <code>glFru
 
 While this is true, it only tells half of the story. 
 
-<!--more-->
 
 In reality, <code>glFrustum</code> does two things: first it performs perspective projection, and then it converts to [normalized device coordinates (NDC)](http://medialab.di.unipi.it/web/IUM/Waterloo/node15.html).  The former is a common operation in projective geometry,  while the latter is OpenGL arcana, an implementation detail.  
 

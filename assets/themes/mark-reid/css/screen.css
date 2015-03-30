@@ -22,7 +22,11 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,p,blockquote,th,t
 
 body {
     font-size:100%;
-	font-family: Palatino, georgia, "times new roman", serif;
+	/*
+  font-family: Palatino, georgia, "times new roman", serif;
+   */
+	font-family: "Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;
+  color: #404040;
 	background-color: whitesmoke;
 	background-position: center -18em;
 	background-repeat: repeat-x; 
@@ -137,7 +141,7 @@ margin: 1.5em 0;
 }
 
 .context-img img {
-    border: 1px solid black;
+    border: 1px solid #999;
 }
 
 .huh {
@@ -207,6 +211,7 @@ sup { line-height: 1ex; }
 */
 
 /* @group FancyFirst */
+/*
 .article > p:first-of-type::first-letter {
 	font-size: 48px;
 	padding: 0 0.15em 0 0;
@@ -214,11 +219,14 @@ sup { line-height: 1ex; }
 	line-height: 1em;
 	float: left;
 }
+*/
 
+/*
 .article > p:first-of-type::first-line {
 	font-variant: small-caps;
 	font-size: larger;
 }
+*/
 /* @end */
 
 .right { float: right; clear: left; }
