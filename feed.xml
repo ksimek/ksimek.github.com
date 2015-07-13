@@ -957,7 +957,7 @@ R  &amp;= R_c^T \\
 
 &lt;h2&gt;The &quot;Look-At&quot; Camera&lt;/h2&gt;
 
-&lt;p&gt;Readers familiar with OpenGL might prefer a third way of specifying the camera&#39;s pose using &lt;em&gt;(a)&lt;/em&gt; the camera&#39;s position, &lt;em&gt;(b)&lt;/em&gt; what it&#39;s looking at, and &lt;em&gt;(c)&lt;/em&gt; the &quot;up&quot; direction.  In legacy OpenGL, this is accomplished by the gluLookAt() function, so we&#39;ll call this the &quot;look-at&quot; camera.  Let &lt;em&gt;C&lt;/em&gt; be the camera center, &lt;strong&gt;&lt;em&gt;p&lt;/em&gt;&lt;/strong&gt; be the target point, and &lt;strong&gt;&lt;em&gt;u&lt;/em&gt;&lt;/strong&gt; be up-direction.   The algorithm for computing the rotation matrix is (paraphrased from the &lt;a href=&quot;http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluLookAt.htm&quot;&gt;OpenGL documentation&lt;/a&gt;):&lt;/p&gt;
+&lt;p&gt;Readers familiar with OpenGL might prefer a third way of specifying the camera&#39;s pose using &lt;em&gt;(a)&lt;/em&gt; the camera&#39;s position, &lt;em&gt;(b)&lt;/em&gt; what it&#39;s looking at, and &lt;em&gt;(c)&lt;/em&gt; the &quot;up&quot; direction.  In legacy OpenGL, this is accomplished by the gluLookAt() function, so we&#39;ll call this the &quot;look-at&quot; camera.  Let &lt;em&gt;C&lt;/em&gt; be the camera center, &lt;strong&gt;&lt;em&gt;p&lt;/em&gt;&lt;/strong&gt; be the target point, and &lt;strong&gt;&lt;em&gt;u&lt;/em&gt;&lt;/strong&gt; be up-direction.   The algorithm for computing the rotation matrix is (paraphrased from the &lt;a href=&quot;https://www.opengl.org/sdk/docs/man2/xhtml/gluLookAt.xml&quot;&gt;OpenGL documentation&lt;/a&gt;):&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;Compute L = p - C.&lt;/li&gt;
