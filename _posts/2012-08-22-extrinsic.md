@@ -180,7 +180,7 @@ Some texts write the extrinsic matrix substituting *-RC* for ***t***, which mixe
 The "Look-At" Camera
 -----------------------------
 
-Readers familiar with OpenGL might prefer a third way of specifying the camera's pose using *(a)* the camera's position, *(b)* what it's looking at, and *(c)* the "up" direction.  In legacy OpenGL, this is accomplished by the gluLookAt() function, so we'll call this the "look-at" camera.  Let *C* be the camera center, ***p*** be the target point, and ***u*** be up-direction.   The algorithm for computing the rotation matrix is (paraphrased from the [OpenGL documentation](http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.opengl%2Fdoc%2Fopenglrf%2FgluLookAt.htm)):
+Readers familiar with OpenGL might prefer a third way of specifying the camera's pose using *(a)* the camera's position, *(b)* what it's looking at, and *(c)* the "up" direction.  In legacy OpenGL, this is accomplished by the gluLookAt() function, so we'll call this the "look-at" camera.  Let *C* be the camera center, ***p*** be the target point, and ***u*** be up-direction.   The algorithm for computing the rotation matrix is (paraphrased from the [OpenGL documentation](https://www.opengl.org/sdk/docs/man2/xhtml/gluLookAt.xml)):
 
 1. Compute L = p - C.
 2. Normalize L.
